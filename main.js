@@ -83,7 +83,7 @@ function Ninja(game) {
     this.radius = 100;
     this.ground = 430;
 
-    Entity.call(this, game, 10, 430);
+    Entity.call(this, game, 8, 430);
 }
 
 Ninja.prototype = new Entity();
