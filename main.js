@@ -82,7 +82,8 @@ function Ninja(game) {
     this.jumpLeftAnimation = new Animation(ASSET_MANAGER.getAsset("./img/ninja.png"), 0, 309, 50, 77, 0.08, 3, false, true);
     this.radius = 100;
     this.ground = 430;
-    Entity.call(this, game, 8, 430);
+
+    Entity.call(this, game, 10, 430);
 }
 
 Ninja.prototype = new Entity();
