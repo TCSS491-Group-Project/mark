@@ -68,6 +68,25 @@ Background.prototype.draw = function (ctx) {
     Entity.prototype.draw.call(this);
 }
 
+function testBox(game) {
+    
+    Entity.call(this, game, 0, 400);
+}
+testBox.prototype = new Entity();
+testBox.prototype.constructor = testBox;
+
+testBox.prototype.update = function () {
+    
+    Entity.prototype.update.call(this);
+}
+
+testBox.prototype.draw = function (ctx) {
+    ctx.fillStyle = "SaddleBrown";
+    ctx.fillRect(0, 0,50,50);
+    Entity.prototype.draw.call(this);
+}
+
+
 function Ninja(game) {
     //this.animation = new Animation(ASSET_MANAGER.getAsset("./img/RobotUnicorn.png"), 0, 0, 206, 110, 0.02, 30, true, true);
     //this.jumpAnimation = new Animation(ASSET_MANAGER.getAsset("./img/RobotUnicorn.png"), 618, 334, 174, 138, 0.02, 40, false, true);
@@ -191,9 +210,11 @@ ASSET_MANAGER.downloadAll(function () {
     var gameEngine = new GameEngine();
     var bg = new Background(gameEngine);
     var ninja = new Ninja(gameEngine);
+    var box = new testBox(gameEngine);
 
     gameEngine.addEntity(bg);
     gameEngine.addEntity(ninja);
+    gameEngine.addEntity(box);
  
     gameEngine.init(ctx);
     gameEngine.start();
