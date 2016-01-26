@@ -69,20 +69,19 @@ Background.prototype.draw = function (ctx) {
 }
 
 function testBox(game) {
-    
+    this.animation1 = new Animation(ASSET_MANAGER.getAsset("./img/Capture.png"), 0, 0, 10, 10, 0.05, 1, true, false);
     Entity.call(this, game, 0, 400);
 }
 testBox.prototype = new Entity();
 testBox.prototype.constructor = testBox;
 
 testBox.prototype.update = function () {
-    
+    this.x += 1; this.y+=1;
     Entity.prototype.update.call(this);
 }
 
 testBox.prototype.draw = function (ctx) {
-    ctx.fillStyle = "SaddleBrown";
-    ctx.fillRect(0, 0,50,50);
+    this.animation1.drawFrame(this.game.clockTick, ctx, this.x, this.y);
     Entity.prototype.draw.call(this);
 }
 
@@ -202,6 +201,7 @@ var ASSET_MANAGER = new AssetManager();
 
 ASSET_MANAGER.queueDownload("./img/ninja.png");
 ASSET_MANAGER.queueDownload("./img/Maze.png");
+ASSET_MANAGER.queueDownload("./img/Capture.png");
 
 ASSET_MANAGER.downloadAll(function () {
     console.log("starting up da sheild");
