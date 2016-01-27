@@ -153,7 +153,7 @@ Ninja.prototype.update = function () {
         this.lookRightOrLeftActive = true;
         this.lookLeft = false;
         this.ground = this.y;
-        //this.tx +=1;
+        this.game.tx = 1;
 
         //console.log(this.tx);
         //this.x += 1;
@@ -162,20 +162,20 @@ Ninja.prototype.update = function () {
         this.lookRight = false;
         this.lookRightOrLeftActive = true;
         this.ground = this.y;
-        //this.tx -= 1;
+        this.game.tx = -1;
 
         //this.x -= 1;
     } else if(this.game.goUp){
         this.lookLeft = false;
         this.lookRight = false;
         this.lookRightOrLeftActive = false;
-        //this.ty -=1;
+        this.game.ty = -1;
         //this.y -= 1;
     } else if(this.game.goDown){
         this.lookLeft = false;
         this.lookRight = false;
         this.lookRightOrLeftActive = false;
-        //this.ty +=1;
+        this.game.ty = 1;
         //this.y += 1;
     }
 
