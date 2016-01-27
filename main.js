@@ -53,7 +53,7 @@ Animation.prototype.isDone = function () {
 }
 
 function Background(game) {
-    Entity.call(this, game, 0, 400);
+    Entity.call(this, game, 200, 200);
     this.radius = 200;
 }
 
@@ -61,12 +61,31 @@ Background.prototype = new Entity();
 Background.prototype.constructor = Background;
 
 Background.prototype.update = function () {
+    
+    /*for(var i = 0; i < this.game.entities.length; i++){
+        var mazepiece = this.game.entities[i];
+        if(mazepiece instanceof Ninja){
+            this.x = this.x - mazepiece.tx;
+            this.y = this.y - mazepiece.ty;
+            //console.log(mazepiece.tx);
+        }
+    }*/
+
+    this.x = this.x - this.game.tx;
+    this.y = this.y - this.game.ty;
+    Entity.prototype.update.call(this);
+    
 }
 
 Background.prototype.draw = function (ctx) {
-    ctx.drawImage(ASSET_MANAGER.getAsset("./img/Maze.png"), 0, 0, 800, 800);
+    //ctx.drawImage(ASSET_MANAGER.getAsset("./img/Maze.png"), 0, 0, 800, 800);
+    ctx.fillStyle = "black";
+    ctx.fillRect(this.x, this.y, 100, 100); 
+
     Entity.prototype.draw.call(this);
 }
+
+
 
 
 function Ninja(game) {
@@ -79,12 +98,15 @@ function Ninja(game) {
     this.walkLeftAnimation = new Animation(ASSET_MANAGER.getAsset("./img/ninja.png"), 0, 77, 50, 77, 0.08, 8, true, false);
     this.LookLeftAnimation = new Animation(ASSET_MANAGER.getAsset("./img/ninja.png"), 0, 77, 50, 77, 0.08, 1, true, false);
     this.goUpAndDownAnimation = new Animation(ASSET_MANAGER.getAsset("./img/ninja.png"), 200, 0, 50, 77, 0.08, 4, true, false);
-    this.jumpRightAnimation = new Animation(ASSET_MANAGER.getAsset("./img/ninja.png"), 200, 309, 50, 77, 0.08, 3, false, false);
-    this.jumpLeftAnimation = new Animation(ASSET_MANAGER.getAsset("./img/ninja.png"), 0, 309, 50, 77, 0.08, 3, false, true);
+    this.jumpRightAnimation = new Animation(ASSET_MANAGER.getAsset("./img/ninja.png"), 200, 309, 50, 77, 0.13, 3, false, false);
+    this.jumpLeftAnimation = new Animation(ASSET_MANAGER.getAsset("./img/ninja.png"), 0, 309, 50, 77, 0.13, 3, false, true);
     this.radius = 100;
     this.ground = 430;
 
-    Entity.call(this, game, 8, 430);
+    //this.tx = 0;
+    //this.ty = 0;
+
+    Entity.call(this, game, 370, 360);
 }
 
 Ninja.prototype = new Entity();
@@ -106,10 +128,10 @@ Ninja.prototype.update = function () {
         var jumpDistance;
         if(this.lookRight){
             jumpDistance = this.jumpRightAnimation.elapsedTime / this.jumpRightAnimation.totalTime;
-             this.x += 10;
+             //this.x += 10;
         } else if(this.lookLeft){
             jumpDistance = this.jumpLeftAnimation.elapsedTime / this.jumpLeftAnimation.totalTime;
-             this.x -= 10;
+             //this.x -= 10;
         }
          
         var totalHeight = 50;
@@ -123,7 +145,7 @@ Ninja.prototype.update = function () {
         var height = totalHeight*(-4 * (jumpDistance * jumpDistance - jumpDistance));
 
         this.y = this.ground - height; 
-        console.log(this.y);
+        //console.log(this.y);
         
         
     } else if(this.game.walkRight){
@@ -131,23 +153,30 @@ Ninja.prototype.update = function () {
         this.lookRightOrLeftActive = true;
         this.lookLeft = false;
         this.ground = this.y;
-        this.x += 1;
+        //this.tx +=1;
+
+        //console.log(this.tx);
+        //this.x += 1;
     } else if(this.game.walkLeft){
         this.lookLeft = true;
         this.lookRight = false;
         this.lookRightOrLeftActive = true;
         this.ground = this.y;
-        this.x -= 1;
+        //this.tx -= 1;
+
+        //this.x -= 1;
     } else if(this.game.goUp){
         this.lookLeft = false;
         this.lookRight = false;
         this.lookRightOrLeftActive = false;
-        this.y -= 1;
+        //this.ty -=1;
+        //this.y -= 1;
     } else if(this.game.goDown){
         this.lookLeft = false;
         this.lookRight = false;
         this.lookRightOrLeftActive = false;
-        this.y += 1;
+        //this.ty +=1;
+        //this.y += 1;
     }
 
 
@@ -179,28 +208,26 @@ Ninja.prototype.draw = function (ctx) {
 }
 
 function testBox(game) {
-    this.animation1 = new Animation(ASSET_MANAGER.getAsset("./img/Capture.png"), 0, 0, 10, 10, 0.05, 1, true, false);
+    //this.animation1 = new Animation(ASSET_MANAGER.getAsset("./img/Capture.png"), 0, 0, 10, 10, 0.05, 1, true, false);
     Entity.call(this, game, 0, 0);
 }
 testBox.prototype = new Entity();
 testBox.prototype.constructor = testBox;
 
 testBox.prototype.update = function () {
-    //consolole.log(Ninja.this.x);
-     for (var i = 0; i < this.game.entities.length; i++) {
-        var ninja = this.game.entities[i];
-        if (ninja instanceof Ninja) {
-           this.x = ninja.x;
-           this.y = ninja.y;
-        }
-    }
-
     Entity.prototype.update.call(this);
 }
 
 testBox.prototype.draw = function (ctx) {
-    this.animation1.drawFrame(this.game.clockTick, ctx, this.x + 10, this.y - 100);
+    //this.animation1.drawFrame(this.game.clockTick, ctx, this.x + 10, this.y - 100);
     Entity.prototype.draw.call(this);
+    //ctx.fillStyle = "SaddleBrown";
+    
+    var gradient = ctx.createRadialGradient(400, 400, 150, 400, 400, 0);
+    gradient.addColorStop(0, "black");
+    gradient.addColorStop(1, "transparent");
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 800, 800);  
 }
 
 // the "main" code begins here
@@ -217,13 +244,16 @@ ASSET_MANAGER.downloadAll(function () {
     var ctx = canvas.getContext('2d');
 
     var gameEngine = new GameEngine();
-    var bg = new Background(gameEngine);
+   
     var ninja = new Ninja(gameEngine);
+    var bg = new Background(gameEngine);
     var box = new testBox(gameEngine);
 
+
     gameEngine.addEntity(bg);
-    gameEngine.addEntity(ninja);
     gameEngine.addEntity(box);
+    gameEngine.addEntity(ninja);
+    
  
     gameEngine.init(ctx);
     gameEngine.start();

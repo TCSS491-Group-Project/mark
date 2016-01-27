@@ -67,18 +67,24 @@ GameEngine.prototype.startInput = function () {
 
         return { x: x, y: y };
     }
+    this.tx = null;
+    this.ty = null;
 
     this.ctx.canvas.addEventListener("keydown", function (e) {
         if (String.fromCharCode(e.which) === ' ') {
             that.jumping = true;
         } else if(String.fromCharCode(e.which) === 'D') {
             that.walkRight = true;
+            that.tx = 1;
         } else if(String.fromCharCode(e.which) === 'A') {
             that.walkLeft = true;
+            that.tx = -1;
         } else if(String.fromCharCode(e.which) === 'W') {
             that.goUp = true;
+            that.ty = -1;
         } else if(String.fromCharCode(e.which) === 'S') {
             that.goDown = true;
+            that.ty = 1;
         } 
 //        console.log(e);
         e.preventDefault();
@@ -87,13 +93,19 @@ GameEngine.prototype.startInput = function () {
     this.ctx.canvas.addEventListener("keyup", function (e) {
         if(String.fromCharCode(e.which) === 'D') {
             that.walkRight = false;
+            
         } else if(String.fromCharCode(e.which) === 'A') {
             that.walkLeft = false;
+            
         } else if(String.fromCharCode(e.which) === 'W') {
             that.goUp = false;
+            
         } else if(String.fromCharCode(e.which) === 'S') {
             that.goDown = false;
         }
+        that.tx = 0;
+        that.ty = 0;
+        
 //        console.log(e);
         e.preventDefault();
     }, false);
