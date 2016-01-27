@@ -61,6 +61,13 @@ GameEngine.prototype.startInput = function () {
     console.log('Starting input');
     var that = this;
 
+    var getXandY = function (e) {
+        var x = e.clientX - that.ctx.canvas.getBoundingClientRect().left;
+        var y = e.clientY - that.ctx.canvas.getBoundingClientRect().top;
+
+        return { x: x, y: y };
+    }
+
     this.ctx.canvas.addEventListener("keydown", function (e) {
         if (String.fromCharCode(e.which) === ' ') {
             that.jumping = true;

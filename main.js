@@ -68,23 +68,6 @@ Background.prototype.draw = function (ctx) {
     Entity.prototype.draw.call(this);
 }
 
-function testBox(game) {
-    this.animation1 = new Animation(ASSET_MANAGER.getAsset("./img/Capture.png"), 0, 0, 10, 10, 0.05, 1, true, false);
-    Entity.call(this, game, 0, 400);
-}
-testBox.prototype = new Entity();
-testBox.prototype.constructor = testBox;
-
-testBox.prototype.update = function () {
-    this.x += 1; this.y+=1;
-    Entity.prototype.update.call(this);
-}
-
-testBox.prototype.draw = function (ctx) {
-    this.animation1.drawFrame(this.game.clockTick, ctx, this.x, this.y);
-    Entity.prototype.draw.call(this);
-}
-
 
 function Ninja(game) {
     //this.animation = new Animation(ASSET_MANAGER.getAsset("./img/RobotUnicorn.png"), 0, 0, 206, 110, 0.02, 30, true, true);
@@ -192,6 +175,33 @@ Ninja.prototype.draw = function (ctx) {
         this.animation.drawFrame(this.game.clockTick, ctx, this.x, this.y);
     }
        
+    Entity.prototype.draw.call(this);
+}
+
+function testBox(game) {
+    this.animation1 = new Animation(ASSET_MANAGER.getAsset("./img/Capture.png"), 0, 0, 10, 10, 0.05, 1, true, false);
+    Entity.call(this, game, 0, 0);
+}
+testBox.prototype = new Entity();
+testBox.prototype.constructor = testBox;
+
+testBox.prototype.update = function () {
+    //consolole.log(Ninja.this.x);
+     for (var i = 0; i < this.game.entities.length; i++) {
+        var ninja = this.game.entities[i];
+        if (ninja instanceof Ninja) {
+           this.x = ninja.x;
+           this.y = ninja.y;
+        }
+    }
+
+
+    this.x += 1; this.y+=1;
+    Entity.prototype.update.call(this);
+}
+
+testBox.prototype.draw = function (ctx) {
+    this.animation1.drawFrame(this.game.clockTick, ctx, this.x + 10, this.y - 100);
     Entity.prototype.draw.call(this);
 }
 
