@@ -195,8 +195,6 @@ testBox.prototype.update = function () {
         }
     }
 
-
-    this.x += 1; this.y+=1;
     Entity.prototype.update.call(this);
 }
 
