@@ -52,8 +52,12 @@ Animation.prototype.isDone = function () {
     return (this.elapsedTime >= this.totalTime);
 }
 
-function Background(game) {
-    Entity.call(this, game, 200, 200);
+function Background(game, x, y, width, height) {
+    this.width = width;
+    this.height = height;
+    this.startX = x;
+    this.startY = y;
+    Entity.call(this, game, x, y);
     this.radius = 200;
 }
 
@@ -80,7 +84,7 @@ Background.prototype.update = function () {
 Background.prototype.draw = function (ctx) {
     //ctx.drawImage(ASSET_MANAGER.getAsset("./img/Maze.png"), 0, 0, 800, 800);
     ctx.fillStyle = "red";
-    ctx.fillRect(this.x, this.y, 100, 100); 
+    ctx.fillRect(this.x, this.y, this.width, this.height); 
 
     Entity.prototype.draw.call(this);
 }
@@ -244,14 +248,25 @@ ASSET_MANAGER.downloadAll(function () {
     var ctx = canvas.getContext('2d');
 
     var gameEngine = new GameEngine();
+    var bgBoxes = [];
+    var pl = new Background(gameEngine, 0, 0, 100, 100);
+    gameEngine.addEntity(pl);
+    bgBoxes.push(pl);
+    pl = new Background(gameEngine, 0, 100, 100, 100);
+    gameEngine.addEntity(pl);
+    bgBoxes.push(pl);
+    pl = new Background(gameEngine, 100, 200, 100, 100);
+    gameEngine.addEntity(pl);
+    bgBoxes.push(pl);
    
+    gameEngine.bgBoxes = bgBoxes;
+
     var ninja = new Ninja(gameEngine);
-    var bg = new Background(gameEngine);
+    //var bg = new Background(gameEngine);
     var box = new testBox(gameEngine);
 
-
-    gameEngine.addEntity(bg);
-    gameEngine.addEntity(box);
+    //gameEngine.addEntity(bg);
+    //gameEngine.addEntity(box);
     gameEngine.addEntity(ninja);
     
  
