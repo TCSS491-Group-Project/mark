@@ -79,7 +79,7 @@ Background.prototype.update = function () {
 
 Background.prototype.draw = function (ctx) {
     //ctx.drawImage(ASSET_MANAGER.getAsset("./img/Maze.png"), 0, 0, 800, 800);
-    ctx.fillStyle = "black";
+    ctx.fillStyle = "red";
     ctx.fillRect(this.x, this.y, 100, 100); 
 
     Entity.prototype.draw.call(this);
