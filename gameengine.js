@@ -75,16 +75,16 @@ GameEngine.prototype.startInput = function () {
             that.jumping = true;
         } else if(String.fromCharCode(e.which) === 'D') {
             that.walkRight = true;
-            that.tx = 1;
+            //that.tx = 1;
         } else if(String.fromCharCode(e.which) === 'A') {
             that.walkLeft = true;
-            that.tx = -1;
+            //that.tx = -1;
         } else if(String.fromCharCode(e.which) === 'W') {
             that.goUp = true;
-            that.ty = -1;
+            //that.ty = -1;
         } else if(String.fromCharCode(e.which) === 'S') {
             that.goDown = true;
-            that.ty = 1;
+            //that.ty = 1;
         } 
 //        console.log(e);
         e.preventDefault();
@@ -99,13 +99,14 @@ GameEngine.prototype.startInput = function () {
             
         } else if(String.fromCharCode(e.which) === 'W') {
             that.goUp = false;
-            
+           
         } else if(String.fromCharCode(e.which) === 'S') {
             that.goDown = false;
+           
         }
+        
         that.tx = 0;
         that.ty = 0;
-        
 //        console.log(e);
         e.preventDefault();
     }, false);
