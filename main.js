@@ -52,6 +52,7 @@ Animation.prototype.isDone = function () {
     return (this.elapsedTime >= this.totalTime);
 }
 
+
 function BoundingBox(x, y, width, height) {
     this.x = x;
     this.y = y;
@@ -69,6 +70,14 @@ BoundingBox.prototype.collide = function (oth) {
     return false;
 }
 
+BoundingBox.prototype.collideRight = function (oth) {
+    if (this.right === oth.left) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 function MazePiece(game, x, y, width, height) {
     this.width = width;
     this.height = height;
@@ -79,7 +88,6 @@ function MazePiece(game, x, y, width, height) {
 
     
     Entity.call(this, game, x, y);
-    this.radius = 200;
 }
 
 MazePiece.prototype = new Entity();
@@ -87,15 +95,7 @@ MazePiece.prototype.constructor = MazePiece;
 
 MazePiece.prototype.update = function () {
     
-    /*for(var i = 0; i < this.game.entities.length; i++){
-        var mazepiece = this.game.entities[i];
-        if(mazepiece instanceof Ninja){
-            this.x = this.x - mazepiece.tx;
-            this.y = this.y - mazepiece.ty;
-            //console.log(mazepiece.tx);
-        }
-    }*/
-
+    
     this.x = this.x - this.game.tx;
     this.y = this.y - this.game.ty;
     this.boundingbox = new BoundingBox(this.x, this.y, this.width, this.height);
@@ -132,16 +132,8 @@ function Ninja(game) {
     this.boxes = true;
     this.stay = true;
     this.boundingbox = new BoundingBox(this.x, this.y, this.animation.frameWidth, this.animation.frameHeight);
-    this.lookRight = null;
-    this.lookLeft = null;
-    this.lookDownAndUp = null;
 
-    //used this trigers for the colision detections
-    this.t1 = null;
-    this.t2 = null;
-    this.t3 = null;
-    //this.tx = 0;
-    //this.ty = 0;
+ 
     this.platform = game.mazePieces[0];
 
     Entity.call(this, game, 370, 360);
@@ -167,7 +159,7 @@ Ninja.prototype.update = function () {
         if(this.lookRight){
             jumpDistance = this.jumpRightAnimation.elapsedTime / this.jumpRightAnimation.totalTime;
              //this.x += 10;
-             this.boundingbox = new BoundingBox(this.x, this.y, this.jumpRightAnimation.frameWidth, this.jumpRightAnimation.frameHeight);
+            this.boundingbox = new BoundingBox(this.x, this.y, this.jumpRightAnimation.frameWidth, this.jumpRightAnimation.frameHeight);
         } else if(this.lookLeft){
             jumpDistance = this.jumpLeftAnimation.elapsedTime / this.jumpLeftAnimation.totalTime;
             this.boundingbox = new BoundingBox(this.x, this.y, this.jumpLeftAnimation.frameWidth, this.jumpLeftAnimation.frameHeight);
@@ -188,102 +180,120 @@ Ninja.prototype.update = function () {
         //console.log(this.y);
         
         
-    } else if(this.game.walkRight && !this.game.goDown && !this.game.goUp){
+    } else if(this.game.walkRight){
         
         this.lookRightOrLeftActive = true;
         this.lookLeft = false;
-        //this.stay = false;
+        this.stay = false;
         this.ground = this.y;
         this.lookRight = true;
-
+        this.game.tx = 1;
         this.boundingbox = new BoundingBox(this.x, this.y, this.walkRightAnimation.frameWidth, this.walkRightAnimation.frameHeight);
         for (var i = 0; i < this.game.mazePieces.length; i++) {
+            var pf = this.game.mazePieces[i];
+            
+            if (this.boundingbox.collide(pf.boundingbox)) {
+                          
+                this.game.tx = 0;
+                this.stay =true;
+                break;
+            } 
+        }
+        
+        if(this.stay){
+            for (var i = 0; i < this.game.mazePieces.length; i++) {
                 var pf = this.game.mazePieces[i];
-                console.log(this.game.tx);
-                if (this.boundingbox.collide(pf.boundingbox) && this.t1 && this.t2) {
-                    //this.x = pf.boundingbox.left - this.animation.frameWidth + 10;                             
-                    this.game.tx = 0;
-                    this.platform = pf;
-                    
-                    break;
-                } else {
-                    this.game.tx = 1;
-                }
+                pf.x = pf.x + 3;
+                
             }
-        this.t1 = true;
-        this.t2 = true;
+        }
         //console.log(this.tx);
         //this.x += 1;
-    } else if(this.game.walkLeft && !this.game.goDown && !this.game.goUp){
+    } else if(this.game.walkLeft){
+        
         this.lookLeft = true;
-        
         this.lookRightOrLeftActive = true;
+        this.lookLeft = true;
+        this.lookRight = false;
         this.ground = this.y;
-        
+        this.stay = false;
+        this.game.tx = -1;
         this.boundingbox = new BoundingBox(this.x, this.y, this.walkLeftAnimation.frameWidth, this.walkLeftAnimation.frameHeight);
         for (var i = 0; i < this.game.mazePieces.length; i++) {
+            var pf = this.game.mazePieces[i];
+           
+            if (this.boundingbox.collide(pf.boundingbox) && !this.t1 && !this.t2) {
+                //this.x = pf.boundingbox.left - this.animation.frameWidth + 10;  
+                this.game.tx = 0;     
+                this.stay = true;
+                break;
+            } 
+        }
+
+        if(this.stay){
+            for (var i = 0; i < this.game.mazePieces.length; i++) {
                 var pf = this.game.mazePieces[i];
-                console.log(this.game.tx);
-                if (this.boundingbox.collide(pf.boundingbox) && !this.t1 && !this.t2) {
-                    //this.x = pf.boundingbox.left - this.animation.frameWidth + 10;                             
-                    this.game.tx = 0;
-                    break;
-                } else {
-                    this.game.tx = -1;
-                }
+                pf.x = pf.x - 3;
+                
             }
-        this.t1 = false;
-        this.t2 = false;
-       
-        this.lookRight = false;
-        //this.x -= 1;
-    } else if(this.game.goUp ){
+        } 
         
-         this.boundingbox = new BoundingBox(this.x, this.y, this.goUpAndDownAnimation.frameWidth, this.goUpAndDownAnimation.frameHeight);
+        
+        
+    }if(this.game.goUp){
+        this.stay = false; 
+        this.game.ty = -1;
+        this.boundingbox = new BoundingBox(this.x, this.y, this.goUpAndDownAnimation.frameWidth, this.goUpAndDownAnimation.frameHeight);
         for (var i = 0; i < this.game.mazePieces.length; i++) {
+            var pf = this.game.mazePieces[i];
+            
+            if (this.boundingbox.collide(pf.boundingbox)) {
+                
+                this.game.ty = 0;                                
+                this.stay = true;
+                break;
+            } 
+        }
+        
+        if(this.stay){
+            for (var i = 0; i < this.game.mazePieces.length; i++) {
                 var pf = this.game.mazePieces[i];
-                console.log(this.boundingbox.collide(pf.boundingbox) && this.lookDownAndUp);
-                if (this.boundingbox.collide(pf.boundingbox) && this.t1 && !this.t2) {
-                    //this.x = pf.boundingbox.left - this.animation.frameWidth + 10;                             
-                    this.game.ty = 0;
-                    //this.platform = pf;
-                    break;
-                } else {
-                    this.game.ty = -1;
-                }
+                pf.y = pf.y - 3;
+                
             }
-        this.t1 = true;
-        this.t2 = false;
-
-
-        this.lookRightOrLeftActive = false;
-        this.lookLeft = false;
-        this.lookRight = false;
-   
-        //this.y -= 1;
-    } else if(this.game.goDown){
-         this.boundingbox = new BoundingBox(this.x, this.y, this.goUpAndDownAnimation.frameWidth, this.goUpAndDownAnimation.frameHeight);
-        for (var i = 0; i < this.game.mazePieces.length; i++) {
-                var pf = this.game.mazePieces[i];
-                console.log(this.game.ty);
-                if (this.boundingbox.collide(pf.boundingbox) && !this.t1 && this.t2) {
-                    //this.x = pf.boundingbox.left - this.animation.frameWidth + 10;                             
-                    this.game.ty = 0;
-                    //this.platform = pf;
-                    break;
-                } else {
-                    this.game.ty = 1;
-                }
-            }
-
-        this.t1 = false;
-        this.t2 = true;
+        }
 
         this.lookRightOrLeftActive = false;
         this.lookLeft = false;
         this.lookRight = false;
 
-        //this.y += 1;
+    }else if(this.game.goDown){
+
+        this.stay = false;
+        this.game.ty = 1;
+        this.boundingbox = new BoundingBox(this.x, this.y, this.goUpAndDownAnimation.frameWidth, this.goUpAndDownAnimation.frameHeight);
+        for (var i = 0; i < this.game.mazePieces.length; i++) {
+            var pf = this.game.mazePieces[i];
+           
+            if (this.boundingbox.collide(pf.boundingbox)) {
+     
+                this.game.ty = 0;                      
+                this.stay = true;
+                break;
+            } 
+        }
+        
+        if(this.stay){
+            for (var i = 0; i < this.game.mazePieces.length; i++) {
+                var pf = this.game.mazePieces[i];
+                pf.y = pf.y + 3;
+                
+            }
+        }
+
+        this.lookRightOrLeftActive = false;
+        this.lookLeft = false;
+        this.lookRight = false;
     }
     
 
@@ -295,7 +305,7 @@ Ninja.prototype.draw = function (ctx) {
         this.jumpRightAnimation.drawFrame(this.game.clockTick, ctx, this.x + 10, this.y - 40);
     }else if (this.game.jumping && this.lookLeft) {
         this.jumpLeftAnimation.drawFrame(this.game.clockTick, ctx, this.x + 10, this.y - 40);
-    } else if (this.game.walkRight && !this.game.goDown && !this.game.goUp){
+    } else if (this.game.walkRight){
         this.walkRightAnimation.drawFrame(this.game.clockTick, ctx, this.x, this.y);
          if (this.boxes) {
             ctx.strokeStyle = "red";
@@ -305,11 +315,17 @@ Ninja.prototype.draw = function (ctx) {
         }
     } else if (this.game.walkLeft){
         this.walkLeftAnimation.drawFrame(this.game.clockTick, ctx, this.x, this.y);
+         if (this.boxes) {
+            ctx.strokeStyle = "red";
+            ctx.strokeRect(this.x, this.y, this.walkRightAnimation.frameWidth, this.walkRightAnimation.frameHeight);
+            ctx.strokeStyle = "green";
+            ctx.strokeRect(this.boundingbox.x, this.boundingbox.y, this.boundingbox.width, this.boundingbox.height);
+        }
     } else if (this.lookLeft) {
         this.LookLeftAnimation.drawFrame(this.game.clockTick, ctx, this.x, this.y);
     } else if (this.lookRight){
         this.LookRightAnimation.drawFrame(this.game.clockTick, ctx, this.x, this.y);
-    } else if (this.game.goUp && !this.game.walkRight && !this.game.walkLeft){
+    } else if (this.game.goUp){
         this.goUpAndDownAnimation.drawFrame(this.game.clockTick, ctx, this.x, this.y);
     } else if (this.game.goDown){
         this.goUpAndDownAnimation.drawFrame(this.game.clockTick, ctx, this.x, this.y);
@@ -375,6 +391,7 @@ ASSET_MANAGER.downloadAll(function () {
     mazePieces.push(pl);
    
     gameEngine.mazePieces  = mazePieces;
+
 
     var ninja = new Ninja(gameEngine);
     var box = new VisibilityCircle(gameEngine);
