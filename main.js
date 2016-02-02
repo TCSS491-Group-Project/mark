@@ -362,6 +362,7 @@ VisibilityCircle.prototype.draw = function (ctx) {
     ctx.fillRect(0, 0, 800, 800);  
 }
 
+
 // the "main" code begins here
 
 var ASSET_MANAGER = new AssetManager();
