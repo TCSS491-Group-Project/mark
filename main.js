@@ -136,7 +136,7 @@ function Ninja(game) {
  
     this.platform = game.mazePieces[0];
 
-    Entity.call(this, game, 120,0);
+    Entity.call(this, game, 360, 370);
 }
 
 Ninja.prototype = new Entity();
@@ -187,7 +187,7 @@ Ninja.prototype.update = function () {
         this.stay = false;
         this.ground = this.y;
         this.lookRight = true;
-        this.game.tx = 1;
+        this.game.tx = 2;
         this.boundingbox = new BoundingBox(this.x, this.y, this.walkRightAnimation.frameWidth, this.walkRightAnimation.frameHeight);
         for (var i = 0; i < this.game.mazePieces.length; i++) {
             var pf = this.game.mazePieces[i];
@@ -195,19 +195,18 @@ Ninja.prototype.update = function () {
             if (this.boundingbox.collide(pf.boundingbox)) {
                           
                 this.game.tx = 0;
-                this.stay =true;
-                //this.game.walkRight = false;
-                break;
+                this.stay = true;
             } 
         }
         
         if(this.stay){
             for (var i = 0; i < this.game.mazePieces.length; i++) {
                 var pf = this.game.mazePieces[i];
-                pf.x = pf.x + 3;
+                pf.x = pf.x + 6;
                 
             }
         }
+
         //console.log(this.tx);
         //this.x += 1;
     } else if(this.game.walkLeft){
@@ -218,7 +217,7 @@ Ninja.prototype.update = function () {
         this.lookRight = false;
         this.ground = this.y;
         this.stay = false;
-        this.game.tx = -1;
+        this.game.tx = -2;
         this.boundingbox = new BoundingBox(this.x, this.y, this.walkLeftAnimation.frameWidth, this.walkLeftAnimation.frameHeight);
         for (var i = 0; i < this.game.mazePieces.length; i++) {
             var pf = this.game.mazePieces[i];
@@ -235,7 +234,7 @@ Ninja.prototype.update = function () {
         if(this.stay){
             for (var i = 0; i < this.game.mazePieces.length; i++) {
                 var pf = this.game.mazePieces[i];
-                pf.x = pf.x - 3;
+                pf.x = pf.x - 6;
                 
             }
         } 
@@ -244,7 +243,7 @@ Ninja.prototype.update = function () {
         
     } if(this.game.goUp){
         this.stay = false; 
-        this.game.ty = -1;
+        this.game.ty = -2;
         this.boundingbox = new BoundingBox(this.x, this.y, this.goUpAndDownAnimation.frameWidth, this.goUpAndDownAnimation.frameHeight);
         for (var i = 0; i < this.game.mazePieces.length; i++) {
             var pf = this.game.mazePieces[i];
@@ -260,7 +259,7 @@ Ninja.prototype.update = function () {
         if(this.stay){
             for (var i = 0; i < this.game.mazePieces.length; i++) {
                 var pf = this.game.mazePieces[i];
-                pf.y = pf.y - 3;
+                pf.y = pf.y - 5;
                 
             }
         }
@@ -272,7 +271,7 @@ Ninja.prototype.update = function () {
     }else if(this.game.goDown){
 
         this.stay = false;
-        this.game.ty = 1;
+        this.game.ty = 2;
         this.boundingbox = new BoundingBox(this.x, this.y, this.goUpAndDownAnimation.frameWidth, this.goUpAndDownAnimation.frameHeight);
         for (var i = 0; i < this.game.mazePieces.length; i++) {
             var pf = this.game.mazePieces[i];
@@ -288,7 +287,7 @@ Ninja.prototype.update = function () {
         if(this.stay){
             for (var i = 0; i < this.game.mazePieces.length; i++) {
                 var pf = this.game.mazePieces[i];
-                pf.y = pf.y + 3;
+                pf.y = pf.y + 5;
                 
             }
         }
@@ -355,7 +354,7 @@ VisibilityCircle.prototype.draw = function (ctx) {
     Entity.prototype.draw.call(this);
     //ctx.fillStyle = "SaddleBrown";
     
-    var gradient = ctx.createRadialGradient(400, 400, 150, 400, 400, 0);
+    var gradient = ctx.createRadialGradient(400, 400, 300, 400, 400, 0);
     gradient.addColorStop(0, "black");
     gradient.addColorStop(1, "transparent");
     ctx.fillStyle = gradient;
@@ -399,7 +398,7 @@ function createMazePieces(game, maze) {
 		for(var c = 0; c < maze.width + 1; c++) {
 //			string += maze.maze[r][c] + " ";
 			if(maze.maze[r][c] === 'X') {
-				var pl = new MazePiece(game, c * 100, r * 100 , 100, 100);
+				var pl = new MazePiece(game, (c * 100) + 250, (r * 100) + 370 , 100, 100);
     				game.addEntity(pl);
     				mazePieces.push(pl); 
 			} 
@@ -438,7 +437,7 @@ ASSET_MANAGER.downloadAll(function () {
     var box = new VisibilityCircle(gameEngine);
 
     
-    //gameEngine.addEntity(box);
+    gameEngine.addEntity(box);
     gameEngine.addEntity(ninja);
  
     gameEngine.init(ctx);
