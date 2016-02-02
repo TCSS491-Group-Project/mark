@@ -136,7 +136,7 @@ function Ninja(game) {
  
     this.platform = game.mazePieces[0];
 
-    Entity.call(this, game, 370, 360);
+    Entity.call(this, game, 120,0);
 }
 
 Ninja.prototype = new Entity();
@@ -362,6 +362,53 @@ VisibilityCircle.prototype.draw = function (ctx) {
     ctx.fillRect(0, 0, 800, 800);  
 }
 
+
+// Hardcoded maze
+function Maze(length, width) {
+	this.length = length;
+	this.width = width;
+	this.maze = [['X', ' ', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
+	              ['X', ' ', ' ', ' ', 'X', ' ', ' ', ' ', 'X', ' ', 'X'],
+	              ['X', 'X', 'X', ' ', 'X', 'X', 'X', ' ', 'X', ' ', 'X'],
+	              ['X', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'X'],
+	              ['X', 'X', 'X', 'X', 'X', 'X', 'X', ' ', 'X', 'X', 'X'],
+	              ['X', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'X', ' ', 'X'],
+	              ['X', ' ', 'X', 'X', 'X', ' ', 'X', 'X', 'X', ' ', 'X'],
+	              ['X', ' ', 'X', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'X'],
+	              ['X', ' ', 'X', 'X', 'X', 'X', 'X', 'X', 'X', ' ', 'X'],
+	              ['X', ' ', ' ', ' ', ' ', ' ', 'X', ' ', ' ', ' ', 'X'],
+	              ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', ' ', 'X']];
+	
+	this.printMaze = function() {
+		var string = '';
+		console.log('The Maze length: ' + this.length);
+		console.log('The Maze width: ' + this.width);
+		for(var r = 0; r < this.length + 1; r++) {
+			for(var c = 0; c < this.width + 1; c++) {
+				string += this.maze[r][c] + " ";
+			}
+			string += '\r\n';
+		}
+		console.log(string);
+	}	
+}
+
+function createMazePieces(game, maze) {
+	var mazePieces = [];
+	for(var r = 0; r < maze.length + 1; r++) {
+		for(var c = 0; c < maze.width + 1; c++) {
+//			string += maze.maze[r][c] + " ";
+			if(maze.maze[r][c] === 'X') {
+				var pl = new MazePiece(game, c * 100, r * 100 , 100, 100);
+    				game.addEntity(pl);
+    				mazePieces.push(pl); 
+			} 
+		}
+//		string += '\r\n';
+	}
+	return mazePieces;
+};
+
 // the "main" code begins here
 
 var ASSET_MANAGER = new AssetManager();
@@ -376,21 +423,13 @@ ASSET_MANAGER.downloadAll(function () {
     var ctx = canvas.getContext('2d');
 
     var gameEngine = new GameEngine();
-    var mazePieces = [];
-    var pl = new MazePiece(gameEngine, 200, 300, 100, 100);
-    gameEngine.addEntity(pl);
-    mazePieces.push(pl);
-    pl = new MazePiece(gameEngine, 500, 300, 100, 100);
-    gameEngine.addEntity(pl);
-    mazePieces.push(pl);
-   
-    pl = new MazePiece(gameEngine, 400, 200, 100, 100);
-    gameEngine.addEntity(pl);
-    mazePieces.push(pl);
 
-    pl = new MazePiece(gameEngine, 400, 450, 100, 100);
-    gameEngine.addEntity(pl);
-    mazePieces.push(pl);
+
+
+    var myMaze = new Maze(10, 10);
+    myMaze.printMaze();
+    var mazePieces = createMazePieces(gameEngine, myMaze);
+    //mazePieces.push(pl);
    
     gameEngine.mazePieces  = mazePieces;
 
@@ -398,7 +437,7 @@ ASSET_MANAGER.downloadAll(function () {
     var ninja = new Ninja(gameEngine);
     var box = new VisibilityCircle(gameEngine);
 
-    //gameEngine.addEntity(bg);
+    
     //gameEngine.addEntity(box);
     gameEngine.addEntity(ninja);
  
