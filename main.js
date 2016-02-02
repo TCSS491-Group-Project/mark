@@ -196,6 +196,7 @@ Ninja.prototype.update = function () {
                           
                 this.game.tx = 0;
                 this.stay =true;
+                //this.game.walkRight = false;
                 break;
             } 
         }
@@ -222,10 +223,11 @@ Ninja.prototype.update = function () {
         for (var i = 0; i < this.game.mazePieces.length; i++) {
             var pf = this.game.mazePieces[i];
            
-            if (this.boundingbox.collide(pf.boundingbox) && !this.t1 && !this.t2) {
+            if (this.boundingbox.collide(pf.boundingbox)) {
                 //this.x = pf.boundingbox.left - this.animation.frameWidth + 10;  
                 this.game.tx = 0;     
                 this.stay = true;
+                //this.game.walkLeft = false;
                 break;
             } 
         }
@@ -240,7 +242,7 @@ Ninja.prototype.update = function () {
         
         
         
-    }if(this.game.goUp){
+    } if(this.game.goUp){
         this.stay = false; 
         this.game.ty = -1;
         this.boundingbox = new BoundingBox(this.x, this.y, this.goUpAndDownAnimation.frameWidth, this.goUpAndDownAnimation.frameHeight);

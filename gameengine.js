@@ -152,6 +152,7 @@ GameEngine.prototype.loop = function () {
     this.update();
     this.draw();
     
+    //this.walkLeft = null;
 }
 
 function Entity(game, x, y) {
