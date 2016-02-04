@@ -143,6 +143,8 @@ Ninja.prototype = new Entity();
 Ninja.prototype.constructor = Ninja;
 
 Ninja.prototype.update = function () {
+    var speed = 20;
+    var padding = 20;
 
     if (this.game.jumping && this.lookRightOrLeftActive) {
         
@@ -187,8 +189,8 @@ Ninja.prototype.update = function () {
         this.stay = false;
         this.ground = this.y;
         this.lookRight = true;
-        this.game.tx = 2;
-        this.boundingbox = new BoundingBox(this.x, this.y, this.walkRightAnimation.frameWidth, this.walkRightAnimation.frameHeight);
+        this.game.tx = speed;
+        this.boundingbox = new BoundingBox(this.x + padding, this.y, this.walkRightAnimation.frameWidth, this.walkRightAnimation.frameHeight);
         for (var i = 0; i < this.game.mazePieces.length; i++) {
             var pf = this.game.mazePieces[i];
             
@@ -196,16 +198,17 @@ Ninja.prototype.update = function () {
                           
                 this.game.tx = 0;
                 this.stay = true;
+                break;
             } 
         }
         
-        if(this.stay){
+        /*if(this.stay){
             for (var i = 0; i < this.game.mazePieces.length; i++) {
                 var pf = this.game.mazePieces[i];
                 pf.x = pf.x + 6;
                 
             }
-        }
+        }*/
 
         //console.log(this.tx);
         //this.x += 1;
@@ -217,8 +220,8 @@ Ninja.prototype.update = function () {
         this.lookRight = false;
         this.ground = this.y;
         this.stay = false;
-        this.game.tx = -2;
-        this.boundingbox = new BoundingBox(this.x, this.y, this.walkLeftAnimation.frameWidth, this.walkLeftAnimation.frameHeight);
+        this.game.tx = -(speed);
+        this.boundingbox = new BoundingBox(this.x - padding, this.y, this.walkLeftAnimation.frameWidth, this.walkLeftAnimation.frameHeight);
         for (var i = 0; i < this.game.mazePieces.length; i++) {
             var pf = this.game.mazePieces[i];
            
@@ -231,20 +234,20 @@ Ninja.prototype.update = function () {
             } 
         }
 
-        if(this.stay){
+        /*if(this.stay){
             for (var i = 0; i < this.game.mazePieces.length; i++) {
                 var pf = this.game.mazePieces[i];
                 pf.x = pf.x - 6;
                 
             }
-        } 
+        } */
         
         
         
     } if(this.game.goUp){
         this.stay = false; 
-        this.game.ty = -2;
-        this.boundingbox = new BoundingBox(this.x, this.y, this.goUpAndDownAnimation.frameWidth, this.goUpAndDownAnimation.frameHeight);
+        this.game.ty = -(speed);
+        this.boundingbox = new BoundingBox(this.x, this.y - padding, this.goUpAndDownAnimation.frameWidth, this.goUpAndDownAnimation.frameHeight);
         for (var i = 0; i < this.game.mazePieces.length; i++) {
             var pf = this.game.mazePieces[i];
             
@@ -256,14 +259,14 @@ Ninja.prototype.update = function () {
             } 
         }
         
-        if(this.stay){
+        /*if(this.stay){
             for (var i = 0; i < this.game.mazePieces.length; i++) {
                 var pf = this.game.mazePieces[i];
                 pf.y = pf.y - 5;
                 
             }
         }
-
+*/
         this.lookRightOrLeftActive = false;
         this.lookLeft = false;
         this.lookRight = false;
@@ -271,8 +274,8 @@ Ninja.prototype.update = function () {
     }else if(this.game.goDown){
 
         this.stay = false;
-        this.game.ty = 2;
-        this.boundingbox = new BoundingBox(this.x, this.y, this.goUpAndDownAnimation.frameWidth, this.goUpAndDownAnimation.frameHeight);
+        this.game.ty = speed;
+        this.boundingbox = new BoundingBox(this.x, this.y + padding, this.goUpAndDownAnimation.frameWidth, this.goUpAndDownAnimation.frameHeight);
         for (var i = 0; i < this.game.mazePieces.length; i++) {
             var pf = this.game.mazePieces[i];
            
@@ -284,13 +287,13 @@ Ninja.prototype.update = function () {
             } 
         }
         
-        if(this.stay){
+        /*if(this.stay){
             for (var i = 0; i < this.game.mazePieces.length; i++) {
                 var pf = this.game.mazePieces[i];
                 pf.y = pf.y + 5;
                 
             }
-        }
+        }*/
 
         this.lookRightOrLeftActive = false;
         this.lookLeft = false;
@@ -328,8 +331,20 @@ Ninja.prototype.draw = function (ctx) {
         this.LookRightAnimation.drawFrame(this.game.clockTick, ctx, this.x, this.y);
     } else if (this.game.goUp){
         this.goUpAndDownAnimation.drawFrame(this.game.clockTick, ctx, this.x, this.y);
+        if (this.boxes) {
+            ctx.strokeStyle = "red";
+            ctx.strokeRect(this.x, this.y, this.goUpAndDownAnimation.frameWidth, this.goUpAndDownAnimation.frameHeight);
+            ctx.strokeStyle = "green";
+            ctx.strokeRect(this.boundingbox.x, this.boundingbox.y, this.boundingbox.width, this.boundingbox.height);
+        }
     } else if (this.game.goDown){
         this.goUpAndDownAnimation.drawFrame(this.game.clockTick, ctx, this.x, this.y);
+        if (this.boxes) {
+            ctx.strokeStyle = "red";
+            ctx.strokeRect(this.x, this.y, this.goUpAndDownAnimation.frameWidth, this.goUpAndDownAnimation.frameHeight);
+            ctx.strokeStyle = "green";
+            ctx.strokeRect(this.boundingbox.x, this.boundingbox.y, this.boundingbox.width, this.boundingbox.height);
+        }
     } else {
         this.animation.drawFrame(this.game.clockTick, ctx, this.x, this.y);
     } 
