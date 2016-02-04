@@ -70,6 +70,30 @@ BoundingBox.prototype.collide = function (oth) {
     return false;
 }
 
+BoundingBox.prototype.collideRight = function (oth) {
+    if (this.right > oth.left) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+BoundingBox.prototype.collideLeft = function (oth) {
+    if (this.left < oth.right) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+//BoundingBox.prototype.collideLeft = function (oth) { //TODO working here
+//    if (this.left < oth.right) {
+//        return true;
+//    } else {
+//        return false;
+//    }
+//}
+
 function MazePiece(game, x, y, width, height) {
     this.width = width;
     this.height = height;
@@ -228,7 +252,7 @@ Ninja.prototype.update = function () {
     }else if(this.game.goDown){
 
         this.stay = false;
-        this.game.ty = padding;
+        this.game.ty = speed;
         this.boundingbox = new BoundingBox(this.x, this.y + padding, this.goUpAndDownAnimation.frameWidth, this.goUpAndDownAnimation.frameHeight);
         for (var i = 0; i < this.game.mazePieces.length; i++) {
             var pf = this.game.mazePieces[i];
