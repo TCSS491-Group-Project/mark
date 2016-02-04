@@ -71,12 +71,28 @@ BoundingBox.prototype.collide = function (oth) {
 }
 
 BoundingBox.prototype.collideRight = function (oth) {
-    if (this.right === oth.left) {
+    if (this.right > oth.left) {
         return true;
     } else {
         return false;
     }
 }
+
+BoundingBox.prototype.collideLeft = function (oth) {
+    if (this.left < oth.right) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+//BoundingBox.prototype.collideLeft = function (oth) { //TODO working here
+//    if (this.left < oth.right) {
+//        return true;
+//    } else {
+//        return false;
+//    }
+//}
 
 function MazePiece(game, x, y, width, height) {
     this.width = width;
@@ -143,7 +159,8 @@ Ninja.prototype = new Entity();
 Ninja.prototype.constructor = Ninja;
 
 Ninja.prototype.update = function () {
-
+	var speed = 4;
+	var padding = 4;
     if (this.game.jumping && this.lookRightOrLeftActive) {
         
 
@@ -187,28 +204,16 @@ Ninja.prototype.update = function () {
         this.stay = false;
         this.ground = this.y;
         this.lookRight = true;
-        this.game.tx = 2;
-        this.boundingbox = new BoundingBox(this.x, this.y, this.walkRightAnimation.frameWidth, this.walkRightAnimation.frameHeight);
+        this.game.tx = speed;
+        this.boundingbox = new BoundingBox(this.x + padding, this.y, this.walkRightAnimation.frameWidth, this.walkRightAnimation.frameHeight);
         for (var i = 0; i < this.game.mazePieces.length; i++) {
             var pf = this.game.mazePieces[i];
             
-            if (this.boundingbox.collide(pf.boundingbox)) {
-                          
+            if (this.boundingbox.collide(pf.boundingbox)) {    
                 this.game.tx = 0;
-                this.stay = true;
+                break;
             } 
         }
-        
-        if(this.stay){
-            for (var i = 0; i < this.game.mazePieces.length; i++) {
-                var pf = this.game.mazePieces[i];
-                pf.x = pf.x + 6;
-                
-            }
-        }
-
-        //console.log(this.tx);
-        //this.x += 1;
     } else if(this.game.walkLeft){
         
         this.lookLeft = true;
@@ -217,51 +222,27 @@ Ninja.prototype.update = function () {
         this.lookRight = false;
         this.ground = this.y;
         this.stay = false;
-        this.game.tx = -2;
-        this.boundingbox = new BoundingBox(this.x, this.y, this.walkLeftAnimation.frameWidth, this.walkLeftAnimation.frameHeight);
+        this.game.tx = -(speed);
+        this.boundingbox = new BoundingBox(this.x - padding, this.y, this.walkLeftAnimation.frameWidth, this.walkLeftAnimation.frameHeight);
         for (var i = 0; i < this.game.mazePieces.length; i++) {
             var pf = this.game.mazePieces[i];
            
             if (this.boundingbox.collide(pf.boundingbox)) {
-                //this.x = pf.boundingbox.left - this.animation.frameWidth + 10;  
                 this.game.tx = 0;     
-                this.stay = true;
-                //this.game.walkLeft = false;
                 break;
             } 
         }
-
-        if(this.stay){
-            for (var i = 0; i < this.game.mazePieces.length; i++) {
-                var pf = this.game.mazePieces[i];
-                pf.x = pf.x - 6;
-                
-            }
-        } 
-        
-        
-        
     } if(this.game.goUp){
         this.stay = false; 
-        this.game.ty = -2;
-        this.boundingbox = new BoundingBox(this.x, this.y, this.goUpAndDownAnimation.frameWidth, this.goUpAndDownAnimation.frameHeight);
+        this.game.ty = -(speed);
+        this.boundingbox = new BoundingBox(this.x, this.y - padding, this.goUpAndDownAnimation.frameWidth, this.goUpAndDownAnimation.frameHeight);
         for (var i = 0; i < this.game.mazePieces.length; i++) {
             var pf = this.game.mazePieces[i];
             
             if (this.boundingbox.collide(pf.boundingbox)) {
-                
-                this.game.ty = 0;                                
-                this.stay = true;
+                this.game.ty = 0;        
                 break;
             } 
-        }
-        
-        if(this.stay){
-            for (var i = 0; i < this.game.mazePieces.length; i++) {
-                var pf = this.game.mazePieces[i];
-                pf.y = pf.y - 5;
-                
-            }
         }
 
         this.lookRightOrLeftActive = false;
@@ -271,25 +252,17 @@ Ninja.prototype.update = function () {
     }else if(this.game.goDown){
 
         this.stay = false;
-        this.game.ty = 2;
-        this.boundingbox = new BoundingBox(this.x, this.y, this.goUpAndDownAnimation.frameWidth, this.goUpAndDownAnimation.frameHeight);
+        this.game.ty = padding;
+        this.boundingbox = new BoundingBox(this.x, this.y + padding, this.goUpAndDownAnimation.frameWidth, this.goUpAndDownAnimation.frameHeight);
         for (var i = 0; i < this.game.mazePieces.length; i++) {
             var pf = this.game.mazePieces[i];
            
-            if (this.boundingbox.collide(pf.boundingbox)) {
+            if (this.boundingbox.collide(pf.boundingbox)) { // TODO here
      
                 this.game.ty = 0;                      
                 this.stay = true;
                 break;
             } 
-        }
-        
-        if(this.stay){
-            for (var i = 0; i < this.game.mazePieces.length; i++) {
-                var pf = this.game.mazePieces[i];
-                pf.y = pf.y + 5;
-                
-            }
         }
 
         this.lookRightOrLeftActive = false;
@@ -413,8 +386,8 @@ function createMazePieces(game, maze) {
 var ASSET_MANAGER = new AssetManager();
 
 ASSET_MANAGER.queueDownload("./img/ninja.png");
-ASSET_MANAGER.queueDownload("./img/Maze.png");
-ASSET_MANAGER.queueDownload("./img/Capture.png");
+//ASSET_MANAGER.queueDownload("./img/Maze.png");
+//ASSET_MANAGER.queueDownload("./img/Capture.png");
 
 ASSET_MANAGER.downloadAll(function () {
     console.log("starting up da sheild");
@@ -426,7 +399,7 @@ ASSET_MANAGER.downloadAll(function () {
 
 
     var myMaze = new Maze(10, 10);
-    myMaze.printMaze();
+//    myMaze.printMaze();
     var mazePieces = createMazePieces(gameEngine, myMaze);
     //mazePieces.push(pl);
    
