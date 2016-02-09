@@ -378,10 +378,8 @@ VisibilityCircle.prototype.draw = function (ctx) {
 
 
 // Hardcoded maze
-function Maze(length, width) {
-	this.length = length;
-	this.width = width;
-	this.maze = [['X', ' ', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
+function Maze() {
+	this.maze = [['X', ' ', 'X', ' ', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
 	              ['X', ' ', ' ', ' ', 'X', ' ', ' ', ' ', 'X', ' ', 'X'],
 	              ['X', 'X', 'X', ' ', 'X', 'X', 'X', ' ', 'X', ' ', 'X'],
 	              ['X', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'X'],
@@ -391,14 +389,18 @@ function Maze(length, width) {
 	              ['X', ' ', 'X', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'X'],
 	              ['X', ' ', 'X', 'X', 'X', 'X', 'X', 'X', 'X', ' ', 'X'],
 	              ['X', ' ', ' ', ' ', ' ', ' ', 'X', ' ', ' ', ' ', 'X'],
-	              ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', ' ', 'X']];
+	              ['X', 'X', ' ', 'X', ' ', 'X', 'X', 'X', ' ', ' ', 'X'],
+                  ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', ' ', 'X']];
+
+    this.length = this.maze[0].length;
+    this.width = this.maze.length;
 	
 	this.printMaze = function() {
 		var string = '';
 		console.log('The Maze length: ' + this.length);
 		console.log('The Maze width: ' + this.width);
-		for(var r = 0; r < this.length + 1; r++) {
-			for(var c = 0; c < this.width + 1; c++) {
+		for(var r = 0; r < this.length; r++) {
+			for(var c = 0; c < this.width; c++) {
 				string += this.maze[r][c] + " ";
 			}
 			string += '\r\n';
@@ -409,8 +411,9 @@ function Maze(length, width) {
 
 function createMazePieces(game, maze) {
 	var mazePieces = [];
-	for(var r = 0; r < maze.length + 1; r++) {
-		for(var c = 0; c < maze.width + 1; c++) {
+    console.log(maze.length);
+	for(var r = 0; r < maze.width ; r++) {
+		for(var c = 0; c < maze.maze[0].length  ; c++) {
 //			string += maze.maze[r][c] + " ";
 			if(maze.maze[r][c] === 'X') {
 				var pl = new MazePiece(game, (c * 100) + 250, (r * 100) + 370 , 100, 100);
@@ -440,7 +443,7 @@ ASSET_MANAGER.downloadAll(function () {
 
 
 
-    var myMaze = new Maze(10, 10);
+    var myMaze = new Maze();
     myMaze.printMaze();
     var mazePieces = createMazePieces(gameEngine, myMaze);
     //mazePieces.push(pl);
