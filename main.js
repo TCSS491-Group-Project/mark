@@ -127,7 +127,32 @@ MazePiece.prototype.draw = function (ctx) {
     Entity.prototype.draw.call(this);
 }
 
+/** Coin function */
+function Coin(game, x, y){
+	this.x = x;
+	this.y = y;
+	this.animation = new Animation(ASSET_MANAGER.getAsset("./img/coin.png"), 0, 0, 100, 100, 0.05, 10, true, false);
+	this.boxes = true;
+	this.boundingbox = new BoundingBox(this.x, this.y, this.animation.frameWidth, this.animation.frameHeight);
+	
+	Entity.call(this, game, x, y); // Entity.call(this, game, x, y);
+	
+}
 
+Coin.prototype = new Entity();
+Coin.prototype.constructor = Coin;
+
+Coin.prototype.update = function () {
+	this.x = this.x - this.game.tx;
+    this.y = this.y - this.game.ty;
+    this.boundingbox = new BoundingBox(this.x, this.y, this.width, this.height);
+    Entity.prototype.update.call(this);
+}
+
+Coin.prototype.draw = function (ctx) {
+	this.animation.drawFrame(this.game.clockTick, ctx, this.x + 10, this.y - 40, 0.5);
+    Entity.prototype.draw.call(this);
+}
 
 
 function Ninja(game) {
@@ -355,8 +380,9 @@ VisibilityCircle.prototype.draw = function (ctx) {
 
 // Hardcoded maze
 function Maze() {
-	this.maze = [['X', ' ', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
-	              ['X', ' ', ' ', ' ', 'X', ' ', ' ', ' ', 'X', ' ', 'X'],
+
+	this.maze =  [['X', ' ', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
+	              ['X', 'C', ' ', ' ', 'X', ' ', ' ', ' ', 'X', 'C', 'X'],
 	              ['X', 'X', 'X', ' ', 'X', 'X', 'X', ' ', 'X', ' ', 'X'],
 	              ['X', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'X'],
 	              ['X', 'X', 'X', 'X', 'X', 'X', 'X', ' ', 'X', 'X', 'X'],
@@ -395,7 +421,11 @@ function createMazePieces(game, maze) {
 				var pl = new MazePiece(game, (c * 100) + 250, (r * 100) + 370 , 100, 100);
     				game.addEntity(pl);
     				mazePieces.push(pl); 
-			} 
+			} else if (maze.maze[r][c] === 'C') {
+				var pl = new Coin(game, (c * 100) + 270, (r * 100) + 430);
+				game.addEntity(pl);
+				mazePieces.push(pl);
+			}
 		}
 //		string += '\r\n';
 	}
@@ -407,7 +437,7 @@ function createMazePieces(game, maze) {
 var ASSET_MANAGER = new AssetManager();
 
 ASSET_MANAGER.queueDownload("./img/ninja.png");
-//ASSET_MANAGER.queueDownload("./img/Maze.png");
+ASSET_MANAGER.queueDownload("./img/coin.png");
 //ASSET_MANAGER.queueDownload("./img/Capture.png");
 
 ASSET_MANAGER.downloadAll(function () {
@@ -429,10 +459,10 @@ ASSET_MANAGER.downloadAll(function () {
 
 
     var ninja = new Ninja(gameEngine);
-    var box = new VisibilityCircle(gameEngine);
+    //var shade = new VisibilityCircle(gameEngine);
 
     
-    gameEngine.addEntity(box);
+    //gameEngine.addEntity(shade);
     gameEngine.addEntity(ninja);
  
     gameEngine.init(ctx);
