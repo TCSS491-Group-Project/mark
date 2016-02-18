@@ -379,23 +379,14 @@ VisibilityCircle.prototype.draw = function (ctx) {
 
 
 // Hardcoded maze
-function Maze() {
-	this.maze =  [['X', ' ', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
-	              ['X', 'C', ' ', ' ', 'X', ' ', ' ', ' ', 'X', 'C', 'X'],
-	              ['X', 'X', 'X', ' ', 'X', 'X', 'X', ' ', 'X', ' ', 'X'],
-	              ['X', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'X'],
-	              ['X', 'X', 'X', 'X', 'X', 'X', 'X', ' ', 'X', 'X', 'X'],
-	              ['X', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'X', ' ', 'X'],
-	              ['X', ' ', 'X', 'X', 'X', ' ', 'X', 'X', 'X', ' ', 'X'],
-	              ['X', ' ', 'X', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'X'],
-	              ['X', ' ', 'X', 'X', 'X', 'X', 'X', 'X', 'X', ' ', 'X'],
-	              ['X', ' ', ' ', ' ', ' ', 'C', 'X', ' ', ' ', ' ', 'X'],
-	              ['X', 'X', ' ', 'X', ' ', 'X', 'X', 'X', ' ', ' ', 'X'],
-                  ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', ' ', 'X']];
-
+function Maze(x, y) {
+	this.maze = getMazeField(generateMaze(x,y));
+//	addCoins(rows, cols, maze, numOfcoins) {
+	
     this.length = this.maze[0].length;
     this.width = this.maze.length;
-	
+    addCoins(this.length, this.width, this.maze, 3);
+    
 	this.printMaze = function() {
 		var string = '';
 		console.log('The Maze length: ' + this.length);
@@ -448,7 +439,7 @@ ASSET_MANAGER.downloadAll(function () {
 
 
 
-    var myMaze = new Maze();
+    var myMaze = new Maze(6, 6);
 //    myMaze.printMaze();
 
     var mazePieces = createMazePieces(gameEngine, myMaze);
