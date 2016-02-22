@@ -106,45 +106,10 @@ BoundingCircle.prototype.collide = function (rect) {
     return (corner <= ((this.radius)*(this.radius)));
 }
 
-function MazePiece(game, x, y, width, height) {
-    this.width = width;
-    this.height = height;
-    this.startX = x;
-    this.startY = y;
-    this.moveIncrement = 0;
-    this.boundingbox = new BoundingBox(x, y, width, height);
-    this.boxes = true;
-    
-    Entity.call(this, game, x, y);
-}
-
-MazePiece.prototype = new Entity();
-MazePiece.prototype.constructor = MazePiece;
-
-MazePiece.prototype.update = function () {
-    
-    
-    this.x = this.x - this.game.tx;
-    this.y = this.y - this.game.ty;
-    this.boundingbox = new BoundingBox(this.x, this.y, this.width, this.height);
-    Entity.prototype.update.call(this);
-    
-}
-
-MazePiece.prototype.draw = function (ctx) {
-    //ctx.drawImage(ASSET_MANAGER.getAsset("./img/Maze.png"), 0, 0, 800, 800);
-    ctx.fillStyle = "black";
-    ctx.fillRect(this.x, this.y, this.width, this.height);
-    if (this.boxes) {
-            ctx.strokeStyle = "green";
-            ctx.strokeRect(this.boundingbox.x, this.boundingbox.y, this.boundingbox.width, this.boundingbox.height);
-        }
-
-    Entity.prototype.draw.call(this);
-}
-
 /** Coin function */
 function Coin(game, x, y){
+	this.startX = x;
+    this.startY = y;
 	this.x = x;
 	this.y = y;
 	this.animation = new Animation(ASSET_MANAGER.getAsset("./img/coin.png"), 0, 0, 100, 100, 0.05, 10, true, false);
@@ -170,213 +135,13 @@ Coin.prototype.draw = function (ctx) {
     Entity.prototype.draw.call(this);
 }
 
-
-function Ninja(game) {
-    //this.animation = new Animation(ASSET_MANAGER.getAsset("./img/RobotUnicorn.png"), 0, 0, 206, 110, 0.02, 30, true, true);
-    //this.jumpAnimation = new Animation(ASSET_MANAGER.getAsset("./img/RobotUnicorn.png"), 618, 334, 174, 138, 0.02, 40, false, true);
-
-    this.animation = new Animation(ASSET_MANAGER.getAsset("./img/ninja.png"), 0, 0, 50, 77, 0.05, 1, true, false);
-    this.walkRightAnimation = new Animation(ASSET_MANAGER.getAsset("./img/ninja.png"), 0, 155, 50, 77, 0.08, 8, true, false);
-    this.LookRightAnimation = new Animation(ASSET_MANAGER.getAsset("./img/ninja.png"), 0, 155, 50, 77, 0.08, 1, true, false);
-    this.walkLeftAnimation = new Animation(ASSET_MANAGER.getAsset("./img/ninja.png"), 0, 77, 50, 77, 0.08, 8, true, false);
-    this.LookLeftAnimation = new Animation(ASSET_MANAGER.getAsset("./img/ninja.png"), 0, 77, 50, 77, 0.08, 1, true, false);
-    this.goUpAndDownAnimation = new Animation(ASSET_MANAGER.getAsset("./img/ninja.png"), 200, 0, 50, 77, 0.08, 4, true, false);
-    this.jumpRightAnimation = new Animation(ASSET_MANAGER.getAsset("./img/ninja.png"), 200, 309, 50, 77, 0.13, 3, false, false);
-    this.jumpLeftAnimation = new Animation(ASSET_MANAGER.getAsset("./img/ninja.png"), 0, 309, 50, 77, 0.13, 3, false, true);
-    
-    this.radius = 100;
-    this.ground = 430;
-    this.boxes = true;
-    this.stay = true;
-    this.boundingbox = new BoundingBox(this.x, this.y, this.animation.frameWidth, this.animation.frameHeight);
-
- 
-    this.platform = game.mazePieces[0];
-
-    Entity.call(this, game, 360, 370);
-}
-
-Ninja.prototype = new Entity();
-Ninja.prototype.constructor = Ninja;
-
-Ninja.prototype.update = function () {
-
-    var speed = 20;
-    var padding = 20;
-
-    if (this.game.jumping && this.lookRightOrLeftActive) {
-        
-
-        if (this.jumpRightAnimation.isDone()) {
-            this.jumpRightAnimation.elapsedTime = 0;
-            this.game.jumping = false;
-        } else if (this.jumpLeftAnimation.isDone()) {
-            this.jumpLeftAnimation.elapsedTime = 0;
-            this.game.jumping = false;
-        }
-        
-        var jumpDistance;
-        if(this.lookRight){
-            jumpDistance = this.jumpRightAnimation.elapsedTime / this.jumpRightAnimation.totalTime;
-             //this.x += 10;
-            this.boundingbox = new BoundingBox(this.x, this.y, this.jumpRightAnimation.frameWidth, this.jumpRightAnimation.frameHeight);
-        } else if(this.lookLeft){
-            jumpDistance = this.jumpLeftAnimation.elapsedTime / this.jumpLeftAnimation.totalTime;
-            this.boundingbox = new BoundingBox(this.x, this.y, this.jumpLeftAnimation.frameWidth, this.jumpLeftAnimation.frameHeight);
-             //this.x -= 10;
-        }
-         
-        var totalHeight = 50;
-
-        if (jumpDistance > 0.5){
-            jumpDistance = 1 - jumpDistance;
-        }
-            
-
-        //var height = jumpDistance * 2 * totalHeight;
-        var height = totalHeight*(-4 * (jumpDistance * jumpDistance - jumpDistance));
-
-        this.y = this.ground - height; 
-        //console.log(this.y);
-        
-        
-    } else if(this.game.walkRight){
-        
-        this.lookRightOrLeftActive = true;
-        this.lookLeft = false;
-        this.stay = false;
-        this.ground = this.y;
-        this.lookRight = true;
-        this.game.tx = speed;
-        this.boundingbox = new BoundingBox(this.x + padding, this.y, this.walkRightAnimation.frameWidth, this.walkRightAnimation.frameHeight);
-        for (var i = 0; i < this.game.mazePieces.length; i++) {
-            var pf = this.game.mazePieces[i];
-            
-            if (this.boundingbox.collide(pf.boundingbox)) {    
-                this.game.tx = 0;
-
-                break;
-            } 
-        }
-        
-    } else if(this.game.walkLeft){
-        
-        this.lookLeft = true;
-        this.lookRightOrLeftActive = true;
-        this.lookLeft = true;
-        this.lookRight = false;
-        this.ground = this.y;
-        this.stay = false;
-        this.game.tx = -(speed);
-        this.boundingbox = new BoundingBox(this.x - padding, this.y, this.walkLeftAnimation.frameWidth, this.walkLeftAnimation.frameHeight);
-        for (var i = 0; i < this.game.mazePieces.length; i++) {
-            var pf = this.game.mazePieces[i];
-           
-            if (this.boundingbox.collide(pf.boundingbox)) {
-                this.game.tx = 0;     
-                break;
-            } 
-        }
-
-    } if(this.game.goUp){
-        this.stay = false; 
-        this.game.ty = -(speed);
-        this.boundingbox = new BoundingBox(this.x, this.y - padding, this.goUpAndDownAnimation.frameWidth, this.goUpAndDownAnimation.frameHeight);
-        for (var i = 0; i < this.game.mazePieces.length; i++) {
-            var pf = this.game.mazePieces[i];
-            
-            if (this.boundingbox.collide(pf.boundingbox)) {
-                this.game.ty = 0;        
-                break;
-            } 
-        }
-
-        this.lookRightOrLeftActive = false;
-        this.lookLeft = false;
-        this.lookRight = false;
-
-    }else if(this.game.goDown){
-
-        this.stay = false;
-        this.game.ty = speed;
-        this.boundingbox = new BoundingBox(this.x, this.y + padding, this.goUpAndDownAnimation.frameWidth, this.goUpAndDownAnimation.frameHeight);
-        for (var i = 0; i < this.game.mazePieces.length; i++) {
-            var pf = this.game.mazePieces[i];
-           
-            if (this.boundingbox.collide(pf.boundingbox)) { // TODO here
-     
-                this.game.ty = 0;                      
-                this.stay = true;
-                break;
-            } 
-        }
-
-
-        this.lookRightOrLeftActive = false;
-        this.lookLeft = false;
-        this.lookRight = false;
-    }
-    
-
-    Entity.prototype.update.call(this);
-}
-
-Ninja.prototype.draw = function (ctx) {
-    if (this.game.jumping && this.lookRight) {
-        this.jumpRightAnimation.drawFrame(this.game.clockTick, ctx, this.x + 10, this.y - 40);
-    }else if (this.game.jumping && this.lookLeft) {
-        this.jumpLeftAnimation.drawFrame(this.game.clockTick, ctx, this.x + 10, this.y - 40);
-    } else if (this.game.walkRight){
-        this.walkRightAnimation.drawFrame(this.game.clockTick, ctx, this.x, this.y);
-         if (this.boxes) {
-            ctx.strokeStyle = "red";
-            ctx.strokeRect(this.x, this.y, this.walkRightAnimation.frameWidth, this.walkRightAnimation.frameHeight);
-            ctx.strokeStyle = "green";
-            ctx.strokeRect(this.boundingbox.x, this.boundingbox.y, this.boundingbox.width, this.boundingbox.height);
-        }
-    } else if (this.game.walkLeft){
-        this.walkLeftAnimation.drawFrame(this.game.clockTick, ctx, this.x, this.y);
-         if (this.boxes) {
-            ctx.strokeStyle = "red";
-            ctx.strokeRect(this.x, this.y, this.walkRightAnimation.frameWidth, this.walkRightAnimation.frameHeight);
-            ctx.strokeStyle = "green";
-            ctx.strokeRect(this.boundingbox.x, this.boundingbox.y, this.boundingbox.width, this.boundingbox.height);
-        }
-    } else if (this.lookLeft) {
-        this.LookLeftAnimation.drawFrame(this.game.clockTick, ctx, this.x, this.y);
-    } else if (this.lookRight){
-        this.LookRightAnimation.drawFrame(this.game.clockTick, ctx, this.x, this.y);
-    } else if (this.game.goUp){
-        this.goUpAndDownAnimation.drawFrame(this.game.clockTick, ctx, this.x, this.y);
-        if (this.boxes) {
-            ctx.strokeStyle = "red";
-            ctx.strokeRect(this.x, this.y, this.goUpAndDownAnimation.frameWidth, this.goUpAndDownAnimation.frameHeight);
-            ctx.strokeStyle = "green";
-            ctx.strokeRect(this.boundingbox.x, this.boundingbox.y, this.boundingbox.width, this.boundingbox.height);
-        }
-    } else if (this.game.goDown){
-        this.goUpAndDownAnimation.drawFrame(this.game.clockTick, ctx, this.x, this.y);
-        if (this.boxes) {
-            ctx.strokeStyle = "red";
-            ctx.strokeRect(this.x, this.y, this.goUpAndDownAnimation.frameWidth, this.goUpAndDownAnimation.frameHeight);
-            ctx.strokeStyle = "green";
-            ctx.strokeRect(this.boundingbox.x, this.boundingbox.y, this.boundingbox.width, this.boundingbox.height);
-        }
-    } else {
-        this.animation.drawFrame(this.game.clockTick, ctx, this.x, this.y);
-    }
-   
-       
-    Entity.prototype.draw.call(this);
-}
-
-
-
 function VisibilityCircle(game) {
     //this.animation1 = new Animation(ASSET_MANAGER.getAsset("./img/Capture.png"), 0, 0, 10, 10, 0.05, 1, true, false);
     Entity.call(this, game, 0, 0);
 };
+
 VisibilityCircle.prototype = new Entity();
+
 VisibilityCircle.prototype.constructor = VisibilityCircle;
 
 VisibilityCircle.prototype.update = function () {
@@ -394,28 +159,6 @@ VisibilityCircle.prototype.draw = function (ctx) {
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, 800, 800);  
 }
-
-function Test3D(game){
-    Entity.call(this, game, 0,0);
-}
-
-Test3D.prototype = new Entity();
-Test3D.prototype.constructor = Test3D;
-Test3D.prototype.update = function() {
-    Entity.prototype.update.call(this);
-    if(this.game.walkRight){
-        var xAxis = new THREE.Vector3(0,1,0);
-        rotateAroundWorldAxis(mesh, xAxis, x);
-        x = 0.09;
-        render();
-    }
-    //animate();
-};
-Test3D.prototype.draw = function (ctx) {
-    Entity.prototype.draw.call(this);
-    render();
-
-};
 
 function Circle3d(game, x, y, radius) {
     this.radius = radius;
@@ -464,12 +207,17 @@ Circle3d.prototype.update = function () {
     Entity.prototype.update.call(this);
 
     var speedIncreament = 0.5;
-    var MaxSpeed = 2;
-    var padding = 2;
+    var MaxSpeed = 5;
+    var padding = 5;
 
-    var ballRotationSpeed = 0.05;
+    var ballRotationSpeed = 0.09;
 
     if(this.game.walkRight){
+        /*var xAxis = new THREE.Vector3(0,1,0);
+        x = 0.09;
+        rotateAroundWorldAxis(mesh, xAxis, x);
+        
+        render();*/
 
         //move the maze
         this.game.tx += speedIncreament;
@@ -479,8 +227,11 @@ Circle3d.prototype.update = function () {
 
         //rotate ball right
         var xAxis = new THREE.Vector3(0,1,0);
+        rotateAroundWorldAxis(mesh, xAxis, x);
         x = ballRotationSpeed;       
 
+        //render the 3d
+        render();
 
         //create a new bounding circle with padding so that the maze will be able to move
         this.boundingcircle = new BoundingCircle(this.x + padding, this.y, this.radius);
@@ -489,20 +240,27 @@ Circle3d.prototype.update = function () {
             var pf = this.game.mazePieces[i];
 
             
-            if (this.boundingcircle.collide(pf.boundingbox)) { // TODO here
-                
-                this.game.tx = 0;
-                x = 0;            
-                //break;
+            if (this.boundingcircle.collide(pf.boundingbox)) { 
+                if(!pf.trap) {
+                	this.game.tx = 0;
+                } else {
+                	pf.removeFromWorld = true;
+                	mazeTrapReset(this.game);
+                	console.log("here" + i);
+                }
             } 
-
+            //this.collide(pf.boundingbox);
+            //console.log(this.collide(pf.boundingbox));
+        
         };
-
-        //update the position of the 3d ball
-        rotateAroundWorldAxis(mesh, xAxis, x);
     }
 
-    if(this.game.walkLeft){
+    else if(this.game.walkLeft){
+        /*var xAxis = new THREE.Vector3(0,1,0);
+        x = 0.09;
+        rotateAroundWorldAxis(mesh, xAxis, x);
+        
+        render();*/
 
         //move the maze
         this.game.tx -= speedIncreament;
@@ -511,8 +269,12 @@ Circle3d.prototype.update = function () {
         }
 
         //rotate ball left
-        var xAxis = new THREE.Vector3(0,1,0);    
+        var xAxis = new THREE.Vector3(0,1,0);
+        rotateAroundWorldAxis(mesh, xAxis, x);
         x = - (ballRotationSpeed);     
+
+        //render the 3d
+        render();
 
         //create a new bounding circle with padding so that the maze will be able to move
         this.boundingcircle = new BoundingCircle(this.x - padding, this.y, this.radius);
@@ -521,21 +283,25 @@ Circle3d.prototype.update = function () {
             var pf = this.game.mazePieces[i];
 
             
-            if (this.boundingcircle.collide(pf.boundingbox)) { // TODO here
-                
-                this.game.tx = 0;  
-                x = 0;                
-                //break;
+            if (this.boundingcircle.collide(pf.boundingbox)) { 
+            	if(!pf.trap) {
+            		this.game.tx = 0;
+                } else {
+                	pf.removeFromWorld = true;
+                	mazeTrapReset(this.game);
+                	console.log("here" + i);
+                }
             } 
-            //console.log(this.collide(pf.boundingbox));
+        
         };
-
-        //update the position of the 3d ball
-        rotateAroundWorldAxis(mesh, xAxis, x);
-
     }
 
     if(this.game.goDown){
+        /*var xAxis = new THREE.Vector3(0,1,0);
+        x = 0.09;
+        rotateAroundWorldAxis(mesh, xAxis, x);
+        
+        render();*/
 
         //move the maze
         this.game.ty += speedIncreament;
@@ -545,8 +311,11 @@ Circle3d.prototype.update = function () {
 
         //rotateball down
         var xAxis = new THREE.Vector3(1,0,0);
-        y = ballRotationSpeed;
-           
+        x = ballRotationSpeed;
+        rotateAroundWorldAxis(mesh, xAxis, x);   
+
+        //render the 3d
+        render();
 
         //create a new bounding circle with padding so that the maze will be able to move
         this.boundingcircle = new BoundingCircle(this.x, this.y + padding, this.radius);
@@ -555,21 +324,26 @@ Circle3d.prototype.update = function () {
             var pf = this.game.mazePieces[i];
 
             
-            if (this.boundingcircle.collide(pf.boundingbox)) { // TODO here
-                
-                this.game.ty = 0;
-                y = 0;
-                //break;
+            if (this.boundingcircle.collide(pf.boundingbox)) { 
+            	if(!pf.trap) {
+            		this.game.ty = 0; 
+                } else {
+                	pf.removeFromWorld = true;
+                	mazeTrapReset(this.game);
+                	console.log("here" + i);
+                }
             } 
             //console.log(this.collide(pf.boundingbox));
         
         };
-
-        //update 3d ball
-        rotateAroundWorldAxis(mesh, xAxis, y);
     }
 
     else if(this.game.goUp){
+        /*var xAxis = new THREE.Vector3(0,1,0);
+        x = 0.09;
+        rotateAroundWorldAxis(mesh, xAxis, x);
+        
+        render();*/
 
         //move the maze
         this.game.ty -= speedIncreament;
@@ -579,7 +353,7 @@ Circle3d.prototype.update = function () {
 
         //rotateball up
         var xAxis = new THREE.Vector3(1,0,0);
-        y = - (ballRotationSpeed);
+        x = - (ballRotationSpeed);
         
 
         //create a new bounding circle with padding so that the maze will be able to move
@@ -588,18 +362,23 @@ Circle3d.prototype.update = function () {
         for (var i = 0; i < this.game.mazePieces.length; i++) {
             var pf = this.game.mazePieces[i];
 
-            if (this.boundingcircle.collide(pf.boundingbox)) { // TODO here
-                
-                this.game.ty = 0; 
+            if (this.boundingcircle.collide(pf.boundingbox)) { 
+            	if(!pf.trap) {
+            		this.game.ty = 0;
+                } else {
+                	pf.removeFromWorld = true;
+                	mazeTrapReset(this.game);
+                	console.log("here" + i);
+                }
 
-                y = 0;                     
-                //break;
+                x =0;                     
+//                break;
             } 
             //console.log(this.collide(pf.boundingbox));
         
         };
 
-        rotateAroundWorldAxis(mesh, xAxis, y);
+        rotateAroundWorldAxis(mesh, xAxis, x);
     }
 
 };
@@ -623,8 +402,57 @@ Circle3d.prototype.draw = function (ctx) {
     render();
 };
 
+function mazeTrapReset(game) { // TODO here
+	for (var i = 0; i < game.mazePieces.length; i++) {
+		game.mazePieces[i].x = game.mazePieces[i].startX;
+		game.mazePieces[i].y = game.mazePieces[i].startY;
+		game.mazePieces[i].update();
+	}
+}
 
-// Hardcoded maze
+function MazePiece(game, x, y, width, height, isTrap) {
+    this.width = width;
+    this.height = height;
+    this.startX = x;
+    this.startY = y;
+    this.moveIncrement = 0;
+    if(!isTrap) {
+    	this.boundingbox = new BoundingBox(x, y, width, height);
+    }
+    this.boxes = true;
+    this.trap = isTrap;
+    
+    Entity.call(this, game, x, y);
+}
+
+MazePiece.prototype = new Entity();
+MazePiece.prototype.constructor = MazePiece;
+
+MazePiece.prototype.update = function () {
+	
+    
+    this.x = this.x - this.game.tx;
+    this.y = this.y - this.game.ty;
+    this.boundingbox = new BoundingBox(this.x, this.y, this.width, this.height);
+    Entity.prototype.update.call(this);
+    
+}
+
+MazePiece.prototype.draw = function (ctx) {
+    //ctx.drawImage(ASSET_MANAGER.getAsset("./img/Maze.png"), 0, 0, 800, 800);
+	if(this.trap) {
+		ctx.fillStyle = "blue";
+	} else {
+		ctx.fillStyle = "black";
+	}
+    ctx.fillRect(this.x, this.y, this.width, this.height);
+    if (this.boxes) {
+            ctx.strokeStyle = "green";
+            ctx.strokeRect(this.boundingbox.x, this.boundingbox.y, this.boundingbox.width, this.boundingbox.height);
+        }
+
+    Entity.prototype.draw.call(this);
+}
 
 function Maze(x, y) {
 	this.maze = getMazeField(generateMaze(x,y));
@@ -632,6 +460,7 @@ function Maze(x, y) {
     this.length = this.maze[0].length;
     this.width = this.maze.length;
     addCoins(this.length, this.width, this.maze, 3);
+    addTraps(this.length, this.width, this.maze, 3);
     
 	this.printMaze = function() {
 		var string = '';
@@ -654,13 +483,17 @@ function createMazePieces(game, maze) {
 		for(var c = 0; c < maze.maze[0].length  ; c++) {
 //			string += maze.maze[r][c] + " ";
 			if(maze.maze[r][c] === 'X') {
-				var pl = new MazePiece(game, (c * 100) + 250, (r * 100) + 370 , 100, 100);
-    				game.addEntity(pl);
-    				mazePieces.push(pl); 
+				var pl = new MazePiece(game, (c * 100) + 250, (r * 100) + 370 , 100, 100, false); // x, y, width, height
+				game.addEntity(pl);
+				mazePieces.push(pl); 
 			} else if (maze.maze[r][c] === 'C') {
-				var pl = new Coin(game, (c * 100) + 270, (r * 100) + 430);
+				var pl = new Coin(game, (c * 100) + 270, (r * 100) + 430); // // x, y, width, height
 				game.addEntity(pl);
 				mazePieces.push(pl);
+			} else if(maze.maze[r][c] === 'T') {
+				var pl = new MazePiece(game, (c * 100) + 250 + 25, (r * 100) + 370 + 25 , 50, 50, true); // x, y, width, height
+				game.addEntity(pl);
+				mazePieces.push(pl); 
 			}
 		}
 //		string += '\r\n';
@@ -690,7 +523,7 @@ ASSET_MANAGER.downloadAll(function () {
     init();
     
 
-    var myMaze = new Maze(10, 10);
+    var myMaze = new Maze(5, 5);
 //    myMaze.printMaze();
 
     var mazePieces = createMazePieces(gameEngine, myMaze);
@@ -699,16 +532,16 @@ ASSET_MANAGER.downloadAll(function () {
     gameEngine.mazePieces  = mazePieces;
 
 
-    var ninja = new Ninja(gameEngine);
-    var shade = new VisibilityCircle(gameEngine);
+//    var ninja = new Ninja(gameEngine); Dont need
+//    var shade = new VisibilityCircle(gameEngine);
 
     /*var test3d = new Test3D(gameEngine);
     gameEngine.addEntity(test3d);*/
 
-    var circle3d = new Circle3d(gameEngine, 400, 400, 20);
+    var circle3d = new Circle3d(gameEngine, 400, 400, 21);
     gameEngine.addEntity(circle3d);
 
-    gameEngine.addEntity(shade);
+//    gameEngine.addEntity(shade);
     //gameEngine.addEntity(ninja);
  
     gameEngine.init(ctx);
