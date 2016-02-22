@@ -112,6 +112,8 @@ function Coin(game, x, y){
     this.startY = y;
 	this.x = x;
 	this.y = y;
+	this.width = 50;
+	this.height = 50;
     this.isCoin = true;
 	this.animation = new Animation(ASSET_MANAGER.getAsset("./img/coin.png"), 0, 0, 100, 100, 0.05, 10, true, false);
 	this.boxes = true;
@@ -135,8 +137,8 @@ Coin.prototype.draw = function (ctx) {
 	if (this.boxes) {
         ctx.strokeStyle = "green";
         ctx.strokeRect(this.boundingbox.x, this.boundingbox.y, this.boundingbox.width, this.boundingbox.height);
-        ctx.strokeStyle = "red";
-        ctx.strokeRect(this.x + 10, this.y - 40, this.animation.frameWidth / 2, this.animation.frameHeight /2);
+//        ctx.strokeStyle = "red";
+//        ctx.strokeRect(this.x + 10, this.y - 40, this.animation.frameWidth / 2, this.animation.frameHeight /2);
     }
     this.animation.drawFrame(this.game.clockTick, ctx, this.x + 10, this.y - 40, 0.5);
     Entity.prototype.draw.call(this);
