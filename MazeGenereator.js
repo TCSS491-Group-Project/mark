@@ -88,3 +88,17 @@ function addCoins(rows, cols, maze, numOfcoins) {
 	}
 }
 
+function addTraps(rows, cols, maze, numOfTraps) {
+	var traps = 0;
+	
+	while(traps !== numOfTraps ) {
+		var x = Math.floor(Math.random() * (rows - 2)) + 2;
+		var y = Math.floor(Math.random() * (cols - 2)) + 2;
+		
+		if(maze[x][y] === ' ') {
+			maze[x][y] = 'T';
+			traps++;
+		}
+	}
+}
+
