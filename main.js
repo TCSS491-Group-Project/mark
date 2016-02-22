@@ -467,14 +467,9 @@ Circle3d.prototype.update = function () {
     var MaxSpeed = 2;
     var padding = 2;
 
-    var ballRotationSpeed = 0.09;
+    var ballRotationSpeed = 0.05;
 
     if(this.game.walkRight){
-        /*var xAxis = new THREE.Vector3(0,1,0);
-        x = 0.09;
-        rotateAroundWorldAxis(mesh, xAxis, x);
-        
-        render();*/
 
         //move the maze
         this.game.tx += speedIncreament;
@@ -484,11 +479,8 @@ Circle3d.prototype.update = function () {
 
         //rotate ball right
         var xAxis = new THREE.Vector3(0,1,0);
-        rotateAroundWorldAxis(mesh, xAxis, x);
         x = ballRotationSpeed;       
 
-        //render the 3d
-        render();
 
         //create a new bounding circle with padding so that the maze will be able to move
         this.boundingcircle = new BoundingCircle(this.x + padding, this.y, this.radius);
@@ -499,23 +491,18 @@ Circle3d.prototype.update = function () {
             
             if (this.boundingcircle.collide(pf.boundingbox)) { // TODO here
                 
-                this.game.tx = 0; 
-
-                              
-                break;
+                this.game.tx = 0;
+                x = 0;            
+                //break;
             } 
-            //this.collide(pf.boundingbox);
-            //console.log(this.collide(pf.boundingbox));
-        
+
         };
+
+        //update the position of the 3d ball
+        rotateAroundWorldAxis(mesh, xAxis, x);
     }
 
-    else if(this.game.walkLeft){
-        /*var xAxis = new THREE.Vector3(0,1,0);
-        x = 0.09;
-        rotateAroundWorldAxis(mesh, xAxis, x);
-        
-        render();*/
+    if(this.game.walkLeft){
 
         //move the maze
         this.game.tx -= speedIncreament;
@@ -524,12 +511,8 @@ Circle3d.prototype.update = function () {
         }
 
         //rotate ball left
-        var xAxis = new THREE.Vector3(0,1,0);
-        rotateAroundWorldAxis(mesh, xAxis, x);
+        var xAxis = new THREE.Vector3(0,1,0);    
         x = - (ballRotationSpeed);     
-
-        //render the 3d
-        render();
 
         //create a new bounding circle with padding so that the maze will be able to move
         this.boundingcircle = new BoundingCircle(this.x - padding, this.y, this.radius);
@@ -541,21 +524,18 @@ Circle3d.prototype.update = function () {
             if (this.boundingcircle.collide(pf.boundingbox)) { // TODO here
                 
                 this.game.tx = 0;  
-
-                               
-                break;
+                x = 0;                
+                //break;
             } 
             //console.log(this.collide(pf.boundingbox));
-        
         };
+
+        //update the position of the 3d ball
+        rotateAroundWorldAxis(mesh, xAxis, x);
+
     }
 
     if(this.game.goDown){
-        /*var xAxis = new THREE.Vector3(0,1,0);
-        x = 0.09;
-        rotateAroundWorldAxis(mesh, xAxis, x);
-        
-        render();*/
 
         //move the maze
         this.game.ty += speedIncreament;
@@ -565,11 +545,8 @@ Circle3d.prototype.update = function () {
 
         //rotateball down
         var xAxis = new THREE.Vector3(1,0,0);
-        x = ballRotationSpeed;
-        rotateAroundWorldAxis(mesh, xAxis, x);   
-
-        //render the 3d
-        render();
+        y = ballRotationSpeed;
+           
 
         //create a new bounding circle with padding so that the maze will be able to move
         this.boundingcircle = new BoundingCircle(this.x, this.y + padding, this.radius);
@@ -580,22 +557,19 @@ Circle3d.prototype.update = function () {
             
             if (this.boundingcircle.collide(pf.boundingbox)) { // TODO here
                 
-                this.game.ty = 0;  
-
-                                 
-                break;
+                this.game.ty = 0;
+                y = 0;
+                //break;
             } 
             //console.log(this.collide(pf.boundingbox));
         
         };
+
+        //update 3d ball
+        rotateAroundWorldAxis(mesh, xAxis, y);
     }
 
     else if(this.game.goUp){
-        /*var xAxis = new THREE.Vector3(0,1,0);
-        x = 0.09;
-        rotateAroundWorldAxis(mesh, xAxis, x);
-        
-        render();*/
 
         //move the maze
         this.game.ty -= speedIncreament;
@@ -605,7 +579,7 @@ Circle3d.prototype.update = function () {
 
         //rotateball up
         var xAxis = new THREE.Vector3(1,0,0);
-        x = - (ballRotationSpeed);
+        y = - (ballRotationSpeed);
         
 
         //create a new bounding circle with padding so that the maze will be able to move
@@ -618,14 +592,14 @@ Circle3d.prototype.update = function () {
                 
                 this.game.ty = 0; 
 
-                x =0;                     
-                break;
+                y = 0;                     
+                //break;
             } 
             //console.log(this.collide(pf.boundingbox));
         
         };
 
-        rotateAroundWorldAxis(mesh, xAxis, x);
+        rotateAroundWorldAxis(mesh, xAxis, y);
     }
 
 };
@@ -648,8 +622,6 @@ Circle3d.prototype.draw = function (ctx) {
     //render the 3d
     render();
 };
-
-
 
 
 // Hardcoded maze
@@ -733,7 +705,7 @@ ASSET_MANAGER.downloadAll(function () {
     /*var test3d = new Test3D(gameEngine);
     gameEngine.addEntity(test3d);*/
 
-    var circle3d = new Circle3d(gameEngine, 380, 370, 20);
+    var circle3d = new Circle3d(gameEngine, 400, 400, 20);
     gameEngine.addEntity(circle3d);
 
     gameEngine.addEntity(shade);
