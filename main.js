@@ -70,29 +70,41 @@ BoundingBox.prototype.collide = function (oth) {
     return false;
 }
 
-BoundingBox.prototype.collideRight = function (oth) {
-    if (this.right > oth.left) {
-        return true;
-    } else {
-        return false;
-    }
+function BoundingCircle(x, y, radius) {
+    this.x = x;
+    this.y = y;
+    this.radius = radius;
 }
 
-BoundingBox.prototype.collideLeft = function (oth) {
-    if (this.left < oth.right) {
-        return true;
-    } else {
-        return false;
-    }
-}
+BoundingCircle.prototype.collide = function (rect) {
+    var x = Math.abs(this.x - (rect.x + (rect.width/2)));
+    var y = Math.abs(this.y - (rect.y + (rect.height/2)));
 
-//BoundingBox.prototype.collideLeft = function (oth) { //TODO working here
-//    if (this.left < oth.right) {
-//        return true;
-//    } else {
-//        return false;
-//    }
-//}
+    //console.log(x); console.log(this.x + this.radius);
+    if(x > ((rect.width/2) + this.radius)) {
+        //console.log("1");
+        return false;
+    };
+
+    if(y > ((rect.height/2) + this.radius)) { 
+        //console.log("2");
+        return false;
+    };
+
+    if(x <= (rect.width/2)) {
+        //console.log("3"); 
+        return true;
+    };
+    if(y <= (rect.height/2)) {
+        //console.log("4"); 
+        return true;
+    };
+
+    var sqx = (x - (rect.width/2)); var sqy = (y - (rect.height/2));
+    var corner = (sqx *sqx) + (sqy *sqy);
+
+    return (corner <= ((this.radius)*(this.radius)));
+}
 
 function MazePiece(game, x, y, width, height) {
     this.width = width;
@@ -101,7 +113,7 @@ function MazePiece(game, x, y, width, height) {
     this.startY = y;
     this.moveIncrement = 0;
     this.boundingbox = new BoundingBox(x, y, width, height);
-
+    this.boxes = true;
     
     Entity.call(this, game, x, y);
 }
@@ -122,7 +134,11 @@ MazePiece.prototype.update = function () {
 MazePiece.prototype.draw = function (ctx) {
     //ctx.drawImage(ASSET_MANAGER.getAsset("./img/Maze.png"), 0, 0, 800, 800);
     ctx.fillStyle = "black";
-    ctx.fillRect(this.x, this.y, this.width, this.height); 
+    ctx.fillRect(this.x, this.y, this.width, this.height);
+    if (this.boxes) {
+            ctx.strokeStyle = "green";
+            ctx.strokeRect(this.boundingbox.x, this.boundingbox.y, this.boundingbox.width, this.boundingbox.height);
+        }
 
     Entity.prototype.draw.call(this);
 }
@@ -348,16 +364,18 @@ Ninja.prototype.draw = function (ctx) {
         }
     } else {
         this.animation.drawFrame(this.game.clockTick, ctx, this.x, this.y);
-    } 
+    }
    
        
     Entity.prototype.draw.call(this);
 }
 
+
+
 function VisibilityCircle(game) {
     //this.animation1 = new Animation(ASSET_MANAGER.getAsset("./img/Capture.png"), 0, 0, 10, 10, 0.05, 1, true, false);
     Entity.call(this, game, 0, 0);
-}
+};
 VisibilityCircle.prototype = new Entity();
 VisibilityCircle.prototype.constructor = VisibilityCircle;
 
@@ -376,6 +394,262 @@ VisibilityCircle.prototype.draw = function (ctx) {
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, 800, 800);  
 }
+
+function Test3D(game){
+    Entity.call(this, game, 0,0);
+}
+
+Test3D.prototype = new Entity();
+Test3D.prototype.constructor = Test3D;
+Test3D.prototype.update = function() {
+    Entity.prototype.update.call(this);
+    if(this.game.walkRight){
+        var xAxis = new THREE.Vector3(0,1,0);
+        rotateAroundWorldAxis(mesh, xAxis, x);
+        x = 0.09;
+        render();
+    }
+    //animate();
+};
+Test3D.prototype.draw = function (ctx) {
+    Entity.prototype.draw.call(this);
+    render();
+
+};
+
+function Circle3d(game, x, y, radius) {
+    this.radius = radius;
+    this.circle = true;
+    this.boundingcircle = new BoundingCircle(x, y, radius);
+    Entity.call(this, game, x, y);
+};
+
+Circle3d.prototype = new Entity();
+Circle3d.prototype.constructor = Circle3d;
+
+Circle3d.prototype.collide = function(rect) {
+    var x = Math.abs(this.x - (rect.x + (rect.width/2)));
+    var y = Math.abs(this.y - (rect.y + (rect.height/2)));
+
+    //console.log(x); console.log(this.x + this.radius);
+    if(x > ((rect.width/2) + this.radius)) {
+        //console.log("1");
+        return false;
+    };
+
+    if(y > ((rect.height/2) + this.radius)) { 
+        //console.log("2");
+        return false;
+    };
+
+    if(x <= (rect.width/2)) {
+        //console.log("3"); 
+        return true;
+    };
+    if(y <= (rect.height/2)) {
+        //console.log("4"); 
+        return true;
+    };
+
+    var sqx = (x - (rect.width/2)); var sqy = (y - (rect.height/2));
+    var corner = (sqx *sqx) + (sqy *sqy);
+
+    return (corner <= ((this.radius)*(this.radius)));
+    
+    //return x;
+
+};
+
+Circle3d.prototype.update = function () {
+    Entity.prototype.update.call(this);
+
+    var speedIncreament = 0.5;
+    var MaxSpeed = 2;
+    var padding = 2;
+
+    var ballRotationSpeed = 0.09;
+
+    if(this.game.walkRight){
+        /*var xAxis = new THREE.Vector3(0,1,0);
+        x = 0.09;
+        rotateAroundWorldAxis(mesh, xAxis, x);
+        
+        render();*/
+
+        //move the maze
+        this.game.tx += speedIncreament;
+        if(this.game.tx > MaxSpeed){
+            this.game.tx = MaxSpeed;
+        }
+
+        //rotate ball right
+        var xAxis = new THREE.Vector3(0,1,0);
+        rotateAroundWorldAxis(mesh, xAxis, x);
+        x = ballRotationSpeed;       
+
+        //render the 3d
+        render();
+
+        //create a new bounding circle with padding so that the maze will be able to move
+        this.boundingcircle = new BoundingCircle(this.x + padding, this.y, this.radius);
+
+        for (var i = 0; i < this.game.mazePieces.length; i++) {
+            var pf = this.game.mazePieces[i];
+
+            
+            if (this.boundingcircle.collide(pf.boundingbox)) { // TODO here
+                
+                this.game.tx = 0; 
+
+                              
+                break;
+            } 
+            //this.collide(pf.boundingbox);
+            //console.log(this.collide(pf.boundingbox));
+        
+        };
+    }
+
+    else if(this.game.walkLeft){
+        /*var xAxis = new THREE.Vector3(0,1,0);
+        x = 0.09;
+        rotateAroundWorldAxis(mesh, xAxis, x);
+        
+        render();*/
+
+        //move the maze
+        this.game.tx -= speedIncreament;
+        if(this.game.tx < - (MaxSpeed)){
+            this.game.tx = - (MaxSpeed);
+        }
+
+        //rotate ball left
+        var xAxis = new THREE.Vector3(0,1,0);
+        rotateAroundWorldAxis(mesh, xAxis, x);
+        x = - (ballRotationSpeed);     
+
+        //render the 3d
+        render();
+
+        //create a new bounding circle with padding so that the maze will be able to move
+        this.boundingcircle = new BoundingCircle(this.x - padding, this.y, this.radius);
+
+        for (var i = 0; i < this.game.mazePieces.length; i++) {
+            var pf = this.game.mazePieces[i];
+
+            
+            if (this.boundingcircle.collide(pf.boundingbox)) { // TODO here
+                
+                this.game.tx = 0;  
+
+                               
+                break;
+            } 
+            //console.log(this.collide(pf.boundingbox));
+        
+        };
+    }
+
+    if(this.game.goDown){
+        /*var xAxis = new THREE.Vector3(0,1,0);
+        x = 0.09;
+        rotateAroundWorldAxis(mesh, xAxis, x);
+        
+        render();*/
+
+        //move the maze
+        this.game.ty += speedIncreament;
+        if(this.game.ty > MaxSpeed){
+            this.game.ty = MaxSpeed;
+        }
+
+        //rotateball down
+        var xAxis = new THREE.Vector3(1,0,0);
+        x = ballRotationSpeed;
+        rotateAroundWorldAxis(mesh, xAxis, x);   
+
+        //render the 3d
+        render();
+
+        //create a new bounding circle with padding so that the maze will be able to move
+        this.boundingcircle = new BoundingCircle(this.x, this.y + padding, this.radius);
+
+        for (var i = 0; i < this.game.mazePieces.length; i++) {
+            var pf = this.game.mazePieces[i];
+
+            
+            if (this.boundingcircle.collide(pf.boundingbox)) { // TODO here
+                
+                this.game.ty = 0;  
+
+                                 
+                break;
+            } 
+            //console.log(this.collide(pf.boundingbox));
+        
+        };
+    }
+
+    else if(this.game.goUp){
+        /*var xAxis = new THREE.Vector3(0,1,0);
+        x = 0.09;
+        rotateAroundWorldAxis(mesh, xAxis, x);
+        
+        render();*/
+
+        //move the maze
+        this.game.ty -= speedIncreament;
+        if(this.game.ty < - (MaxSpeed)){
+            this.game.ty = - (MaxSpeed);
+        }
+
+        //rotateball up
+        var xAxis = new THREE.Vector3(1,0,0);
+        x = - (ballRotationSpeed);
+        
+
+        //create a new bounding circle with padding so that the maze will be able to move
+        this.boundingcircle = new BoundingCircle(this.x, this.y - padding, this.radius);
+
+        for (var i = 0; i < this.game.mazePieces.length; i++) {
+            var pf = this.game.mazePieces[i];
+
+            if (this.boundingcircle.collide(pf.boundingbox)) { // TODO here
+                
+                this.game.ty = 0; 
+
+                x =0;                     
+                break;
+            } 
+            //console.log(this.collide(pf.boundingbox));
+        
+        };
+
+        rotateAroundWorldAxis(mesh, xAxis, x);
+    }
+
+};
+
+Circle3d.prototype.draw = function (ctx) {
+    ctx.beginPath();
+    ctx.fillStyle = "purple";
+    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+    ctx.fill();
+    ctx.closePath();
+
+    if (this.circle) {
+        ctx.beginPath();
+        //ctx.fillStyle = "green";
+        ctx.arc(this.boundingcircle.x, this.boundingcircle.y, this.boundingcircle.radius, 0, Math.PI * 2, false);
+        //ctx.fill();
+        ctx.stroke();
+    }
+
+    //render the 3d
+    render();
+};
+
+
 
 
 // Hardcoded maze
@@ -399,7 +673,7 @@ function Maze(x, y) {
 		}
 		console.log(string);
 	}	
-}
+};
 
 function createMazePieces(game, maze) {
 	var mazePieces = [];
@@ -419,6 +693,9 @@ function createMazePieces(game, maze) {
 		}
 //		string += '\r\n';
 	}
+    /*var pl = new MazePiece(game, ( 100) + 250, (100) + 370 , 100, 100);
+    game.addEntity(pl);
+    mazePieces.push(pl);*/
 	return mazePieces;
 };
 
@@ -437,9 +714,11 @@ ASSET_MANAGER.downloadAll(function () {
 
     var gameEngine = new GameEngine();
 
+    //instanciate the 3d ball
+    init();
+    
 
-
-    var myMaze = new Maze(6, 6);
+    var myMaze = new Maze(10, 10);
 //    myMaze.printMaze();
 
     var mazePieces = createMazePieces(gameEngine, myMaze);
@@ -449,11 +728,16 @@ ASSET_MANAGER.downloadAll(function () {
 
 
     var ninja = new Ninja(gameEngine);
-    //var shade = new VisibilityCircle(gameEngine);
+    var shade = new VisibilityCircle(gameEngine);
 
-    
-    //gameEngine.addEntity(shade);
-    gameEngine.addEntity(ninja);
+    /*var test3d = new Test3D(gameEngine);
+    gameEngine.addEntity(test3d);*/
+
+    var circle3d = new Circle3d(gameEngine, 380, 370, 20);
+    gameEngine.addEntity(circle3d);
+
+    gameEngine.addEntity(shade);
+    //gameEngine.addEntity(ninja);
  
     gameEngine.init(ctx);
     gameEngine.start();
