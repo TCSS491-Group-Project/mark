@@ -112,6 +112,7 @@ function Coin(game, x, y){
     this.startY = y;
 	this.x = x;
 	this.y = y;
+    this.isCoin = true;
 	this.animation = new Animation(ASSET_MANAGER.getAsset("./img/coin.png"), 0, 0, 100, 100, 0.05, 10, true, false);
 	this.boxes = true;
 	this.boundingbox = new BoundingBox(this.x, this.y, this.animation.frameWidth, this.animation.frameHeight);
@@ -126,12 +127,18 @@ Coin.prototype.constructor = Coin;
 Coin.prototype.update = function () {
 	this.x = this.x - this.game.tx;
     this.y = this.y - this.game.ty;
-    this.boundingbox = new BoundingBox(this.x, this.y, this.width, this.height);
+    this.boundingbox = new BoundingBox(this.x + 10, this.y - 40, this.width, this.height);
     Entity.prototype.update.call(this);
 }
 
 Coin.prototype.draw = function (ctx) {
-	this.animation.drawFrame(this.game.clockTick, ctx, this.x + 10, this.y - 40, 0.5);
+	if (this.boxes) {
+        ctx.strokeStyle = "green";
+        ctx.strokeRect(this.boundingbox.x, this.boundingbox.y, this.boundingbox.width, this.boundingbox.height);
+        ctx.strokeStyle = "red";
+        ctx.strokeRect(this.x + 10, this.y - 40, this.animation.frameWidth / 2, this.animation.frameHeight /2);
+    }
+    this.animation.drawFrame(this.game.clockTick, ctx, this.x + 10, this.y - 40, 0.5);
     Entity.prototype.draw.call(this);
 }
 
@@ -213,11 +220,6 @@ Circle3d.prototype.update = function () {
     var ballRotationSpeed = 0.09;
 
     if(this.game.walkRight){
-        /*var xAxis = new THREE.Vector3(0,1,0);
-        x = 0.09;
-        rotateAroundWorldAxis(mesh, xAxis, x);
-        
-        render();*/
 
         //move the maze
         this.game.tx += speedIncreament;
@@ -227,7 +229,7 @@ Circle3d.prototype.update = function () {
 
         //rotate ball right
         var xAxis = new THREE.Vector3(0,1,0);
-        rotateAroundWorldAxis(mesh, xAxis, x);
+        
         x = ballRotationSpeed;       
 
         //render the 3d
@@ -241,26 +243,26 @@ Circle3d.prototype.update = function () {
 
             
             if (this.boundingcircle.collide(pf.boundingbox)) { 
-                if(!pf.trap) {
+                if(!pf.trap || pf.isCoin) {
                 	this.game.tx = 0;
+                    x = 0;
                 } else {
                 	pf.removeFromWorld = true;
                 	mazeTrapReset(this.game);
-                	console.log("here" + i);
+                    
+                	//console.log("here" + i);
                 }
             } 
             //this.collide(pf.boundingbox);
             //console.log(this.collide(pf.boundingbox));
         
         };
+
+        //update the position of the 3d ball
+        rotateAroundWorldAxis(mesh, xAxis, x);
     }
 
     else if(this.game.walkLeft){
-        /*var xAxis = new THREE.Vector3(0,1,0);
-        x = 0.09;
-        rotateAroundWorldAxis(mesh, xAxis, x);
-        
-        render();*/
 
         //move the maze
         this.game.tx -= speedIncreament;
@@ -270,11 +272,7 @@ Circle3d.prototype.update = function () {
 
         //rotate ball left
         var xAxis = new THREE.Vector3(0,1,0);
-        rotateAroundWorldAxis(mesh, xAxis, x);
         x = - (ballRotationSpeed);     
-
-        //render the 3d
-        render();
 
         //create a new bounding circle with padding so that the maze will be able to move
         this.boundingcircle = new BoundingCircle(this.x - padding, this.y, this.radius);
@@ -284,24 +282,23 @@ Circle3d.prototype.update = function () {
 
             
             if (this.boundingcircle.collide(pf.boundingbox)) { 
-            	if(!pf.trap) {
+            	if(!pf.trap || pf.isCoin) {
             		this.game.tx = 0;
+                    x = 0; 
                 } else {
                 	pf.removeFromWorld = true;
                 	mazeTrapReset(this.game);
-                	console.log("here" + i);
+                	//console.log("here" + i);
                 }
             } 
         
         };
+
+        //update the position of the 3d ball
+        rotateAroundWorldAxis(mesh, xAxis, x);
     }
 
     if(this.game.goDown){
-        /*var xAxis = new THREE.Vector3(0,1,0);
-        x = 0.09;
-        rotateAroundWorldAxis(mesh, xAxis, x);
-        
-        render();*/
 
         //move the maze
         this.game.ty += speedIncreament;
@@ -311,11 +308,7 @@ Circle3d.prototype.update = function () {
 
         //rotateball down
         var xAxis = new THREE.Vector3(1,0,0);
-        x = ballRotationSpeed;
-        rotateAroundWorldAxis(mesh, xAxis, x);   
-
-        //render the 3d
-        render();
+        y = ballRotationSpeed;  
 
         //create a new bounding circle with padding so that the maze will be able to move
         this.boundingcircle = new BoundingCircle(this.x, this.y + padding, this.radius);
@@ -325,25 +318,22 @@ Circle3d.prototype.update = function () {
 
             
             if (this.boundingcircle.collide(pf.boundingbox)) { 
-            	if(!pf.trap) {
+            	if(!pf.trap || pf.isCoin) {
             		this.game.ty = 0; 
+                    y = 0;
                 } else {
                 	pf.removeFromWorld = true;
                 	mazeTrapReset(this.game);
-                	console.log("here" + i);
+                	//console.log("here" + i);
                 }
             } 
-            //console.log(this.collide(pf.boundingbox));
-        
         };
+
+        //update 3d ball
+        rotateAroundWorldAxis(mesh, xAxis, y);
     }
 
     else if(this.game.goUp){
-        /*var xAxis = new THREE.Vector3(0,1,0);
-        x = 0.09;
-        rotateAroundWorldAxis(mesh, xAxis, x);
-        
-        render();*/
 
         //move the maze
         this.game.ty -= speedIncreament;
@@ -353,7 +343,7 @@ Circle3d.prototype.update = function () {
 
         //rotateball up
         var xAxis = new THREE.Vector3(1,0,0);
-        x = - (ballRotationSpeed);
+        y = - (ballRotationSpeed);
         
 
         //create a new bounding circle with padding so that the maze will be able to move
@@ -361,24 +351,25 @@ Circle3d.prototype.update = function () {
 
         for (var i = 0; i < this.game.mazePieces.length; i++) {
             var pf = this.game.mazePieces[i];
-
+            //console.log("coin: " + pf.isCoin);
             if (this.boundingcircle.collide(pf.boundingbox)) { 
-            	if(!pf.trap) {
+
+            	if(!pf.trap || pf.isCoin) {
             		this.game.ty = 0;
+                    y = 0;
                 } else {
                 	pf.removeFromWorld = true;
                 	mazeTrapReset(this.game);
-                	console.log("here" + i);
+                	//console.log("here" + i);
                 }
 
-                x =0;                     
-//                break;
             } 
             //console.log(this.collide(pf.boundingbox));
         
         };
 
-        rotateAroundWorldAxis(mesh, xAxis, x);
+        //update ball
+        rotateAroundWorldAxis(mesh, xAxis, y);
     }
 
 };
@@ -416,9 +407,8 @@ function MazePiece(game, x, y, width, height, isTrap) {
     this.startX = x;
     this.startY = y;
     this.moveIncrement = 0;
-    if(!isTrap) {
-    	this.boundingbox = new BoundingBox(x, y, width, height);
-    }
+
+    this.boundingbox = new BoundingBox(x, y, width, height);
     this.boxes = true;
     this.trap = isTrap;
     
