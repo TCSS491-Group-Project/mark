@@ -115,6 +115,8 @@ function Coin(game, x, y){
 	this.width = 50;
 	this.height = 50;
     this.isCoin = true;
+    this.trap = true;
+    this.deactivate = false;
 	this.animation = new Animation(ASSET_MANAGER.getAsset("./img/coin.png"), 0, 0, 100, 100, 0.05, 10, true, false);
 	this.boxes = true;
 	this.boundingbox = new BoundingBox(this.x, this.y, this.animation.frameWidth, this.animation.frameHeight);
@@ -127,8 +129,13 @@ Coin.prototype = new Entity();
 Coin.prototype.constructor = Coin;
 
 Coin.prototype.update = function () {
-	this.x = this.x - this.game.tx;
-    this.y = this.y - this.game.ty;
+	if(!this.deactivate) {
+		this.x = this.x - this.game.tx;
+	    this.y = this.y - this.game.ty;
+	} else {
+		this.x = 100;
+		this.y = 100;
+	}
     this.boundingbox = new BoundingBox(this.x + 10, this.y - 40, this.width, this.height);
     Entity.prototype.update.call(this);
 }
@@ -245,14 +252,14 @@ Circle3d.prototype.update = function () {
 
             
             if (this.boundingcircle.collide(pf.boundingbox)) { 
-                if(!pf.trap || pf.isCoin) {
+                if(!pf.trap) {
                 	this.game.tx = 0;
                     x = 0;
+                } else if(pf.isCoin){
+                	pf.deactivate = true;
                 } else {
                 	pf.removeFromWorld = true;
                 	mazeTrapReset(this.game);
-                    
-                	//console.log("here" + i);
                 }
             } 
             //this.collide(pf.boundingbox);
@@ -284,13 +291,14 @@ Circle3d.prototype.update = function () {
 
             
             if (this.boundingcircle.collide(pf.boundingbox)) { 
-            	if(!pf.trap || pf.isCoin) {
+            	if(!pf.trap) {
             		this.game.tx = 0;
                     x = 0; 
+            	} else if(pf.isCoin){
+                	pf.deactivate = true;
                 } else {
                 	pf.removeFromWorld = true;
                 	mazeTrapReset(this.game);
-                	//console.log("here" + i);
                 }
             } 
         
@@ -320,13 +328,14 @@ Circle3d.prototype.update = function () {
 
             
             if (this.boundingcircle.collide(pf.boundingbox)) { 
-            	if(!pf.trap || pf.isCoin) {
+            	if(!pf.trap) {
             		this.game.ty = 0; 
                     y = 0;
+            	} else if(pf.isCoin){
+                	pf.deactivate = true;
                 } else {
                 	pf.removeFromWorld = true;
                 	mazeTrapReset(this.game);
-                	//console.log("here" + i);
                 }
             } 
         };
@@ -356,13 +365,14 @@ Circle3d.prototype.update = function () {
             //console.log("coin: " + pf.isCoin);
             if (this.boundingcircle.collide(pf.boundingbox)) { 
 
-            	if(!pf.trap || pf.isCoin) {
+            	if(!pf.trap) {
             		this.game.ty = 0;
                     y = 0;
+            	} else if(pf.isCoin){
+                	pf.deactivate = true;
                 } else {
                 	pf.removeFromWorld = true;
                 	mazeTrapReset(this.game);
-                	//console.log("here" + i);
                 }
 
             } 
@@ -451,8 +461,8 @@ function Maze(x, y) {
 //	addCoins(rows, cols, maze, numOfcoins) {
     this.length = this.maze[0].length;
     this.width = this.maze.length;
-    addCoins(this.length, this.width, this.maze, 3);
-    addTraps(this.length, this.width, this.maze, 3);
+    addCoins(this.length, this.width, this.maze, 10);
+    addTraps(this.length, this.width, this.maze, 0);
     
 	this.printMaze = function() {
 		var string = '';
