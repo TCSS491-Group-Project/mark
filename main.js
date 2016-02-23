@@ -116,6 +116,7 @@ function Coin(game, x, y){
 	this.height = 50;
     this.isCoin = true;
     this.trap = true;
+    this.someX = 0;
     this.deactivate = false;
 	this.animation = new Animation(ASSET_MANAGER.getAsset("./img/coin.png"), 0, 0, 100, 100, 0.05, 10, true, false);
 	this.boxes = true;
@@ -133,8 +134,8 @@ Coin.prototype.update = function () {
 		this.x = this.x - this.game.tx;
 	    this.y = this.y - this.game.ty;
 	} else {
-		this.x = 100;
-		this.y = 100;
+		this.x = 25 + this.someX;
+		this.y = 75;
 	}
     this.boundingbox = new BoundingBox(this.x + 10, this.y - 40, this.width, this.height);
     Entity.prototype.update.call(this);
@@ -147,7 +148,11 @@ Coin.prototype.draw = function (ctx) {
 //        ctx.strokeStyle = "red";
 //        ctx.strokeRect(this.x + 10, this.y - 40, this.animation.frameWidth / 2, this.animation.frameHeight /2);
     }
-    this.animation.drawFrame(this.game.clockTick, ctx, this.x + 10, this.y - 40, 0.5);
+	if(!this.deactivate) {
+		this.animation.drawFrame(this.game.clockTick, ctx, this.x + 10, this.y - 40, 0.5);
+	} else {
+		this.animation.drawFrame(this.game.clockTick, ctx, this.x + 10, this.y - 40, 0.25);
+	}
     Entity.prototype.draw.call(this);
 }
 
@@ -219,6 +224,8 @@ Circle3d.prototype.collide = function(rect) {
 
 };
 
+//var temp = 0;
+
 Circle3d.prototype.update = function () {
     Entity.prototype.update.call(this);
 
@@ -257,6 +264,8 @@ Circle3d.prototype.update = function () {
                     x = 0;
                 } else if(pf.isCoin){
                 	pf.deactivate = true;
+                	pf.someX = this.game.temp;
+                	this.game.temp += 50;
                 } else {
                 	pf.removeFromWorld = true;
                 	mazeTrapReset(this.game);
@@ -269,9 +278,7 @@ Circle3d.prototype.update = function () {
 
         //update the position of the 3d ball
         rotateAroundWorldAxis(mesh, xAxis, x);
-    }
-
-    else if(this.game.walkLeft){
+    } else if(this.game.walkLeft){
 
         //move the maze
         this.game.tx -= speedIncreament;
@@ -296,6 +303,8 @@ Circle3d.prototype.update = function () {
                     x = 0; 
             	} else if(pf.isCoin){
                 	pf.deactivate = true;
+                	pf.someX = this.game.temp;
+                	this.game.temp += 50;
                 } else {
                 	pf.removeFromWorld = true;
                 	mazeTrapReset(this.game);
@@ -333,6 +342,8 @@ Circle3d.prototype.update = function () {
                     y = 0;
             	} else if(pf.isCoin){
                 	pf.deactivate = true;
+                	pf.someX = this.game.temp;
+                	this.game.temp += 50;
                 } else {
                 	pf.removeFromWorld = true;
                 	mazeTrapReset(this.game);
@@ -370,6 +381,8 @@ Circle3d.prototype.update = function () {
                     y = 0;
             	} else if(pf.isCoin){
                 	pf.deactivate = true;
+                	pf.someX = this.game.temp;
+                	this.game.temp += 50;
                 } else {
                 	pf.removeFromWorld = true;
                 	mazeTrapReset(this.game);
@@ -461,8 +474,8 @@ function Maze(x, y) {
 //	addCoins(rows, cols, maze, numOfcoins) {
     this.length = this.maze[0].length;
     this.width = this.maze.length;
-    addCoins(this.length, this.width, this.maze, 10);
-    addTraps(this.length, this.width, this.maze, 0);
+    addCoins(this.length, this.width, this.maze, 3);
+    addTraps(this.length, this.width, this.maze, 2);
     
 	this.printMaze = function() {
 		var string = '';
@@ -480,7 +493,7 @@ function Maze(x, y) {
 
 function createMazePieces(game, maze) {
 	var mazePieces = [];
-    console.log(maze.length);
+//    console.log(maze.length);
 	for(var r = 0; r < maze.width ; r++) {
 		for(var c = 0; c < maze.maze[0].length  ; c++) {
 //			string += maze.maze[r][c] + " ";
@@ -520,6 +533,7 @@ ASSET_MANAGER.downloadAll(function () {
     var ctx = canvas.getContext('2d');
 
     var gameEngine = new GameEngine();
+    gameEngine.temp = 0;
 
     //instanciate the 3d ball
     init();

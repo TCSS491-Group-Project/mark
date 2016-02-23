@@ -58,7 +58,7 @@ GameEngine.prototype.start = function () {
 }
 
 GameEngine.prototype.startInput = function () {
-    console.log('Starting input');
+//    console.log('Starting input');
     var that = this;
 
     var getXandY = function (e) {
@@ -112,11 +112,11 @@ GameEngine.prototype.startInput = function () {
     }, false);
 
 
-    console.log('Input started');
+//    console.log('Input started');
 }
 
 GameEngine.prototype.addEntity = function (entity) {
-    console.log('added entity');
+//    console.log('added entity');
     this.entities.push(entity);
 }
 
