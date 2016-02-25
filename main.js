@@ -229,9 +229,9 @@ Circle3d.prototype.collide = function(rect) {
 Circle3d.prototype.update = function () {
     Entity.prototype.update.call(this);
 
-    var speedIncreament = 0.5;
-    var MaxSpeed = 5;
-    var padding = 5;
+    var speedIncreament = 1;
+    var MaxSpeed = 10;
+    var padding = 10;
 
     var ballRotationSpeed = 0.09;
 
@@ -247,9 +247,6 @@ Circle3d.prototype.update = function () {
         var xAxis = new THREE.Vector3(0,1,0);
         
         x = ballRotationSpeed;       
-
-        //render the 3d
-        render();
 
         //create a new bounding circle with padding so that the maze will be able to move
         this.boundingcircle = new BoundingCircle(this.x + padding, this.y, this.radius);
@@ -278,6 +275,7 @@ Circle3d.prototype.update = function () {
 
         //update the position of the 3d ball
         rotateAroundWorldAxis(mesh, xAxis, x);
+
     } else if(this.game.walkLeft){
 
         //move the maze
@@ -312,6 +310,7 @@ Circle3d.prototype.update = function () {
             } 
         
         };
+        render();
 
         //update the position of the 3d ball
         rotateAroundWorldAxis(mesh, xAxis, x);
@@ -374,6 +373,7 @@ Circle3d.prototype.update = function () {
         for (var i = 0; i < this.game.mazePieces.length; i++) {
             var pf = this.game.mazePieces[i];
             //console.log("coin: " + pf.isCoin);
+
             if (this.boundingcircle.collide(pf.boundingbox)) { 
 
             	if(!pf.trap) {
@@ -397,6 +397,8 @@ Circle3d.prototype.update = function () {
         rotateAroundWorldAxis(mesh, xAxis, y);
     }
 
+    //console.log(this.game.timer);
+    
 };
 
 Circle3d.prototype.draw = function (ctx) {
@@ -454,7 +456,7 @@ MazePiece.prototype.update = function () {
 }
 
 MazePiece.prototype.draw = function (ctx) {
-    //ctx.drawImage(ASSET_MANAGER.getAsset("./img/Maze.png"), 0, 0, 800, 800);
+    
 	if(this.trap) {
 		ctx.fillStyle = "blue";
 	} else {
@@ -462,10 +464,11 @@ MazePiece.prototype.draw = function (ctx) {
 	}
     ctx.fillRect(this.x, this.y, this.width, this.height);
     if (this.boxes) {
-            ctx.strokeStyle = "green";
-            ctx.strokeRect(this.boundingbox.x, this.boundingbox.y, this.boundingbox.width, this.boundingbox.height);
-        }
+        ctx.strokeStyle = "green";
+        ctx.strokeRect(this.boundingbox.x, this.boundingbox.y, this.boundingbox.width, this.boundingbox.height);
+    }
 
+    ctx.drawImage(ASSET_MANAGER.getAsset("./img/Maze.png"), this.x, this.y, this.width, this.height);
     Entity.prototype.draw.call(this);
 }
 
@@ -498,15 +501,15 @@ function createMazePieces(game, maze) {
 		for(var c = 0; c < maze.maze[0].length  ; c++) {
 //			string += maze.maze[r][c] + " ";
 			if(maze.maze[r][c] === 'X') {
-				var pl = new MazePiece(game, (c * 100) + 250, (r * 100) + 370 , 100, 100, false); // x, y, width, height
+				var pl = new MazePiece(game, (c * 175) + 175, (r * 175) + 295 , 175, 175, false); // x, y, width, height
 				game.addEntity(pl);
 				mazePieces.push(pl); 
 			} else if (maze.maze[r][c] === 'C') {
-				var pl = new Coin(game, (c * 100) + 270, (r * 100) + 430); // // x, y, width, height
+				var pl = new Coin(game, (c * 175) + 270, (r * 175) + 430); // // x, y, width, height
 				game.addEntity(pl);
 				mazePieces.push(pl);
 			} else if(maze.maze[r][c] === 'T') {
-				var pl = new MazePiece(game, (c * 100) + 250 + 25, (r * 100) + 370 + 25 , 50, 50, true); // x, y, width, height
+				var pl = new MazePiece(game, (c * 175) + 175 + 25, (r * 175) + 295 + 25 , 50, 50, true); // x, y, width, height
 				game.addEntity(pl);
 				mazePieces.push(pl); 
 			}
@@ -523,7 +526,7 @@ function createMazePieces(game, maze) {
 
 var ASSET_MANAGER = new AssetManager();
 
-ASSET_MANAGER.queueDownload("./img/ninja.png");
+ASSET_MANAGER.queueDownload("./img/Maze.png");
 ASSET_MANAGER.queueDownload("./img/coin.png");
 //ASSET_MANAGER.queueDownload("./img/Capture.png");
 
@@ -535,12 +538,13 @@ ASSET_MANAGER.downloadAll(function () {
     var gameEngine = new GameEngine();
     gameEngine.temp = 0;
 
-    //instanciate the 3d ball
+    //instantiate the 3d ball
     init();
     
+    var time = new Timer();
 
     var myMaze = new Maze(5, 5);
-//    myMaze.printMaze();
+    myMaze.printMaze();
 
     var mazePieces = createMazePieces(gameEngine, myMaze);
     //mazePieces.push(pl);
@@ -548,18 +552,18 @@ ASSET_MANAGER.downloadAll(function () {
     gameEngine.mazePieces  = mazePieces;
 
 
-//    var ninja = new Ninja(gameEngine); Dont need
-//    var shade = new VisibilityCircle(gameEngine);
+    var shade = new VisibilityCircle(gameEngine);
 
-    /*var test3d = new Test3D(gameEngine);
-    gameEngine.addEntity(test3d);*/
 
-    var circle3d = new Circle3d(gameEngine, 400, 400, 21);
+
+    var circle3d = new Circle3d(gameEngine, 399, 399, 35);
     gameEngine.addEntity(circle3d);
 
 //    gameEngine.addEntity(shade);
     //gameEngine.addEntity(ninja);
- 
+    
+    //gameEngine.timer = time;
+
     gameEngine.init(ctx);
     gameEngine.start();
 });
