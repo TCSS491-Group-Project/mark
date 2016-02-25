@@ -12,14 +12,18 @@ function init() {
 	
 	
 	scene = new THREE.Scene();
-	camera = new THREE.PerspectiveCamera( 85, 800 / 800, 0.1, 1000);
+
+	camera = new THREE.PerspectiveCamera( 80, 800 / 800, 0.1, 1000);
+
 	
 	/** DirectionalLight(hex, intensity)
 		hex -- Numeric value of the RGB component of the color. 
 		intensity -- Numeric value of the light's strength/intensity. */
-	var light = new THREE.DirectionalLight( 0xFFFFFF, 1.5); // white light
+	var light = new THREE.DirectionalLight( 0xffd699, 1.5); // white light
 //	var light = new THREE.DirectionalLight( 0xF51621, 1.5); // red light
-	light.position.set( 0, 0, 8).normalize();
+
+	light.position.set( 0, 0, .1).normalize();
+
 	scene.add(light);
 
 	var geometry = new THREE.SphereGeometry( 5, 39, 39);
@@ -37,8 +41,6 @@ function init() {
 	renderer.setSize(  window.innerWidth, window.innerHeight );
 	document.body.appendChild( renderer.domElement );
 
-	
-	//render();
 }
 
 // Rotate an object around an arbitrary axis in world space       

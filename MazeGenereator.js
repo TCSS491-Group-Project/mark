@@ -68,7 +68,7 @@ function getMazeField(m) {
 			maze2D[j][1] = 1;
 		}
 		if (m.x*2-1 == j) {
-			maze2D[j][2*m.y] = 2;
+			maze2D[j][2*m.y] = 'E';
 		}
 	}
 	return maze2D;
@@ -100,5 +100,80 @@ function addTraps(rows, cols, maze, numOfTraps) {
 			traps++;
 		}
 	}
+}
+
+function solveMaze(maze, mazeC, mazeW){
+	this.maze = maze;
+
+	var wasHere = mazeW;
+	var correctPath = mazeC;
+	//console.log(this.maze[0][0]);
+	for(var r = 0; r < this.maze.length; r++) {
+		for(var c = 0; c < this.maze[0].length  ; c++) {
+			
+			correctPath[r][c] = false;
+			wasHere[r][c] = false;
+		}
+	};
+	//console.log(mazeW[1][1]);
+	this.traverse = function(x, y) {
+		//console.log(wasHere[1][1]);
+        if(x === this.maze.length - 1 && y === this.maze[0].length - 1 ) {
+        	return true;
+        }
+        
+        if(this.maze[x][y] === "X" || wasHere[x][y]) {
+            //console.log("we reach the end");
+            return false;
+        }
+        wasHere[x][y] = true;
+        //console.log("2");
+        if(x != 0){
+        	if(this.traverse(x-1, y)){
+        		correctPath[x][y] = true;
+        		return true;
+        	}
+        }
+        if( x != this.maze.length - 1){
+        	if(this.traverse(x+1, y)){
+        		correctPath[x][y] = true;
+        		return true;
+        	}
+        }
+        if(y != 0){
+        	if (this.traverse(x, y-1)){
+        		correctPath[x][y] = true;
+        		return true;
+        	}
+        }
+        if(y != this.maze[0].length - 1){
+        	if (this.traverse(x, y+1)){
+        		correctPath[x][y] = true;
+        		return true;
+        	}
+        }
+        return false;
+    }
+};
+
+function printMaze(maze){
+    this.maze = maze;
+
+    var string = '';
+    this.length = this.maze.length;
+    this.width = this.maze[0].length;
+
+    for(var r = 0; r < this.length; r++) {
+        for(var c = 0; c < this.width; c++) {
+            if(maze[r][c]){
+                string += "1 ";
+            } else {
+                string += "2 ";
+            }
+            
+        }
+        string += '\r\n';
+    }
+    console.log(string);
 }
 

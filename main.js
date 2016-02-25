@@ -171,7 +171,7 @@ VisibilityCircle.prototype.update = function () {
 
 VisibilityCircle.prototype.draw = function (ctx) {
     //this.animation1.drawFrame(this.game.clockTick, ctx, this.x + 10, this.y - 100);
-    Entity.prototype.draw.call(this);
+    
     //ctx.fillStyle = "SaddleBrown";
     
     var gradient = ctx.createRadialGradient(400, 400, 300, 400, 400, 0);
@@ -179,6 +179,7 @@ VisibilityCircle.prototype.draw = function (ctx) {
     gradient.addColorStop(1, "transparent");
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, 800, 800);  
+    Entity.prototype.draw.call(this);
 }
 
 function Circle3d(game, x, y, radius) {
@@ -229,11 +230,13 @@ Circle3d.prototype.collide = function(rect) {
 Circle3d.prototype.update = function () {
     Entity.prototype.update.call(this);
 
-    var speedIncreament = 1;
-    var MaxSpeed = 10;
-    var padding = 10;
 
-    var ballRotationSpeed = 0.09;
+    var speedIncreament = 2;
+    var MaxSpeed = 8;
+    var padding = 8;
+
+
+    var ballRotationSpeed = 0.10;
 
     if(this.game.walkRight){
 
@@ -256,13 +259,17 @@ Circle3d.prototype.update = function () {
 
             
             if (this.boundingcircle.collide(pf.boundingbox)) { 
-                if(!pf.trap) {
+                if(!pf.trap && !pf.exit) {
                 	this.game.tx = 0;
                     x = 0;
                 } else if(pf.isCoin){
                 	pf.deactivate = true;
                 	pf.someX = this.game.temp;
                 	this.game.temp += 50;
+                } else if(pf.exit) {
+                	console.log("Next level");
+                	this.game.temp = 0;
+                	nextLevel(++(this.game.mazeSize), this.game);
                 } else {
                 	pf.removeFromWorld = true;
                 	mazeTrapReset(this.game);
@@ -420,25 +427,75 @@ Circle3d.prototype.draw = function (ctx) {
     render();
 };
 
+function testMazePath(game, x, y){
+    this.startX = x;
+    this.startY = y;
+    this.x = x;
+    this.y = y;
+    this.width = 50;
+    this.height = 50;
+
+
+    this.someX = 0;
+    
+    this.boxes = true;
+    
+    Entity.call(this, game, x, y); // Entity.call(this, game, x, y);
+    
+}
+
+testMazePath.prototype = new Entity();
+testMazePath.prototype.constructor = testMazePath;
+
+testMazePath.prototype.update = function () {
+    this.x = this.x - this.game.tx;
+    this.y = this.y - this.game.ty;
+    Entity.prototype.update.call(this);
+}
+
+testMazePath.prototype.draw = function (ctx) {
+    if (this.boxes) {
+
+        //ctx.strokeStyle = "green";
+        ctx.fillStyle = "red";
+        ctx.fillRect(this.x, this.y, this.width, this.height);
+        
+    }
+    Entity.prototype.draw.call(this);
+}
+
+
 function mazeTrapReset(game) { // TODO here
 	for (var i = 0; i < game.mazePieces.length; i++) {
 		game.mazePieces[i].x = game.mazePieces[i].startX;
 		game.mazePieces[i].y = game.mazePieces[i].startY;
 		game.mazePieces[i].update();
 	}
+	for(var i = 0; i < game.entities.length; i++) {
+		var temp = game.entities[i];
+		if(temp instanceof(testMazePath)) {
+			temp.x = temp.startX;
+			temp.y = temp.startY;
+		}
+	}
 }
 
-function MazePiece(game, x, y, width, height, isTrap) {
+function MazePiece(game, x, y, width, height, isTrap, isExit) {
     this.width = width;
     this.height = height;
     this.startX = x;
     this.startY = y;
     this.moveIncrement = 0;
-
-    this.boundingbox = new BoundingBox(x, y, width, height);
-    this.boxes = true;
-    this.trap = isTrap;
+    this.exit = isExit;
+    if(isTrap) {
+    	this.boundingbox = new BoundingBox(x + 20, y, width, height);
+    } else {
+    	this.boundingbox = new BoundingBox(x, y, width, height);
+    }
     
+    this.boxes = false;
+    this.trap = isTrap;
+    this.animation = new Animation(ASSET_MANAGER.getAsset("./img/fire.png"), 0, 0, 85.3, 85.3, 0.05, 72, true, false); // running
     Entity.call(this, game, x, y);
 }
 
@@ -450,7 +507,12 @@ MazePiece.prototype.update = function () {
     
     this.x = this.x - this.game.tx;
     this.y = this.y - this.game.ty;
-    this.boundingbox = new BoundingBox(this.x, this.y, this.width, this.height);
+    if(this.trap) {
+    	this.boundingbox = new BoundingBox(this.x + 20, this.y, this.width, this.height);
+    } else {
+    	this.boundingbox = new BoundingBox(this.x, this.y, this.width, this.height);
+    }
+    
     Entity.prototype.update.call(this);
     
 }
@@ -458,17 +520,26 @@ MazePiece.prototype.update = function () {
 MazePiece.prototype.draw = function (ctx) {
     
 	if(this.trap) {
-		ctx.fillStyle = "blue";
+//		ctx.fillStyle = "blue";
+//		ctx.fillRect(this.x, this.y, this.width, this.height);
+		this.animation.drawFrame(this.game.clockTick, ctx, this.x, this.y, 1.0);
+	} else if(this.startTop) {
+		ctx.fillStyle = "white";
+		ctx.fillRect(this.x, this.y, this.width, this.height);
+	} else if(this.exit){
+		ctx.fillStyle = "red";
+		ctx.fillRect(this.x, this.y, this.width, this.height);
 	} else {
-		ctx.fillStyle = "black";
+//		ctx.fillStyle = "black";
+		ctx.fillRect(this.x, this.y, this.width, this.height);
+		ctx.drawImage(ASSET_MANAGER.getAsset("./img/bricks.jpg"), this.x, this.y, this.width, this.height);
 	}
-    ctx.fillRect(this.x, this.y, this.width, this.height);
+    
     if (this.boxes) {
-        ctx.strokeStyle = "green";
-        ctx.strokeRect(this.boundingbox.x, this.boundingbox.y, this.boundingbox.width, this.boundingbox.height);
+            ctx.strokeStyle = "green";
+            ctx.strokeRect(this.boundingbox.x, this.boundingbox.y, this.boundingbox.width, this.boundingbox.height);
     }
-
-    ctx.drawImage(ASSET_MANAGER.getAsset("./img/Maze.png"), this.x, this.y, this.width, this.height);
+   
     Entity.prototype.draw.call(this);
 }
 
@@ -494,31 +565,52 @@ function Maze(x, y) {
 	}	
 };
 
-function createMazePieces(game, maze) {
+function createMazePieces(game, maze, mazeP) {
 	var mazePieces = [];
 //    console.log(maze.length);
+	var tempCoins = [];
 	for(var r = 0; r < maze.width ; r++) {
 		for(var c = 0; c < maze.maze[0].length  ; c++) {
 //			string += maze.maze[r][c] + " ";
 			if(maze.maze[r][c] === 'X') {
-				var pl = new MazePiece(game, (c * 175) + 175, (r * 175) + 295 , 175, 175, false); // x, y, width, height
+				var pl = new MazePiece(game, (c * 175) + 175, (r * 175) + 295 , 175, 175, false, false); // x, y, width, height
 				game.addEntity(pl);
 				mazePieces.push(pl); 
 			} else if (maze.maze[r][c] === 'C') {
-				var pl = new Coin(game, (c * 175) + 270, (r * 175) + 430); // // x, y, width, height
-				game.addEntity(pl);
-				mazePieces.push(pl);
+//				var pl = new Coin(game, (c * 175) + 195, (r * 175) + 355); // // x, y, width, height
+//				game.addEntity(pl);
+//				mazePieces.push(pl);
+				tempCoins.push(new Coin(game, (c * 175) + 195, (r * 175) + 355));
 			} else if(maze.maze[r][c] === 'T') {
-				var pl = new MazePiece(game, (c * 175) + 175 + 25, (r * 175) + 295 + 25 , 50, 50, true); // x, y, width, height
+				var pl = new MazePiece(game, (c * 175) + 175 + 50, (r * 175) + 295 + 25 , 40, 85.3, true, false); // x, y, width, height
+				game.addEntity(pl);
+				mazePieces.push(pl); 
+			} else if(maze.maze[r][c] === 'E') {
+				var pl = new MazePiece(game, (c * 175) + 175, (r * 175) + 295 , 175, 175, false, true); // x, y, width, height
 				game.addEntity(pl);
 				mazePieces.push(pl); 
 			}
+			if(mazeP[r][c]) {
+                var pl = new testMazePath(game, (c * 175) + 250, (r * 175) + 400); // x, y, width, height
+                game.addEntity(pl);
+            }
 		}
 //		string += '\r\n';
 	}
-    /*var pl = new MazePiece(game, ( 100) + 250, (100) + 370 , 100, 100);
-    game.addEntity(pl);
-    mazePieces.push(pl);*/
+	
+	var shade = new VisibilityCircle(game); //TODO  shade
+    game.addEntity(shade);
+    
+	for(var i = 0; i < tempCoins.length; i++) {
+		var pl = tempCoins[i];
+		game.addEntity(pl);
+		mazePieces.push(pl);
+		
+	}
+//    var pl = new MazePiece(game, ( 175) + 175, (-175) + 295 , 175, 175);
+//    pl.startTop = true;
+//    game.addEntity(pl);
+//    mazePieces.push(pl);
 	return mazePieces;
 };
 
@@ -526,44 +618,80 @@ function createMazePieces(game, maze) {
 
 var ASSET_MANAGER = new AssetManager();
 
-ASSET_MANAGER.queueDownload("./img/Maze.png");
+//ASSET_MANAGER.queueDownload("./img/ninja.png");
 ASSET_MANAGER.queueDownload("./img/coin.png");
-//ASSET_MANAGER.queueDownload("./img/Capture.png");
+ASSET_MANAGER.queueDownload("./img/bricks.jpg");
+ASSET_MANAGER.queueDownload("./img/fire.png"); // pre-download of .png images.
 
 ASSET_MANAGER.downloadAll(function () {
+	
     console.log("starting up da sheild");
     var canvas = document.getElementById('gameWorld');
     var ctx = canvas.getContext('2d');
 
     var gameEngine = new GameEngine();
+    gameEngine.mazeSize = 3;
     gameEngine.temp = 0;
 
     //instantiate the 3d ball
     init();
     
-    var time = new Timer();
-
-    var myMaze = new Maze(5, 5);
+    var myMaze = new Maze(gameEngine.mazeSize, gameEngine.mazeSize);
+    var myMaze1 = new Maze(gameEngine.mazeSize, gameEngine.mazeSize);
+    var myMaze2 = new Maze(gameEngine.mazeSize, gameEngine.mazeSize);
     myMaze.printMaze();
 
-    var mazePieces = createMazePieces(gameEngine, myMaze);
+   
+    var ms = new solveMaze(myMaze.maze, myMaze1.maze, myMaze2.maze);
+    console.log(ms.traverse(0, 1));
+    printMaze(myMaze1.maze);
+
+
+     var mazePieces = createMazePieces(gameEngine, myMaze, myMaze1.maze);
+    
     //mazePieces.push(pl);
    
     gameEngine.mazePieces  = mazePieces;
 
 
-    var shade = new VisibilityCircle(gameEngine);
+//    var ninja = new Ninja(gameEngine); Dont need
 
 
 
-    var circle3d = new Circle3d(gameEngine, 399, 399, 35);
+    var circle3d = new Circle3d(gameEngine, 399, 399, 38);
     gameEngine.addEntity(circle3d);
 
 //    gameEngine.addEntity(shade);
     //gameEngine.addEntity(ninja);
     
-    //gameEngine.timer = time;
-
     gameEngine.init(ctx);
     gameEngine.start();
 });
+
+function nextLevel(mazeSize, game) {
+	for (var i = 0; i < game.mazePieces.length; i++) {
+		game.mazePieces[i].removeFromWorld = true;
+	}
+	for(var i = 0; i < game.entities.length; i++) {
+		var temp = game.entities[i];
+		if(temp instanceof(testMazePath) || temp instanceof(VisibilityCircle)) {
+			temp.removeFromWorld = true;
+		}
+	}
+	
+	var myMaze = new Maze(mazeSize, mazeSize);
+	var myMaze1 = new Maze(game.mazeSize, game.mazeSize);
+    var myMaze2 = new Maze(game.mazeSize, game.mazeSize);
+    myMaze.printMaze();
+
+   
+    var ms = new solveMaze(myMaze.maze, myMaze1.maze, myMaze2.maze);
+    console.log(ms.traverse(0, 1));
+    printMaze(myMaze1.maze);
+
+
+     var mazePieces = createMazePieces(game, myMaze, myMaze1.maze);
+    
+    game.mazePieces  = mazePieces;
+}
+
