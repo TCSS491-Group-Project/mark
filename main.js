@@ -417,6 +417,38 @@ Circle3d.prototype.update = function () {
         rotateAroundWorldAxis(mesh, xAxis, y);
     }
 
+    if(this.game.jumping){
+
+        //reset the enities color back to transparent
+        for(var i = 0; i < this.game.entities.length; i++) {
+            var temp = this.game.entities[i];
+            if(temp instanceof(testMazePath)) {
+                //console.log("column " + temp.row + "row " + temp.column);
+                temp.color = 1;
+            }
+        }
+
+        var pf = this.game.mazePieces[0];
+        var r, c;
+
+        if(pf.x >= 175){
+            c = 1;
+        } else {
+            c = Math.floor((185 + 175 - (pf.x)) / 175);
+        }
+        if(pf.y >= 265){
+            r = 0;
+        } else {
+            r = Math.floor((265 + 175 - pf.y) / 175);
+        }
+        
+        
+        //solve the path in respect to where you are
+        pathSolver(this.game, r, c);
+        console.log("r " + r + " c " + c);
+        console.log("x " + pf.x + " y " + pf.y);
+    }
+
     //console.log(this.game.timer);
     
 };
@@ -440,14 +472,17 @@ Circle3d.prototype.draw = function (ctx) {
     render();
 };
 
-function testMazePath(game, x, y){
+function testMazePath(game, x, y, r, c){
     this.startX = x;
     this.startY = y;
     this.x = x;
     this.y = y;
     this.width = 50;
     this.height = 50;
-
+    this.column = c;
+    this.row = r;
+    this.colors = ["Red", "transparent" ];
+    this.color = 1;
 
     this.someX = 0;
     
@@ -470,7 +505,7 @@ testMazePath.prototype.draw = function (ctx) {
     if (this.boxes) {
 
         //ctx.strokeStyle = "green";
-        ctx.fillStyle = "red";
+        ctx.fillStyle = this.colors[this.color];
         ctx.fillRect(this.x, this.y, this.width, this.height);
         
     }
@@ -623,8 +658,8 @@ function createMazePieces(game, maze, mazeP) {
 				game.addEntity(pl);
 				mazePieces.push(pl); 
 			}
-			if(mazeP[r][c]) {
-                var pl = new testMazePath(game, (c * 175) + 250, (r * 175) + 400); // x, y, width, height
+			if(maze.maze[r][c] != 'X') {
+                var pl = new testMazePath(game, (c * 175) + 250, (r * 175) + 400, r, c); // x, y, width, height
                 game.addEntity(pl);
             }
 		}
@@ -647,6 +682,33 @@ function createMazePieces(game, maze, mazeP) {
 	return mazePieces;
 };
 
+//solve the path with the current x, y coordinate
+function pathSolver(game, r, c){
+    var correctPath = new Maze(game.mazeSize, game.mazeSize);
+    var temp = new Maze(game.mazeSize, game.mazeSize);
+
+    var ms = new solveMaze(game.myMaze, correctPath.maze, temp.maze);
+    console.log(ms.traverse(r, c));
+    printMaze(correctPath.maze);
+
+    this.length = game.myMaze.length;
+    this.width = game.myMaze[0].length;
+
+    for(var r = 0; r < this.length; r++) {
+        for(var c = 0; c < this.width; c++) {
+            if(correctPath.maze[r][c]){
+                for(var t = 0; t < game.entities.length; t++){
+                    var cp = game.entities[t];
+                    if(cp instanceof(testMazePath) && cp.row === r && cp.column ===c){
+                        cp.color = 0;
+                    }
+                }
+            }  
+        }
+    }
+
+};
+
 // the "main" code begins here
 
 var ASSET_MANAGER = new AssetManager();
@@ -664,7 +726,7 @@ ASSET_MANAGER.downloadAll(function () {
     var ctx = canvas.getContext('2d');
 
     var gameEngine = new GameEngine();
-    gameEngine.mazeSize = 3;
+    gameEngine.mazeSize = 40;
     gameEngine.level = 1;
     gameEngine.temp = 0;
 
@@ -672,17 +734,19 @@ ASSET_MANAGER.downloadAll(function () {
     init();
     
     var myMaze = new Maze(gameEngine.mazeSize, gameEngine.mazeSize);
-    var myMaze1 = new Maze(gameEngine.mazeSize, gameEngine.mazeSize);
-    var myMaze2 = new Maze(gameEngine.mazeSize, gameEngine.mazeSize);
+    var myMazeC = new Maze(gameEngine.mazeSize, gameEngine.mazeSize);
+    var myMazeW = new Maze(gameEngine.mazeSize, gameEngine.mazeSize);
     myMaze.printMaze();
 
+    //make the myMaze a game entity variable
+    gameEngine.myMaze = myMaze.maze;
    
-    var ms = new solveMaze(myMaze.maze, myMaze1.maze, myMaze2.maze);
+    var ms = new solveMaze(myMaze.maze, myMazeC.maze, myMazeW.maze);
     console.log(ms.traverse(0, 1));
-    printMaze(myMaze1.maze);
+    printMaze(myMazeW.maze);
 
 
-     var mazePieces = createMazePieces(gameEngine, myMaze, myMaze1.maze);
+     var mazePieces = createMazePieces(gameEngine, myMaze, myMazeC.maze);
     
     //mazePieces.push(pl);
    
@@ -693,7 +757,7 @@ ASSET_MANAGER.downloadAll(function () {
 
 
 
-    var circle3d = new Circle3d(gameEngine, 399, 399, 38);
+    var circle3d = new Circle3d(gameEngine, 399.5, 399, 40);
     gameEngine.addEntity(circle3d);
 
 //    gameEngine.addEntity(shade);
@@ -715,17 +779,20 @@ function nextLevel(mazeSize, game) {
 	}
 	
 	var myMaze = new Maze(mazeSize, mazeSize);
-	var myMaze1 = new Maze(mazeSize, mazeSize);
-    var myMaze2 = new Maze(mazeSize, mazeSize);
+	var myMazeC = new Maze(mazeSize, mazeSize);
+    var myMazeW = new Maze(mazeSize, mazeSize);
     myMaze.printMaze();
 
+    //make the maze we are solving a game variable
+    game.myMaze = myMaze.maze;
+
    
-    var ms = new solveMaze(myMaze.maze, myMaze1.maze, myMaze2.maze);
+    var ms = new solveMaze(myMaze.maze, myMazeC.maze, myMazeW.maze);
     console.log(ms.traverse(0, 1));
-    printMaze(myMaze1.maze);
+    printMaze(myMazeC.maze);
 
 
-     var mazePieces = createMazePieces(game, myMaze, myMaze1.maze);
+    var mazePieces = createMazePieces(game, myMaze, myMazeC.maze);
     
     game.mazePieces  = mazePieces;
 }

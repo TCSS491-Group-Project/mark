@@ -103,6 +103,8 @@ GameEngine.prototype.startInput = function () {
         } else if(String.fromCharCode(e.which) === 'S') {
             that.goDown = false;
            
+        } else if (String.fromCharCode(e.which) === ' '){
+            that.jumping = false;
         }
         
         that.tx = 0;
