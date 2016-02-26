@@ -138,6 +138,7 @@ Coin.prototype.update = function () {
 		this.y = 75;
 	}
     this.boundingbox = new BoundingBox(this.x + 10, this.y - 40, this.width, this.height);
+    
     Entity.prototype.update.call(this);
 }
 
@@ -153,6 +154,10 @@ Coin.prototype.draw = function (ctx) {
 	} else {
 		this.animation.drawFrame(this.game.clockTick, ctx, this.x + 10, this.y - 40, 0.25);
 	}
+	
+	ctx.fillStyle = "orange";
+    ctx.font = "bold 2em Arial";
+    ctx.fillText("Level: " + this.game.level, 625, 50); // TODO score
     Entity.prototype.draw.call(this);
 }
 
@@ -267,12 +272,14 @@ Circle3d.prototype.update = function () {
                 	pf.someX = this.game.temp;
                 	this.game.temp += 50;
                 } else if(pf.exit) {
-                	console.log("Next level");
+                	this.game.level += 1;
                 	this.game.temp = 0;
                 	nextLevel(++(this.game.mazeSize), this.game);
                 } else {
-                	pf.removeFromWorld = true;
-                	mazeTrapReset(this.game);
+                	if(pf.trapFrame < 4) {
+//                		pf.removeFromWorld = true;
+                		mazeTrapReset(this.game);
+                	}
                 }
             } 
             //this.collide(pf.boundingbox);
@@ -311,8 +318,10 @@ Circle3d.prototype.update = function () {
                 	pf.someX = this.game.temp;
                 	this.game.temp += 50;
                 } else {
-                	pf.removeFromWorld = true;
-                	mazeTrapReset(this.game);
+                	if(pf.trapFrame < 4) {
+//                		pf.removeFromWorld = true;
+                		mazeTrapReset(this.game);
+                	}
                 }
             } 
         
@@ -351,8 +360,10 @@ Circle3d.prototype.update = function () {
                 	pf.someX = this.game.temp;
                 	this.game.temp += 50;
                 } else {
-                	pf.removeFromWorld = true;
-                	mazeTrapReset(this.game);
+                	if(pf.trapFrame < 4) {
+//                		pf.removeFromWorld = true;
+                		mazeTrapReset(this.game);
+                	}
                 }
             } 
         };
@@ -391,8 +402,10 @@ Circle3d.prototype.update = function () {
                 	pf.someX = this.game.temp;
                 	this.game.temp += 50;
                 } else {
-                	pf.removeFromWorld = true;
-                	mazeTrapReset(this.game);
+                	if(pf.trapFrame < 4) {
+//                		pf.removeFromWorld = true;
+                		mazeTrapReset(this.game);
+                	}
                 }
 
             } 
@@ -465,7 +478,7 @@ testMazePath.prototype.draw = function (ctx) {
 }
 
 
-function mazeTrapReset(game) { // TODO here
+function mazeTrapReset(game) { 
 	for (var i = 0; i < game.mazePieces.length; i++) {
 		game.mazePieces[i].x = game.mazePieces[i].startX;
 		game.mazePieces[i].y = game.mazePieces[i].startY;
@@ -480,23 +493,31 @@ function mazeTrapReset(game) { // TODO here
 	}
 }
 
-function MazePiece(game, x, y, width, height, isTrap, isExit) {
+function MazePiece(game, x, y, width, height, isTrap, isExit, isHorizontalTrap) {
     this.width = width;
     this.height = height;
     this.startX = x;
     this.startY = y;
     this.moveIncrement = 0;
     this.exit = isExit;
-    if(isTrap) {
-    	this.boundingbox = new BoundingBox(x + 20, y, width, height);
+    if(isTrap && isHorizontalTrap) {
+    	this.boundingbox = new BoundingBox(x, y + 40, height, width);
+    } else if(isTrap){
+    	this.boundingbox = new BoundingBox(x + 50, y, width, height);
     } else {
     	this.boundingbox = new BoundingBox(x, y, width, height);
     }
     
-    this.boxes = false;
+    
+    this.boxes = false;  // TODO bounding boxes true/false
     this.trap = isTrap;
-    this.animation = new Animation(ASSET_MANAGER.getAsset("./img/fire.png"), 0, 0, 85.3, 85.3, 0.05, 72, true, false); // running
-    Entity.call(this, game, x, y);
+    this.horizontalTrap = isHorizontalTrap; 
+    if(this.trap && this.horizontalTrap){ // currentFrame
+    	this.animationHorizontal = new Animation(ASSET_MANAGER.getAsset("./img/trap1.png"), 10, 0, 225, 150, 0.5, 7, true, false); // running
+    } else {
+    	this.animationVertical = new Animation(ASSET_MANAGER.getAsset("./img/trap.png"), 0, 10, 150, 225, 0.5, 7, true, false); // running
+    }
+	Entity.call(this, game, x, y);
 }
 
 MazePiece.prototype = new Entity();
@@ -507,8 +528,12 @@ MazePiece.prototype.update = function () {
     
     this.x = this.x - this.game.tx;
     this.y = this.y - this.game.ty;
-    if(this.trap) {
-    	this.boundingbox = new BoundingBox(this.x + 20, this.y, this.width, this.height);
+    if(this.trap && this.horizontalTrap) {
+    	this.boundingbox = new BoundingBox(this.x, this.y + 40, this.height, this.width);
+    	this.trapFrame = this.animationHorizontal.currentFrame(); 
+    } else if(this.trap){
+    	this.boundingbox = new BoundingBox(this.x + 50, this.y, this.width, this.height);
+    	this.trapFrame = this.animationVertical.currentFrame();
     } else {
     	this.boundingbox = new BoundingBox(this.x, this.y, this.width, this.height);
     }
@@ -522,7 +547,13 @@ MazePiece.prototype.draw = function (ctx) {
 	if(this.trap) {
 //		ctx.fillStyle = "blue";
 //		ctx.fillRect(this.x, this.y, this.width, this.height);
-		this.animation.drawFrame(this.game.clockTick, ctx, this.x, this.y, 1.0);
+		if(this.horizontalTrap) {
+			this.animationHorizontal.drawFrame(this.game.clockTick, ctx, this.x - 10, this.y + 40, .77);
+		} else {
+			this.animationVertical.drawFrame(this.game.clockTick, ctx, this.x + 50, this.y, .77);
+			
+		}
+		
 	} else if(this.startTop) {
 		ctx.fillStyle = "white";
 		ctx.fillRect(this.x, this.y, this.width, this.height);
@@ -573,7 +604,7 @@ function createMazePieces(game, maze, mazeP) {
 		for(var c = 0; c < maze.maze[0].length  ; c++) {
 //			string += maze.maze[r][c] + " ";
 			if(maze.maze[r][c] === 'X') {
-				var pl = new MazePiece(game, (c * 175) + 175, (r * 175) + 295 , 175, 175, false, false); // x, y, width, height
+				var pl = new MazePiece(game, (c * 175) + 175, (r * 175) + 295 , 175, 175, false, false, false); // x, y, width, height
 				game.addEntity(pl);
 				mazePieces.push(pl); 
 			} else if (maze.maze[r][c] === 'C') {
@@ -582,11 +613,13 @@ function createMazePieces(game, maze, mazeP) {
 //				mazePieces.push(pl);
 				tempCoins.push(new Coin(game, (c * 175) + 195, (r * 175) + 355));
 			} else if(maze.maze[r][c] === 'T') {
-				var pl = new MazePiece(game, (c * 175) + 175 + 50, (r * 175) + 295 + 25 , 40, 85.3, true, false); // x, y, width, height
+				var isHorirontal = false;
+				if(maze.maze[r][c - 1] === 'X' || maze.maze[r][c + 1] === 'X') isHorirontal = true;
+				var pl = new MazePiece(game, (c * 175) + 175, (r * 175) + 295 , 100, 175, true, false, isHorirontal); // x, y, width, height
 				game.addEntity(pl);
 				mazePieces.push(pl); 
 			} else if(maze.maze[r][c] === 'E') {
-				var pl = new MazePiece(game, (c * 175) + 175, (r * 175) + 295 , 175, 175, false, true); // x, y, width, height
+				var pl = new MazePiece(game, (c * 175) + 175, (r * 175) + 295 , 175, 175, false, true, false); // x, y, width, height
 				game.addEntity(pl);
 				mazePieces.push(pl); 
 			}
@@ -621,7 +654,8 @@ var ASSET_MANAGER = new AssetManager();
 //ASSET_MANAGER.queueDownload("./img/ninja.png");
 ASSET_MANAGER.queueDownload("./img/coin.png");
 ASSET_MANAGER.queueDownload("./img/bricks.jpg");
-ASSET_MANAGER.queueDownload("./img/fire.png"); // pre-download of .png images.
+ASSET_MANAGER.queueDownload("./img/trap.png"); // pre-download of .png images.
+ASSET_MANAGER.queueDownload("./img/trap1.png");
 
 ASSET_MANAGER.downloadAll(function () {
 	
@@ -631,6 +665,7 @@ ASSET_MANAGER.downloadAll(function () {
 
     var gameEngine = new GameEngine();
     gameEngine.mazeSize = 3;
+    gameEngine.level = 1;
     gameEngine.temp = 0;
 
     //instantiate the 3d ball
@@ -680,8 +715,8 @@ function nextLevel(mazeSize, game) {
 	}
 	
 	var myMaze = new Maze(mazeSize, mazeSize);
-	var myMaze1 = new Maze(game.mazeSize, game.mazeSize);
-    var myMaze2 = new Maze(game.mazeSize, game.mazeSize);
+	var myMaze1 = new Maze(mazeSize, mazeSize);
+    var myMaze2 = new Maze(mazeSize, mazeSize);
     myMaze.printMaze();
 
    
