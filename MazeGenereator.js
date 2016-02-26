@@ -42,12 +42,12 @@ function getMazeField(m) {
 		if (0 == j%2){
 			for (var k=0; k<m.y*2+1; k++) {
 				if (0 == k%2) {
-					maze2D[j][k] = 'X';
+					maze2D[j][k] = "X";
 				} else {
 					if (j>0 && m.verti[j/2-1][Math.floor(k/2)]) {
-						maze2D[j][k] = ' ';
+						maze2D[j][k] = " ";
 					} else {
-						maze2D[j][k] = 'X';
+						maze2D[j][k] = "X";
 					}
 				}
 			}
@@ -55,17 +55,17 @@ function getMazeField(m) {
 			for (var k=0; k<m.y*2+1; k++) {
 				if (0 == k%2) {
 					if (k>0 && m.horiz[(j-1)/2][k/2-1]) {
-						maze2D[j][k] = ' ';
+						maze2D[j][k] = " ";
 					} else { 
-						maze2D[j][k] = 'X';
+						maze2D[j][k] = "X";
 					}
 				} else {
-					maze2D[j][k] = ' ';
+					maze2D[j][k] = " ";
 				}
 			}
 		}
 		if (0 == j) {
-			maze2D[j][1] = ' ';
+			maze2D[j][1] = 1;
 		}
 		if (m.x*2-1 == j) {
 			maze2D[j][2*m.y] = 'E';
@@ -81,8 +81,8 @@ function addCoins(rows, cols, maze, numOfcoins) {
 		var x = Math.floor(Math.random() * (rows - 2)) + 2;
 		var y = Math.floor(Math.random() * (cols - 2)) + 2;
 		
-		if(maze[x][y] === ' ') {
-			maze[x][y] = 'C';
+		if(maze[x][y] === " ") {
+			maze[x][y] = "C";
 			coins++;
 		}
 	}
@@ -95,8 +95,8 @@ function addTraps(rows, cols, maze, numOfTraps) {
 		var x = Math.floor(Math.random() * (rows - 2)) + 2;
 		var y = Math.floor(Math.random() * (cols - 2)) + 2;
 		
-		if(maze[x][y] === ' ') {
-			maze[x][y] = 'T';
+		if(maze[x][y] === " ") {
+			maze[x][y] = "T";
 			traps++;
 		}
 	}
