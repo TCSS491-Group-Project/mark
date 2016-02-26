@@ -510,7 +510,7 @@ function MazePiece(game, x, y, width, height, isTrap, isExit, isHorizontalTrap) 
     this.horizontalTrap = isHorizontalTrap; 
     if(this.trap && this.horizontalTrap){ // currentFrame
     	this.animationHorizontal = new Animation(ASSET_MANAGER.getAsset("./img/trap1.png"), 10, 0, 225, 150, 0.5, 7, true, false); // running
-    } else {
+    } else if(this.trap){
     	this.animationVertical = new Animation(ASSET_MANAGER.getAsset("./img/trap.png"), 0, 10, 150, 225, 0.5, 7, true, false); // running
     }
 	Entity.call(this, game, x, y);
@@ -619,7 +619,7 @@ function createMazePieces(game, maze, mazeP) {
 				game.addEntity(pl);
 				mazePieces.push(pl); 
 			}
-			if(mazeP[r][c]) {
+			if(game.showSolution && mazeP[r][c]) {
                 var pl = new testMazePath(game, (c * 175) + 250, (r * 175) + 400); // x, y, width, height
                 game.addEntity(pl);
             }
@@ -663,23 +663,25 @@ ASSET_MANAGER.downloadAll(function () {
     gameEngine.mazeSize = 3;
     gameEngine.level = 1;
     gameEngine.temp = 0;
+    gameEngine.showSolution = false;
 
     //instanciate the 3d ball
     init();
     
     
     var myMaze = new Maze(gameEngine.mazeSize, gameEngine.mazeSize);
-    var myMaze1 = new Maze(gameEngine.mazeSize, gameEngine.mazeSize);
-    var myMaze2 = new Maze(gameEngine.mazeSize, gameEngine.mazeSize);
-    myMaze.printMaze();
+//    var myMaze1 = new Maze(gameEngine.mazeSize, gameEngine.mazeSize);
+//    var myMaze2 = new Maze(gameEngine.mazeSize, gameEngine.mazeSize);
+//    myMaze.printMaze();
+//
+//   
+//    var ms = new solveMaze(myMaze.maze, myMaze1.maze, myMaze2.maze);
+//    console.log(ms.traverse(0, 1));
+//    printMaze(myMaze1.maze);
 
-   
-    var ms = new solveMaze(myMaze.maze, myMaze1.maze, myMaze2.maze);
-    console.log(ms.traverse(0, 1));
-    printMaze(myMaze1.maze);
 
-
-     var mazePieces = createMazePieces(gameEngine, myMaze, myMaze1.maze);
+//     var mazePieces = createMazePieces(gameEngine, myMaze, myMaze1.maze);
+    var mazePieces = createMazePieces(gameEngine, myMaze);
     
     //mazePieces.push(pl);
    
@@ -717,17 +719,18 @@ function nextLevel(mazeSize, game) {
 	}
 	
 	var myMaze = new Maze(mazeSize, mazeSize);
-	var myMaze1 = new Maze(mazeSize, mazeSize);
-    var myMaze2 = new Maze(mazeSize, mazeSize);
+//	var myMaze1 = new Maze(mazeSize, mazeSize);
+//    var myMaze2 = new Maze(mazeSize, mazeSize);
     myMaze.printMaze();
 
    
-    var ms = new solveMaze(myMaze.maze, myMaze1.maze, myMaze2.maze);
-    console.log(ms.traverse(0, 1));
-    printMaze(myMaze1.maze);
+//    var ms = new solveMaze(myMaze.maze, myMaze1.maze, myMaze2.maze);
+//    console.log(ms.traverse(0, 1));
+//    printMaze(myMaze1.maze);
 
 
-     var mazePieces = createMazePieces(game, myMaze, myMaze1.maze);
+//     var mazePieces = createMazePieces(game, myMaze, myMaze1.maze);
+	var mazePieces = createMazePieces(game, myMaze);
     
     game.mazePieces  = mazePieces;
 }
