@@ -743,10 +743,14 @@ ASSET_MANAGER.queueDownload("./img/exitFlag.png");
 ASSET_MANAGER.downloadAll(function () {
 	
     console.log("starting up da sheild");
-    var canvas = document.getElementById('gameWorld');
-    canvas.focus();
-    var ctx = canvas.getContext('2d');
-
+    
+	var  canvas = document.getElementById('gameWorld');
+	canvas.focus();
+	var   ctx = canvas.getContext('2d');
+    
+    
+    
+    
     var gameEngine = new GameEngine();
     gameEngine.mazeSize = 3;
     gameEngine.level = 1;
