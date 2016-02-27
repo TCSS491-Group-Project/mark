@@ -9,6 +9,21 @@ var up = false;
 var y = 0; var x = 0; var z = 0;
 
 function init() {
+	var canvas = document.getElementById('gameWorld');
+	
+	this.addEventListener("click", function(e){
+//		console.log(e);
+		e.preventDefault();
+		canvas.focus();
+    }, false);
+	
+	this.addEventListener("contextmenu", function(e){
+//		console.log(e);
+//		e.preventDefault();
+		canvas.focus();
+    }, false);
+	
+	
 	
 	
 	scene = new THREE.Scene();

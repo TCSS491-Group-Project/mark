@@ -59,6 +59,20 @@ GameEngine.prototype.start = function () {
 
 GameEngine.prototype.startInput = function () {
 //    console.log('Starting input');
+	
+	this.ctx.canvas.addEventListener("click", function(e){
+		e.preventDefault();
+		this.ctx.canvas.focus();
+    }, false);
+	
+	this.ctx.canvas.addEventListener("contextmenu", function(e){
+//		console.log(e);
+//		e.preventDefault();
+		this.ctx.canvas.focus();
+
+    }, false);
+	
+	
     var that = this;
 
     var getXandY = function (e) {
@@ -69,11 +83,9 @@ GameEngine.prototype.startInput = function () {
     }
     this.tx = null;
     this.ty = null;
-
+    
     this.ctx.canvas.addEventListener("keydown", function (e) {
-        if (String.fromCharCode(e.which) === ' ') {
-            that.jumping = true;
-        } else if(String.fromCharCode(e.which) === 'D') {
+        if(String.fromCharCode(e.which) === 'D') {
             that.walkRight = true;
             //that.tx = 1;
         } else if(String.fromCharCode(e.which) === 'A') {
@@ -104,7 +116,7 @@ GameEngine.prototype.startInput = function () {
             that.goDown = false;
            
         } else if (String.fromCharCode(e.which) === ' '){
-            that.jumping = false;
+            that.payPath = true;
         }
         
         that.tx = 0;

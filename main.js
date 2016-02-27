@@ -266,7 +266,6 @@ Circle3d.prototype.update = function () {
         for (var i = 0; i < this.game.mazePieces.length; i++) {
             var pf = this.game.mazePieces[i];
 
-            
             if (this.boundingcircle.collide(pf.boundingbox)) { 
                 if(!pf.trap && !pf.exit) {
                 	this.game.tx = 0;
@@ -277,10 +276,13 @@ Circle3d.prototype.update = function () {
                 	pf.removeFromWorld = true;
                 } else if(pf.exit) {
                 	this.game.level += 1;
+                	this.game.numCoins += 2;
+                	this.game.numTraps += 2;
                 	nextLevel(++(this.game.mazeSize), this.game);
                 } else {
                 	if(pf.trapFrame < 4) {
 //                		pf.removeFromWorld = true;
+                		if(this.game.totCoins !== 0) this.game.totCoins--;
                 		mazeTrapReset(this.game);
                 	}
                 }
@@ -323,6 +325,7 @@ Circle3d.prototype.update = function () {
                 } else {
                 	if(pf.trapFrame < 4) {
 //                		pf.removeFromWorld = true;
+                		if(this.game.totCoins !== 0) this.game.totCoins--;
                 		mazeTrapReset(this.game);
                 	}
                 }
@@ -365,6 +368,7 @@ Circle3d.prototype.update = function () {
                 } else {
                 	if(pf.trapFrame < 4) {
 //                		pf.removeFromWorld = true;
+                		if(this.game.totCoins !== 0) this.game.totCoins--;
                 		mazeTrapReset(this.game);
                 	}
                 }
@@ -407,6 +411,7 @@ Circle3d.prototype.update = function () {
                 } else {
                 	if(pf.trapFrame < 4) {
 //                		pf.removeFromWorld = true;
+                		if(this.game.totCoins !== 0) this.game.totCoins--;
                 		mazeTrapReset(this.game);
                 	}
                 }
@@ -420,8 +425,8 @@ Circle3d.prototype.update = function () {
         rotateAroundWorldAxis(mesh, xAxis, y);
     }
 
-    if(this.game.jumping){
-
+    if(this.game.payPath && this.game.totCoins >= 10){ //TODO coins to cash
+    	this.game.totCoins -= 10;
         //reset the enities color back to transparent
         for(var i = 0; i < this.game.entities.length; i++) {
             var temp = this.game.entities[i];
@@ -450,9 +455,14 @@ Circle3d.prototype.update = function () {
         pathSolver(this.game, r, c);
         console.log("r " + r + " c " + c);
         console.log("x " + pf.x + " y " + pf.y);
+        
+        this.game.payPath = false;
+    } else if(this.game.payPath) {
+    	this.game.payPath = false;
     }
 
     //console.log(this.game.timer);
+    
     
 };
 
@@ -591,13 +601,11 @@ MazePiece.prototype.draw = function (ctx) {
 			this.animationVertical.drawFrame(this.game.clockTick, ctx, this.x + 50, this.y, .77);
 			
 		}
-		
 	} else if(this.startTop) {
-		ctx.fillStyle = "white";
+		ctx.fillStyle = "transparent";
 		ctx.fillRect(this.x, this.y, this.width, this.height);
 	} else if(this.exit){
-		ctx.fillStyle = "red";
-		ctx.fillRect(this.x, this.y, this.width, this.height);
+		ctx.drawImage(ASSET_MANAGER.getAsset("./img/exitFlag.png"), this.x, this.y, this.width, this.height);
 	} else {
 //		ctx.fillStyle = "black";
 		ctx.fillRect(this.x, this.y, this.width, this.height);
@@ -612,13 +620,13 @@ MazePiece.prototype.draw = function (ctx) {
     Entity.prototype.draw.call(this);
 }
 
-function Maze(x, y) {
+function Maze(x, y, game) {
 	this.maze = getMazeField(generateMaze(x,y));
 //	addCoins(rows, cols, maze, numOfcoins) {
     this.length = this.maze[0].length;
     this.width = this.maze.length;
-    addCoins(this.length, this.width, this.maze, 3);
-    addTraps(this.length, this.width, this.maze, 0);
+    addCoins(this.length, this.width, this.maze, game.numCoins);  
+    addTraps(this.length, this.width, this.maze, game.numTraps);
     
 	this.printMaze = function() {
 		var string = '';
@@ -662,7 +670,7 @@ function createMazePieces(game, maze, mazeP) {
 				mazePieces.push(pl); 
 			}
 
-			if(maze.maze[r][c] != 'X') {
+			if(maze.maze[r][c] !== 'X' && maze.maze[r][c] !== 'E') {
                 var pl = new testMazePath(game, (c * 175) + 250, (r * 175) + 400, r, c); // x, y, width, height
                 game.addEntity(pl);
             }
@@ -685,17 +693,18 @@ function createMazePieces(game, maze, mazeP) {
 	game.addEntity(pl);
 	
 	//Starting block blocker
-//    var pl = new MazePiece(game, ( 175) + 175, (-175) + 295 , 175, 175);
-//    pl.startTop = true;
-//    game.addEntity(pl);
-//    mazePieces.push(pl);
+    var pl = new MazePiece(game, ( 175) + 175, (-175) + 295 , 175, 175);
+    pl.startTop = true;
+    pl.boxes = false;
+    game.addEntity(pl);
+    mazePieces.push(pl);
 	return mazePieces;
 };
 
 //solve the path with the current x, y coordinate
 function pathSolver(game, r, c){
-    var correctPath = new Maze(game.mazeSize, game.mazeSize);
-    var temp = new Maze(game.mazeSize, game.mazeSize);
+    var correctPath = new Maze(game.mazeSize, game.mazeSize, game);
+    var temp = new Maze(game.mazeSize, game.mazeSize, game);
 
     var ms = new solveMaze(game.myMaze, correctPath.maze, temp.maze);
     console.log(ms.traverse(r, c));
@@ -728,26 +737,31 @@ ASSET_MANAGER.queueDownload("./img/coin.png");
 ASSET_MANAGER.queueDownload("./img/bricks.jpg");
 ASSET_MANAGER.queueDownload("./img/trap.png"); // pre-download of .png images.
 ASSET_MANAGER.queueDownload("./img/trap1.png");
+ASSET_MANAGER.queueDownload("./img/exitFlag.png");
+
 
 ASSET_MANAGER.downloadAll(function () {
 	
     console.log("starting up da sheild");
     var canvas = document.getElementById('gameWorld');
+    canvas.focus();
     var ctx = canvas.getContext('2d');
 
     var gameEngine = new GameEngine();
     gameEngine.mazeSize = 3;
     gameEngine.level = 1;
     gameEngine.totCoins = 0;
+    gameEngine.numTraps = 0;
+    gameEngine.numCoins = 3;
     
     gameEngine.showSolution = false;
 
     //instantiate the 3d ball
     init();
     
-    var myMaze = new Maze(gameEngine.mazeSize, gameEngine.mazeSize);
-    var myMazeC = new Maze(gameEngine.mazeSize, gameEngine.mazeSize);
-    var myMazeW = new Maze(gameEngine.mazeSize, gameEngine.mazeSize);
+    var myMaze = new Maze(gameEngine.mazeSize, gameEngine.mazeSize, gameEngine);
+    var myMazeC = new Maze(gameEngine.mazeSize, gameEngine.mazeSize, gameEngine);
+    var myMazeW = new Maze(gameEngine.mazeSize, gameEngine.mazeSize, gameEngine);
     myMaze.printMaze();
 
     //make the myMaze a game entity variable
@@ -781,6 +795,7 @@ ASSET_MANAGER.downloadAll(function () {
 });
 
 function nextLevel(mazeSize, game) {
+	
 	for(var i = 0; i < game.entities.length; i++) {
 		var temp = game.entities[i];
 		if(temp instanceof(testMazePath) || temp instanceof(VisibilityCircle) || temp instanceof(Coin)) {
@@ -793,10 +808,10 @@ function nextLevel(mazeSize, game) {
 	}
 	
 	
-	var myMaze = new Maze(mazeSize, mazeSize);
+	var myMaze = new Maze(mazeSize, mazeSize, game);
 
-	var myMazeC = new Maze(mazeSize, mazeSize);
-    var myMazeW = new Maze(mazeSize, mazeSize);
+	var myMazeC = new Maze(mazeSize, mazeSize, game);
+    var myMazeW = new Maze(mazeSize, mazeSize, game);
 
     myMaze.printMaze();
 
