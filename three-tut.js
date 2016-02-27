@@ -10,7 +10,6 @@ var y = 0; var x = 0; var z = 0;
 
 function init() {
 	
-	
 	scene = new THREE.Scene();
 
 	camera = new THREE.PerspectiveCamera( 80, 800 / 800, 0.1, 1000);
