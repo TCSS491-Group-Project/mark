@@ -154,19 +154,21 @@ Coin.prototype.draw = function (ctx) {
 	this.animation.drawFrame(this.game.clockTick, ctx, this.x + 10, this.y - 40, 0.5);
 	
 	
-	ctx.fillStyle = "orange";
-    ctx.font = "bold 2em Arial";
-    ctx.fillText("Level: " + this.game.level, 625, 50); // TODO score
+	// ctx.fillStyle = "orange";
+ //    ctx.font = "bold 2em Arial";
+ //    ctx.fillText("Level: " + this.game.level, 625, 50); // TODO score
     
-    ctx.fillStyle = "orange";
-    ctx.font = "bold 2em Arial";
-    ctx.fillText(" x " + this.game.totCoins, 75, 50);
+ //    ctx.fillStyle = "orange";
+ //    ctx.font = "bold 2em Arial";
+ //    ctx.fillText(" x " + this.game.totCoins, 75, 50);
     
     Entity.prototype.draw.call(this);
 }
 
-function VisibilityCircle(game) {
+function VisibilityCircle(game, circleG) {
     //this.animation1 = new Animation(ASSET_MANAGER.getAsset("./img/Capture.png"), 0, 0, 10, 10, 0.05, 1, true, false);
+    this.circleG = circleG;
+    this.gradleTriger = false;
     Entity.call(this, game, 0, 0);
 };
 
@@ -175,6 +177,13 @@ VisibilityCircle.prototype = new Entity();
 VisibilityCircle.prototype.constructor = VisibilityCircle;
 
 VisibilityCircle.prototype.update = function () {
+    if(this.gradleTriger){
+        this.circleG -= 20;
+        if(this.circleG < 0){
+            this.gradleTriger = false;
+            this.circleG = 300;
+        }
+    }
     Entity.prototype.update.call(this);
 }
 
@@ -183,11 +192,72 @@ VisibilityCircle.prototype.draw = function (ctx) {
     
     //ctx.fillStyle = "SaddleBrown";
     
-    var gradient = ctx.createRadialGradient(400, 400, 300, 400, 400, 0);
+    var gradient = ctx.createRadialGradient(400, 400, this.circleG, 400, 400, 0);
     gradient.addColorStop(0, "black");
     gradient.addColorStop(1, "transparent");
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, 800, 800);  
+    Entity.prototype.draw.call(this);
+}
+
+function gameLabel(game) {
+    //this.animation1 = new Animation(ASSET_MANAGER.getAsset("./img/Capture.png"), 0, 0, 10, 10, 0.05, 1, true, false);
+    this.gameLevel = game.level;
+    this.gameTotCoins = game.totCoins;
+    this.nextLevelLabel = false;
+    this.trapLabel = false;
+    this.counter1 = 300;
+    this.counter2 = 300;
+    Entity.call(this, game, 0, 0);
+};
+
+gameLabel.prototype = new Entity();
+
+gameLabel.prototype.constructor = gameLabel;
+
+gameLabel.prototype.update = function () {
+    this.gameLevel = this.game.level;
+    this.gameTotCoins = this.game.totCoins;
+    var that = this;
+
+
+    if (this.nextLevelLabel){
+        this.counter1 -= 2;
+        if(this.counter1 < 0){
+            this.counter1 = 300;
+            this.nextLevelLabel = false;
+        }
+    }
+    if (this.trapLabel){
+        this.counter2 -= 2;
+        if(this.counter2 < 0){
+            this.counter2 = 300;
+            this.trapLabel = false;
+        }
+    }
+    Entity.prototype.update.call(this);
+}
+
+gameLabel.prototype.draw = function (ctx) {
+
+    ctx.fillStyle = "orange";
+    ctx.font = "bold 2em Arial";
+    ctx.fillText("Level: " + this.game.level, 625, 50); // TODO score
+    
+    ctx.fillStyle = "orange";
+    ctx.font = "bold 2em Arial";
+    ctx.fillText(" x " + this.game.totCoins, 75, 50);
+
+    if(this.nextLevelLabel){
+        ctx.fillStyle = "orange";
+        ctx.font = "bold 3em Arial";
+        ctx.fillText("Level: " + this.game.level, 350, 150);
+    } 
+    if(this.trapLabel){
+        ctx.fillStyle = "Red";
+        ctx.font = "bold 2em Arial";
+        ctx.fillText("You fall on to a trap" , 300, 100);
+    }
     Entity.prototype.draw.call(this);
 }
 
@@ -258,7 +328,7 @@ Circle3d.prototype.update = function () {
         //rotate ball right
         var xAxis = new THREE.Vector3(0,1,0);
         
-        x = ballRotationSpeed;       
+        var x = ballRotationSpeed;       
 
         //create a new bounding circle with padding so that the maze will be able to move
         this.boundingcircle = new BoundingCircle(this.x + padding, this.y, this.radius);
@@ -283,6 +353,9 @@ Circle3d.prototype.update = function () {
                 	if(pf.trapFrame < 4) {
 //                		pf.removeFromWorld = true;
                 		if(this.game.totCoins !== 0) this.game.totCoins--;
+
+                        //tell user they fall in the trap
+                        this.game.gameLabel.trapLabel = true;
                 		mazeTrapReset(this.game);
                 	}
                 }
@@ -305,7 +378,7 @@ Circle3d.prototype.update = function () {
 
         //rotate ball left
         var xAxis = new THREE.Vector3(0,1,0);
-        x = - (ballRotationSpeed);     
+        var x = - (ballRotationSpeed);     
 
         //create a new bounding circle with padding so that the maze will be able to move
         this.boundingcircle = new BoundingCircle(this.x - padding, this.y, this.radius);
@@ -326,6 +399,9 @@ Circle3d.prototype.update = function () {
                 	if(pf.trapFrame < 4) {
 //                		pf.removeFromWorld = true;
                 		if(this.game.totCoins !== 0) this.game.totCoins--;
+
+                        //tell user they fall in the trap
+                        this.game.gameLabel.trapLabel = true;
                 		mazeTrapReset(this.game);
                 	}
                 }
@@ -348,7 +424,7 @@ Circle3d.prototype.update = function () {
 
         //rotateball down
         var xAxis = new THREE.Vector3(1,0,0);
-        y = ballRotationSpeed;  
+        var y = ballRotationSpeed;  
 
         //create a new bounding circle with padding so that the maze will be able to move
         this.boundingcircle = new BoundingCircle(this.x, this.y + padding, this.radius);
@@ -369,6 +445,9 @@ Circle3d.prototype.update = function () {
                 	if(pf.trapFrame < 4) {
 //                		pf.removeFromWorld = true;
                 		if(this.game.totCoins !== 0) this.game.totCoins--;
+
+                        //tell user they fall in the trap
+                        this.game.gameLabel.trapLabel = true;
                 		mazeTrapReset(this.game);
                 	}
                 }
@@ -412,6 +491,9 @@ Circle3d.prototype.update = function () {
                 	if(pf.trapFrame < 4) {
 //                		pf.removeFromWorld = true;
                 		if(this.game.totCoins !== 0) this.game.totCoins--;
+
+                        //tell user they fall in the trap
+                        this.game.gameLabel.trapLabel = true;
                 		mazeTrapReset(this.game);
                 	}
                 }
@@ -522,6 +604,8 @@ testMazePath.prototype.draw = function (ctx) {
         ctx.fillRect(this.x, this.y, this.width, this.height);
         
     }
+
+
     Entity.prototype.draw.call(this);
 }
 
@@ -537,7 +621,9 @@ function mazeTrapReset(game) {
 		if(temp instanceof(testMazePath)) {
 			temp.x = temp.startX;
 			temp.y = temp.startY;
-		}
+		} else if(temp instanceof(VisibilityCircle)){
+            temp.gradleTriger = true;
+        }
 	}
 }
 
@@ -678,7 +764,8 @@ function createMazePieces(game, maze, mazeP) {
 //		string += '\r\n';
 	}
 	
-	var shade = new VisibilityCircle(game); //TODO  shade
+	var shade = new VisibilityCircle(game, 300); //TODO  shade
+    shade.gradleTriger = true;
     game.addEntity(shade);
     
 	for(var i = 0; i < tempCoins.length; i++) {
@@ -749,8 +836,6 @@ ASSET_MANAGER.downloadAll(function () {
 	var   ctx = canvas.getContext('2d');
     
     
-    
-    
     var gameEngine = new GameEngine();
     gameEngine.mazeSize = 3;
     gameEngine.level = 1;
@@ -791,6 +876,10 @@ ASSET_MANAGER.downloadAll(function () {
     var circle3d = new Circle3d(gameEngine, 399.5, 399, 40);
     gameEngine.addEntity(circle3d);
 
+    var gamelabel = new gameLabel(gameEngine);
+    gameEngine.addEntity(gamelabel);
+    gameEngine.gameLabel = gamelabel;
+
 //    gameEngine.addEntity(shade);
     //gameEngine.addEntity(ninja);
     
@@ -799,10 +888,13 @@ ASSET_MANAGER.downloadAll(function () {
 });
 
 function nextLevel(mazeSize, game) {
-	
+	var so = false
+    
+    
+    //remove the enities
 	for(var i = 0; i < game.entities.length; i++) {
 		var temp = game.entities[i];
-		if(temp instanceof(testMazePath) || temp instanceof(VisibilityCircle) || temp instanceof(Coin)) {
+		if(temp instanceof(testMazePath) || temp instanceof(VisibilityCircle) || temp instanceof(Coin) || temp instanceof(gameLabel)) {
 			temp.removeFromWorld = true;
 		}
 	}
@@ -830,7 +922,13 @@ function nextLevel(mazeSize, game) {
 
     var mazePieces = createMazePieces(game, myMaze, myMazeC.maze);
 
-    
     game.mazePieces  = mazePieces;
+
+    var gamelabel = new gameLabel(game);
+    gamelabel.nextLevelLabel = true;
+    game.addEntity(gamelabel);
+
+    game.gameLabel = gamelabel;
+
 }
 

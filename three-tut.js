@@ -6,7 +6,7 @@ var right = false;
 var left = false;
 var down = false;
 var up = false;
-var y = 0; var x = 0; var z = 0;
+
 
 function init() {
 	var canvas = document.getElementById('gameWorld');
