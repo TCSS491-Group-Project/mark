@@ -656,7 +656,7 @@ function MazePiece(game, x, y, width, height, isTrap, isExit, isHorizontalTrap) 
     }
     
     
-    this.boxes = true;  // TODO bounding boxes true/false
+    this.boxes = false;  // TODO bounding boxes true/false
     this.trap = isTrap;
     this.horizontalTrap = isHorizontalTrap; 
     if(this.trap && this.horizontalTrap){ // currentFrame
