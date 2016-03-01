@@ -355,7 +355,7 @@ Circle3d.prototype.update = function () {
                 	this.game.numTraps += 2;
                 	nextLevel(++(this.game.mazeSize), this.game);
                 } else {
-                	if(pf.trapFrame < 4) {
+                	if(pf.trapFrame < 8) {
 //                		pf.removeFromWorld = true;
                 		if(this.game.totCoins !== 0) this.game.totCoins--;
 
@@ -403,7 +403,7 @@ Circle3d.prototype.update = function () {
                 	pf.isCoin = false;
                 	pf.removeFromWorld = true;
                 } else {
-                	if(pf.trapFrame < 4) {
+                	if(pf.trapFrame < 8) {
 //                		pf.removeFromWorld = true;
                 		if(this.game.totCoins !== 0) this.game.totCoins--;
 
@@ -452,7 +452,7 @@ Circle3d.prototype.update = function () {
                 	pf.isCoin = false;
                 	pf.removeFromWorld = true;
                 } else {
-                	if(pf.trapFrame < 4) {
+                	if(pf.trapFrame < 8) {
 //                		pf.removeFromWorld = true;
                 		if(this.game.totCoins !== 0) this.game.totCoins--;
 
@@ -498,7 +498,7 @@ Circle3d.prototype.update = function () {
                 	pf.isCoin = false;
                 	pf.removeFromWorld = true;
                 } else {
-                	if(pf.trapFrame < 4) {
+                	if(pf.trapFrame < 8) {
 //                		pf.removeFromWorld = true;
                 		if(this.game.totCoins !== 0) this.game.totCoins--;
 
@@ -648,21 +648,21 @@ function MazePiece(game, x, y, width, height, isTrap, isExit, isHorizontalTrap) 
     this.moveIncrement = 0;
     this.exit = isExit;
     if(isTrap && isHorizontalTrap) {
-    	this.boundingbox = new BoundingBox(x, y + 40, height, width);
+    	this.boundingbox = new BoundingBox(x, y + 45, height, width - 25);
     } else if(isTrap){
-    	this.boundingbox = new BoundingBox(x + 50, y, width, height);
+    	this.boundingbox = new BoundingBox(x + 55, y, width - 25, height);
     } else {
     	this.boundingbox = new BoundingBox(x, y, width, height);
     }
     
     
-    this.boxes = false;  // TODO bounding boxes true/false
+    this.boxes = true;  // TODO bounding boxes true/false
     this.trap = isTrap;
     this.horizontalTrap = isHorizontalTrap; 
     if(this.trap && this.horizontalTrap){ // currentFrame
-    	this.animationHorizontal = new Animation(ASSET_MANAGER.getAsset("./img/trap1.png"), 10, 0, 225, 150, 0.5, 7, true, false); // running
+    	this.animationHorizontal = new Animation(ASSET_MANAGER.getAsset("./img/trap1.png"), 0, 0, 252, 144, 0.27, 14, true, false); // running
     } else if(this.trap){
-    	this.animationVertical = new Animation(ASSET_MANAGER.getAsset("./img/trap.png"), 0, 10, 150, 225, 0.5, 7, true, false); // running
+    	this.animationVertical = new Animation(ASSET_MANAGER.getAsset("./img/trap2.png"), 0, 0, 144, 252, 0.27, 14, true, false); // running
     }
 	Entity.call(this, game, x, y);
 }
@@ -676,10 +676,10 @@ MazePiece.prototype.update = function () {
     this.x = this.x - this.game.tx;
     this.y = this.y - this.game.ty;
     if(this.trap && this.horizontalTrap) {
-    	this.boundingbox = new BoundingBox(this.x, this.y + 40, this.height, this.width);
+    	this.boundingbox = new BoundingBox(this.x, this.y + 45, this.height, this.width - 25);
     	this.trapFrame = this.animationHorizontal.currentFrame(); 
     } else if(this.trap){
-    	this.boundingbox = new BoundingBox(this.x + 50, this.y, this.width, this.height);
+    	this.boundingbox = new BoundingBox(this.x + 55, this.y, this.width - 25, this.height);
     	this.trapFrame = this.animationVertical.currentFrame();
     } else {
     	this.boundingbox = new BoundingBox(this.x, this.y, this.width, this.height);
@@ -695,9 +695,9 @@ MazePiece.prototype.draw = function (ctx) {
 //		ctx.fillStyle = "blue";
 //		ctx.fillRect(this.x, this.y, this.width, this.height);
 		if(this.horizontalTrap) {
-			this.animationHorizontal.drawFrame(this.game.clockTick, ctx, this.x - 10, this.y + 40, .77);
+			this.animationHorizontal.drawFrame(this.game.clockTick, ctx, this.x - 10, this.y + 40, .68);
 		} else {
-			this.animationVertical.drawFrame(this.game.clockTick, ctx, this.x + 50, this.y, .77);
+			this.animationVertical.drawFrame(this.game.clockTick, ctx, this.x + 50, this.y, .68);
 			
 		}
 	} else if(this.startTop) {
@@ -835,7 +835,7 @@ var ASSET_MANAGER = new AssetManager();
 //ASSET_MANAGER.queueDownload("./img/ninja.png");
 ASSET_MANAGER.queueDownload("./img/coin.png");
 ASSET_MANAGER.queueDownload("./img/bricks.jpg");
-ASSET_MANAGER.queueDownload("./img/trap.png"); // pre-download of .png images.
+ASSET_MANAGER.queueDownload("./img/trap2.png"); // pre-download of .png images.
 ASSET_MANAGER.queueDownload("./img/trap1.png");
 ASSET_MANAGER.queueDownload("./img/exitFlag.png");
 
