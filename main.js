@@ -178,10 +178,14 @@ VisibilityCircle.prototype.constructor = VisibilityCircle;
 
 VisibilityCircle.prototype.update = function () {
     if(this.gradleTriger){
-        this.circleG -= 20;
+        this.circleG -= 5;
+        camera = cameraOff;
+        this.game.screenOff = true;
         if(this.circleG < 0){
             this.gradleTriger = false;
             this.circleG = 300;
+            camera = cameraOn;
+            this.game.screenOff = false;
         }
     }
     Entity.prototype.update.call(this);
@@ -223,7 +227,7 @@ gameLabel.prototype.update = function () {
 
     if (this.nextLevelLabel){
         this.counter1 -= 2;
-        if(this.counter1 < 0){
+        if(this.counter1 < 0){ //TODO hereehrherhehrhehrhe
             this.counter1 = 300;
             this.nextLevelLabel = false;
         }
@@ -263,7 +267,7 @@ gameLabel.prototype.draw = function (ctx) {
 
 function Circle3d(game, x, y, radius) {
     this.radius = radius;
-    this.circle = true;
+    this.circle = false;
     this.boundingcircle = new BoundingCircle(x, y, radius);
     Entity.call(this, game, x, y);
 };
@@ -307,6 +311,7 @@ Circle3d.prototype.collide = function(rect) {
 //var temp = 0;
 
 Circle3d.prototype.update = function () {
+	if(this.game.screenOff) return;
     Entity.prototype.update.call(this);
 
 
@@ -357,6 +362,8 @@ Circle3d.prototype.update = function () {
                         //tell user they fall in the trap
                         this.game.gameLabel.trapLabel = true;
                 		mazeTrapReset(this.game);
+                		this.game.screenOff = true;
+                		this.game.tx = 0;
                 	}
                 }
             } 
@@ -403,6 +410,9 @@ Circle3d.prototype.update = function () {
                         //tell user they fall in the trap
                         this.game.gameLabel.trapLabel = true;
                 		mazeTrapReset(this.game);
+                		this.game.screenOff = true;
+                		this.game.tx = 0;
+                		
                 	}
                 }
             } 
@@ -449,6 +459,8 @@ Circle3d.prototype.update = function () {
                         //tell user they fall in the trap
                         this.game.gameLabel.trapLabel = true;
                 		mazeTrapReset(this.game);
+                		this.game.screenOff = true;
+                		this.game.ty = 0;
                 	}
                 }
             } 
@@ -456,9 +468,7 @@ Circle3d.prototype.update = function () {
 
         //update 3d ball
         rotateAroundWorldAxis(mesh, xAxis, y);
-    }
-
-    else if(this.game.goUp){
+    } else if(this.game.goUp){
 
         //move the maze
         this.game.ty -= speedIncreament;
@@ -495,6 +505,8 @@ Circle3d.prototype.update = function () {
                         //tell user they fall in the trap
                         this.game.gameLabel.trapLabel = true;
                 		mazeTrapReset(this.game);
+                		this.game.screenOff = true;
+                		this.game.ty = 0;
                 	}
                 }
 
@@ -550,7 +562,8 @@ Circle3d.prototype.update = function () {
 
 Circle3d.prototype.draw = function (ctx) {
     ctx.beginPath();
-    ctx.fillStyle = "purple";
+    ctx.strokeStyle = "transparent";
+    ctx.fillStyle = "transparent";
     ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
     ctx.fill();
     ctx.closePath();
@@ -842,7 +855,7 @@ ASSET_MANAGER.downloadAll(function () {
     gameEngine.totCoins = 0;
     gameEngine.numTraps = 0;
     gameEngine.numCoins = 3;
-    
+    gameEngine.screenOff = false;
     gameEngine.showSolution = false;
 
     //instantiate the 3d ball

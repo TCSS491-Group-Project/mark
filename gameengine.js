@@ -98,6 +98,7 @@ GameEngine.prototype.startInput = function () {
             that.goDown = true;
             //that.ty = 1;
         } 
+        
 //        console.log(e);
         e.preventDefault();
     }, false);

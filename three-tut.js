@@ -6,6 +6,8 @@ var right = false;
 var left = false;
 var down = false;
 var up = false;
+var cameraOff = new THREE.PerspectiveCamera( 0, 800 / 800, 0.1, 1000);
+var cameraOn = new THREE.PerspectiveCamera( 80, 800 / 800, 0.1, 1000);
 
 
 function init() {
@@ -27,7 +29,7 @@ function init() {
 	
 	scene = new THREE.Scene();
 
-	camera = new THREE.PerspectiveCamera( 80, 800 / 800, 0.1, 1000);
+	camera = cameraOn;
 
 	
 	/** DirectionalLight(hex, intensity)
