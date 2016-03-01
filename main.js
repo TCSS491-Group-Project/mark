@@ -323,7 +323,7 @@ Circle3d.prototype.update = function () {
     var ballRotationSpeed = 0.10;
 
     if(this.game.walkRight){
-
+        //this.game.walkLeft = false;
         //move the maze
         this.game.tx += speedIncreament;
         if(this.game.tx > MaxSpeed){
@@ -371,16 +371,16 @@ Circle3d.prototype.update = function () {
             //console.log(this.collide(pf.boundingbox));
         
         };
-
-        //update the position of the 3d ball
+        
+                //update the position of the 3d ball
         rotateAroundWorldAxis(mesh, xAxis, x);
 
     } else if(this.game.walkLeft){
 
         //move the maze
         this.game.tx -= speedIncreament;
-        if(this.game.tx < - (MaxSpeed)){
-            this.game.tx = - (MaxSpeed);
+        if(this.game.tx < -(MaxSpeed)){
+            this.game.tx = -(MaxSpeed);
         }
 
         //rotate ball left
@@ -418,13 +418,60 @@ Circle3d.prototype.update = function () {
             } 
         
         };
-        render();
 
         //update the position of the 3d ball
         rotateAroundWorldAxis(mesh, xAxis, x);
     }
+    if(this.game.goUp){
 
-    if(this.game.goDown){
+        //move the maze
+        this.game.ty -= speedIncreament;
+        if(this.game.ty < - (MaxSpeed)){
+            this.game.ty = - (MaxSpeed);
+        }
+
+        //rotateball up
+        var xAxis = new THREE.Vector3(1,0,0);
+        y = - (ballRotationSpeed);
+        
+
+        //create a new bounding circle with padding so that the maze will be able to move
+        this.boundingcircle = new BoundingCircle(this.x, this.y - padding, this.radius);
+
+        for (var i = 0; i < this.game.mazePieces.length; i++) {
+            var pf = this.game.mazePieces[i];
+            //console.log("coin: " + pf.isCoin);
+
+            if (this.boundingcircle.collide(pf.boundingbox)) { 
+
+                if(!pf.trap) {
+                    this.game.ty = 0;
+                    y = 0;
+                } else if(pf.isCoin){
+                    this.game.totCoins++;
+                    pf.isCoin = false;
+                    pf.removeFromWorld = true;
+                } else {
+                    if(pf.trapFrame < 4) {
+//                      pf.removeFromWorld = true;
+                        if(this.game.totCoins !== 0) this.game.totCoins--;
+
+                        //tell user they fall in the trap
+                        this.game.gameLabel.trapLabel = true;
+                        mazeTrapReset(this.game);
+                        this.game.screenOff = true;
+                        this.game.ty = 0;
+                    }
+                }
+
+            } 
+            //console.log(this.collide(pf.boundingbox));
+        
+        };
+
+        //update ball
+        rotateAroundWorldAxis(mesh, xAxis, y);
+    } else if(this.game.goDown){
 
         //move the maze
         this.game.ty += speedIncreament;
@@ -468,56 +515,7 @@ Circle3d.prototype.update = function () {
 
         //update 3d ball
         rotateAroundWorldAxis(mesh, xAxis, y);
-    } else if(this.game.goUp){
-
-        //move the maze
-        this.game.ty -= speedIncreament;
-        if(this.game.ty < - (MaxSpeed)){
-            this.game.ty = - (MaxSpeed);
-        }
-
-        //rotateball up
-        var xAxis = new THREE.Vector3(1,0,0);
-        y = - (ballRotationSpeed);
-        
-
-        //create a new bounding circle with padding so that the maze will be able to move
-        this.boundingcircle = new BoundingCircle(this.x, this.y - padding, this.radius);
-
-        for (var i = 0; i < this.game.mazePieces.length; i++) {
-            var pf = this.game.mazePieces[i];
-            //console.log("coin: " + pf.isCoin);
-
-            if (this.boundingcircle.collide(pf.boundingbox)) { 
-
-            	if(!pf.trap) {
-            		this.game.ty = 0;
-                    y = 0;
-            	} else if(pf.isCoin){
-            		this.game.totCoins++;
-                	pf.isCoin = false;
-                	pf.removeFromWorld = true;
-                } else {
-                	if(pf.trapFrame < 4) {
-//                		pf.removeFromWorld = true;
-                		if(this.game.totCoins !== 0) this.game.totCoins--;
-
-                        //tell user they fall in the trap
-                        this.game.gameLabel.trapLabel = true;
-                		mazeTrapReset(this.game);
-                		this.game.screenOff = true;
-                		this.game.ty = 0;
-                	}
-                }
-
-            } 
-            //console.log(this.collide(pf.boundingbox));
-        
-        };
-
-        //update ball
-        rotateAroundWorldAxis(mesh, xAxis, y);
-    }
+    } 
 
     if(this.game.payPath && this.game.totCoins >= 10){ //TODO coins to cash
     	this.game.totCoins -= 10;

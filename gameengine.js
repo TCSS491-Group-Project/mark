@@ -87,15 +87,19 @@ GameEngine.prototype.startInput = function () {
     this.ctx.canvas.addEventListener("keydown", function (e) {
         if(String.fromCharCode(e.which) === 'D') {
             that.walkRight = true;
+            
             //that.tx = 1;
-        } else if(String.fromCharCode(e.which) === 'A') {
+        } if(String.fromCharCode(e.which) === 'A') {
             that.walkLeft = true;
+            that.walkRight = false;
             //that.tx = -1;
         } else if(String.fromCharCode(e.which) === 'W') {
             that.goUp = true;
+            that.goDown = false;
             //that.ty = -1;
         } else if(String.fromCharCode(e.which) === 'S') {
             that.goDown = true;
+            that.goUp = false;
             //that.ty = 1;
         } 
         
@@ -107,7 +111,7 @@ GameEngine.prototype.startInput = function () {
         if(String.fromCharCode(e.which) === 'D') {
             that.walkRight = false;
             
-        } else if(String.fromCharCode(e.which) === 'A') {
+        } if(String.fromCharCode(e.which) === 'A') {
             that.walkLeft = false;
             
         } else if(String.fromCharCode(e.which) === 'W') {
