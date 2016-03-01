@@ -253,14 +253,14 @@ gameLabel.prototype.draw = function (ctx) {
     ctx.fillText(" x " + this.game.totCoins, 75, 50);
 
     if(this.nextLevelLabel){
-        ctx.fillStyle = "orange";
+        ctx.fillStyle = "white";
         ctx.font = "bold 3em Arial";
-        ctx.fillText("Level: " + this.game.level, 350, 150);
+        ctx.fillText("Level: " + this.game.level, 300, 150);
     } 
     if(this.trapLabel){
         ctx.fillStyle = "Red";
         ctx.font = "bold 2em Arial";
-        ctx.fillText("You fall on to a trap" , 300, 100);
+        ctx.fillText("You fall on to a trap" , 210, 100);
     }
     Entity.prototype.draw.call(this);
 }
