@@ -324,11 +324,12 @@ Circle3d.prototype.update = function () {
 
     if(this.game.walkRight){
 
-       
-        this.game.tx += speedIncreament;
-        if(this.game.tx > MaxSpeed){
-            this.game.tx = MaxSpeed;
-        }
+    	if(!this.game.screenOff){
+	        this.game.tx += speedIncreament;
+	        if(this.game.tx > MaxSpeed){
+	            this.game.tx = MaxSpeed;
+	        }
+    	}
 
         //rotate ball right
         var xAxis = new THREE.Vector3(0,1,0);
@@ -351,7 +352,7 @@ Circle3d.prototype.update = function () {
                 	pf.removeFromWorld = true;
                 } else if(pf.exit) {
                 	this.game.level += 1;
-                	this.game.numCoins += 2;
+                	this.game.numCoins += 1;
                 	this.game.numTraps += 2;
                     this.game.tx = 0;
                     this.game.screenOff = true;
@@ -359,6 +360,8 @@ Circle3d.prototype.update = function () {
                     
                 } else {
                 	if(pf.trapFrame < 8) {
+                		this.game.tx = 0;
+                		this.game.ty = 0;
 //                		pf.removeFromWorld = true;
                 		if(this.game.totCoins !== 0) this.game.totCoins--;
 
@@ -366,7 +369,7 @@ Circle3d.prototype.update = function () {
                         this.game.gameLabel.trapLabel = true;
                 		mazeTrapReset(this.game);
                 		this.game.screenOff = true;
-                		this.game.tx = 0;
+                		
                 	}
                 }
             } 
@@ -381,10 +384,12 @@ Circle3d.prototype.update = function () {
     } else if(this.game.walkLeft){
 
         //move the maze
-        this.game.tx -= speedIncreament;
-        if(this.game.tx < -(MaxSpeed)){
-            this.game.tx = -(MaxSpeed);
-        }
+    	if(!this.game.screenOff) {
+	        this.game.tx -= speedIncreament;
+	        if(this.game.tx < -(MaxSpeed)){
+	            this.game.tx = -(MaxSpeed);
+	        }
+    	}
 
         //rotate ball left
         var xAxis = new THREE.Vector3(0,1,0);
@@ -407,6 +412,8 @@ Circle3d.prototype.update = function () {
                 	pf.removeFromWorld = true;
                 } else {
                 	if(pf.trapFrame < 8) {
+                		this.game.tx = 0;
+                		this.game.ty = 0;
 //                		pf.removeFromWorld = true;
                 		if(this.game.totCoins !== 0) this.game.totCoins--;
 
@@ -414,7 +421,6 @@ Circle3d.prototype.update = function () {
                         this.game.gameLabel.trapLabel = true;
                 		mazeTrapReset(this.game);
                 		this.game.screenOff = true;
-                		this.game.tx = 0;
                 		
                 	}
                 }
@@ -428,10 +434,12 @@ Circle3d.prototype.update = function () {
     if(this.game.goUp){
 
         //move the maze
-        this.game.ty -= speedIncreament;
-        if(this.game.ty < - (MaxSpeed)){
-            this.game.ty = - (MaxSpeed);
-        }
+    	if(!this.game.screenOff){
+	        this.game.ty -= speedIncreament;
+	        if(this.game.ty < - (MaxSpeed)){
+	            this.game.ty = - (MaxSpeed);
+	        }
+    	}
 
         //rotateball up
         var xAxis = new THREE.Vector3(1,0,0);
@@ -456,13 +464,14 @@ Circle3d.prototype.update = function () {
                     pf.removeFromWorld = true;
                 } else {
                 	if(pf.trapFrame < 8) {
+                		this.game.tx = 0;
+                		this.game.ty = 0;
 //                		pf.removeFromWorld = true;
                 		if(this.game.totCoins !== 0) this.game.totCoins--;
                         //tell user they fall in the trap
                         this.game.gameLabel.trapLabel = true;
                         mazeTrapReset(this.game);
                         this.game.screenOff = true;
-                        this.game.ty = 0;
                     }
                 }
 
@@ -476,10 +485,12 @@ Circle3d.prototype.update = function () {
     } else if(this.game.goDown){
 
         //move the maze
-        this.game.ty += speedIncreament;
-        if(this.game.ty > MaxSpeed){
-            this.game.ty = MaxSpeed;
-        }
+    	if(!this.game.screenOff) {
+	        this.game.ty += speedIncreament;
+	        if(this.game.ty > MaxSpeed){
+	            this.game.ty = MaxSpeed;
+	        }
+    	}
 
         //rotateball down
         var xAxis = new THREE.Vector3(1,0,0);
@@ -502,6 +513,8 @@ Circle3d.prototype.update = function () {
                 	pf.removeFromWorld = true;
                 } else {
                 	if(pf.trapFrame < 8) {
+                		this.game.tx = 0;
+                		this.game.ty = 0;
 //                		pf.removeFromWorld = true;
                 		if(this.game.totCoins !== 0) this.game.totCoins--;
 
@@ -509,7 +522,6 @@ Circle3d.prototype.update = function () {
                         this.game.gameLabel.trapLabel = true;
                 		mazeTrapReset(this.game);
                 		this.game.screenOff = true;
-                		this.game.ty = 0;
                 	}
                 }
             } 
