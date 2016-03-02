@@ -94,8 +94,11 @@ function addTraps(rows, cols, maze, numOfTraps) {
 	while(traps !== numOfTraps ) {
 		var x = Math.floor(Math.random() * (rows - 2)) + 2;
 		var y = Math.floor(Math.random() * (cols - 2)) + 2;
+		var okayTrap = false;
+		if(maze[x - 1][y] === 'X' && maze[x + 1][y] === 'X') okayTrap = true;
+		if(maze[x][y - 1] === 'X' && maze[x][y + 1] === 'X') okayTrap = true;
 		
-		if(maze[x][y] === " ") {
+		if(maze[x][y] === " " && okayTrap) {
 			maze[x][y] = "T";
 			traps++;
 		}
