@@ -212,6 +212,8 @@ function gameLabel(game) {
     this.trapLabel = false;
     this.counter1 = 300;
     this.counter2 = 300;
+    this.gameMins = 0;
+    this.gameSecs = 0;
     Entity.call(this, game, 0, 0);
 };
 
@@ -222,8 +224,13 @@ gameLabel.prototype.constructor = gameLabel;
 gameLabel.prototype.update = function () {
     this.gameLevel = this.game.level;
     this.gameTotCoins = this.game.totCoins;
-    var that = this;
 
+    this.gameMins = Math.floor(Math.floor(this.game.timer.gameTime) / 60);
+    if(this.gameMins < 10) this.gameMins = "0" + this.gameMins;
+
+
+    this.gameSecs = Math.floor(this.game.timer.gameTime) % 60;
+    if(this.gameSecs < 10) this.gameSecs = "0" + this.gameSecs;
 
     if (this.nextLevelLabel){
         this.counter1 -= 2;
@@ -251,6 +258,10 @@ gameLabel.prototype.draw = function (ctx) {
     ctx.fillStyle = "orange";
     ctx.font = "bold 2em Arial";
     ctx.fillText(" x " + this.game.totCoins, 75, 50);
+
+    ctx.fillStyle = "white";
+    ctx.font = "bold 2em Arial";
+    ctx.fillText(this.gameMins + ":" + this.gameSecs, 350, 50);
 
     if(this.nextLevelLabel){
         ctx.fillStyle = "white";
@@ -351,10 +362,11 @@ Circle3d.prototype.update = function () {
                 	pf.isCoin = false;
                 	pf.removeFromWorld = true;
                 } else if(pf.exit) {
+                    this.game.tx = 0;
+                    this.game.ty = 0;
                 	this.game.level += 1;
                 	this.game.numCoins += 1;
                 	this.game.numTraps += 2;
-                    this.game.tx = 0;
                     this.game.screenOff = true;
                 	nextLevel(++(this.game.mazeSize), this.game);
                     
@@ -660,9 +672,9 @@ function MazePiece(game, x, y, width, height, isTrap, isExit, isHorizontalTrap) 
     this.moveIncrement = 0;
     this.exit = isExit;
     if(isTrap && isHorizontalTrap) {
-    	this.boundingbox = new BoundingBox(x, y + 45, height, width - 25);
+    	this.boundingbox = new BoundingBox(x, y, height, width);
     } else if(isTrap){
-    	this.boundingbox = new BoundingBox(x + 55, y, width - 25, height);
+    	this.boundingbox = new BoundingBox(x, y, width, height);
     } else {
     	this.boundingbox = new BoundingBox(x, y, width, height);
     }
@@ -688,10 +700,10 @@ MazePiece.prototype.update = function () {
     this.x = this.x - this.game.tx;
     this.y = this.y - this.game.ty;
     if(this.trap && this.horizontalTrap) {
-    	this.boundingbox = new BoundingBox(this.x, this.y + 45, this.height, this.width - 25);
+    	this.boundingbox = new BoundingBox(this.x, this.y + 65, this.height, this.width - 50);
     	this.trapFrame = this.animationHorizontal.currentFrame(); 
     } else if(this.trap){
-    	this.boundingbox = new BoundingBox(this.x + 55, this.y, this.width - 25, this.height);
+    	this.boundingbox = new BoundingBox(this.x + 75, this.y, this.width - 50, this.height);
     	this.trapFrame = this.animationVertical.currentFrame();
     } else {
     	this.boundingbox = new BoundingBox(this.x, this.y, this.width, this.height);
@@ -888,14 +900,12 @@ ASSET_MANAGER.downloadAll(function () {
     printMaze(myMazeW.maze);
 
 
-     var mazePieces = createMazePieces(gameEngine, myMaze, myMazeC.maze);
-
-    
-    //mazePieces.push(pl);
-   
+    var mazePieces = createMazePieces(gameEngine, myMaze, myMazeC.maze);
     gameEngine.mazePieces  = mazePieces;
 
 
+    var timer = new Timer();
+    gameEngine.timer = timer;
 //    var ninja = new Ninja(gameEngine); Dont need
 
 
@@ -955,5 +965,8 @@ function nextLevel(mazeSize, game) {
     game.addEntity(gamelabel);
 
     game.gameLabel = gamelabel;
+
+    var timer = new Timer();
+    game.timer = timer;
 }
 
