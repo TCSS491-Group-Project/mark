@@ -352,7 +352,7 @@ Circle3d.prototype.update = function () {
                 	pf.removeFromWorld = true;
                 } else if(pf.exit) {
                 	this.game.level += 1;
-                	this.game.numCoins += 2;
+                	this.game.numCoins += 1;
                 	this.game.numTraps += 2;
                     this.game.tx = 0;
                     this.game.screenOff = true;

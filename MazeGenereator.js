@@ -98,6 +98,11 @@ function addTraps(rows, cols, maze, numOfTraps) {
 		if(maze[x - 1][y] === 'X' && maze[x + 1][y] === 'X') okayTrap = true;
 		if(maze[x][y - 1] === 'X' && maze[x][y + 1] === 'X') okayTrap = true;
 		
+		if(maze[x][y - 1] === 'X' && maze[x][y + 1] === 'X' && maze[x - 1][y] === 'X') okayTrap = false;
+		if(maze[x][y - 1] === 'X' && maze[x][y + 1] === 'X' && maze[x + 1][y] === 'X') okayTrap = false;
+		if(maze[x - 1][y] === 'X' && maze[x + 1][y] === 'X' && maze[x][y - 1] === 'X') okayTrap = false;
+		if(maze[x - 1][y] === 'X' && maze[x + 1][y] === 'X' && maze[x][y + 1] === 'X') okayTrap = false;
+		
 		if(maze[x][y] === " " && okayTrap) {
 			maze[x][y] = "T";
 			traps++;
