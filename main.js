@@ -323,8 +323,8 @@ Circle3d.prototype.update = function () {
     var ballRotationSpeed = 0.10;
 
     if(this.game.walkRight){
-        //this.game.walkLeft = false;
-        //move the maze
+
+       
         this.game.tx += speedIncreament;
         if(this.game.tx > MaxSpeed){
             this.game.tx = MaxSpeed;
@@ -353,7 +353,10 @@ Circle3d.prototype.update = function () {
                 	this.game.level += 1;
                 	this.game.numCoins += 2;
                 	this.game.numTraps += 2;
+                    this.game.tx = 0;
+                    this.game.screenOff = true;
                 	nextLevel(++(this.game.mazeSize), this.game);
+                    
                 } else {
                 	if(pf.trapFrame < 8) {
 //                		pf.removeFromWorld = true;
@@ -891,7 +894,6 @@ ASSET_MANAGER.downloadAll(function () {
     var gamelabel = new gameLabel(gameEngine);
     gameEngine.addEntity(gamelabel);
     gameEngine.gameLabel = gamelabel;
-
 //    gameEngine.addEntity(shade);
     //gameEngine.addEntity(ninja);
     
@@ -900,8 +902,8 @@ ASSET_MANAGER.downloadAll(function () {
 });
 
 function nextLevel(mazeSize, game) {
-	var so = false
-    
+	var so = false;
+
     
     //remove the enities
 	for(var i = 0; i < game.entities.length; i++) {
@@ -941,6 +943,5 @@ function nextLevel(mazeSize, game) {
     game.addEntity(gamelabel);
 
     game.gameLabel = gamelabel;
-
 }
 
