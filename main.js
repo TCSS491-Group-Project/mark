@@ -716,13 +716,15 @@ MazePiece.prototype.draw = function (ctx) {
     Entity.prototype.draw.call(this);
 }
 
-function Maze(x, y, game) {
+function Maze(x, y, game, addFeatures) {
 	this.maze = getMazeField(generateMaze(x,y));
 //	addCoins(rows, cols, maze, numOfcoins) {
     this.length = this.maze[0].length;
     this.width = this.maze.length;
-    addCoins(this.length, this.width, this.maze, game.numCoins);  
-    addTraps(this.length, this.width, this.maze, game.numTraps);
+    if(addFeatures) {
+	    addCoins(this.length, this.width, this.maze, game.numCoins);  
+	    addTraps(this.length, this.width, this.maze, game.numTraps);
+    }
     
 	this.printMaze = function() {
 		var string = '';
@@ -858,9 +860,9 @@ ASSET_MANAGER.downloadAll(function () {
     //instantiate the 3d ball
     init();
     
-    var myMaze = new Maze(gameEngine.mazeSize, gameEngine.mazeSize, gameEngine);
-    var myMazeC = new Maze(gameEngine.mazeSize, gameEngine.mazeSize, gameEngine);
-    var myMazeW = new Maze(gameEngine.mazeSize, gameEngine.mazeSize, gameEngine);
+    var myMaze = new Maze(gameEngine.mazeSize, gameEngine.mazeSize, gameEngine, true);
+    var myMazeC = new Maze(gameEngine.mazeSize, gameEngine.mazeSize, gameEngine, false);
+    var myMazeW = new Maze(gameEngine.mazeSize, gameEngine.mazeSize, gameEngine, false);
     myMaze.printMaze();
 
     //make the myMaze a game entity variable
@@ -914,10 +916,10 @@ function nextLevel(mazeSize, game) {
 	}
 	
 	
-	var myMaze = new Maze(mazeSize, mazeSize, game);
+	var myMaze = new Maze(mazeSize, mazeSize, game, true);
 
-	var myMazeC = new Maze(mazeSize, mazeSize, game);
-    var myMazeW = new Maze(mazeSize, mazeSize, game);
+	var myMazeC = new Maze(mazeSize, mazeSize, game, false);
+    var myMazeW = new Maze(mazeSize, mazeSize, game, false);
 
     myMaze.printMaze();
 
