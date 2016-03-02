@@ -3,6 +3,8 @@ function AssetManager() {
     this.errorCount = 0;
     this.cache = [];
     this.downloadQueue = [];
+    this.audioCache = [];
+    this.audioQueue = [];
 }
 
 AssetManager.prototype.queueDownload = function (path) {
@@ -10,11 +12,23 @@ AssetManager.prototype.queueDownload = function (path) {
     this.downloadQueue.push(path);
 }
 
+AssetManager.prototype.queueAudioDownload = function(path){
+    this.audioQueue.push(path);
+}
+
 AssetManager.prototype.isDone = function () {
     return this.downloadQueue.length === this.successCount + this.errorCount;
 }
 
 AssetManager.prototype.downloadAll = function (callback) {
+    for(var i = 0; i < this.audioQueue.length; i++){
+        var audio = new Audio();
+        var that = this;
+        var path = this.audioQueue[i];
+        audio.src = path;
+        this.audioCache[path] = audio;
+    }
+
     for (var i = 0; i < this.downloadQueue.length; i++) {
         var img = new Image();
         var that = this;
@@ -41,4 +55,8 @@ AssetManager.prototype.downloadAll = function (callback) {
 
 AssetManager.prototype.getAsset = function (path) {
     return this.cache[path];
+}
+
+AssetManager.prototype.getAudioAsset = function (path) {
+    return this.audioCache[path];
 }

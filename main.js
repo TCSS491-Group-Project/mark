@@ -864,6 +864,7 @@ ASSET_MANAGER.queueDownload("./img/bricks.jpg");
 ASSET_MANAGER.queueDownload("./img/trap2.png"); // pre-download of .png images.
 ASSET_MANAGER.queueDownload("./img/trap1.png");
 ASSET_MANAGER.queueDownload("./img/exitFlag.png");
+ASSET_MANAGER.queueAudioDownload("./song/bgsound.mp3");
 
 
 ASSET_MANAGER.downloadAll(function () {
@@ -873,6 +874,9 @@ ASSET_MANAGER.downloadAll(function () {
 	var  canvas = document.getElementById('gameWorld');
 	canvas.focus();
 	var   ctx = canvas.getContext('2d');
+    
+    var snd = ASSET_MANAGER.getAudioAsset("./song/bgsound.mp3");
+    snd.play();
     
     
     var gameEngine = new GameEngine();
