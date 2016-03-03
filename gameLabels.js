@@ -25,6 +25,26 @@ gameLabel.prototype.update = function () {
 
     this.gameSecs = Math.floor(this.game.timer.gameTime) % 60;
     if(this.gameSecs < 10) this.gameSecs = "0" + this.gameSecs;
+    
+   if(this.game.startTrapTime) {
+	   this.game.currTime = Math.floor(this.game.timer.gameTime);
+	   this.game.startTrapTime = false;
+	   this.game.continueTrapTime  = true;
+   } else if(this.game.continueTrapTime) {
+	   var sub = Math.floor(this.game.timer.gameTime) - this.game.currTime;
+	   this.game.currTime = Math.floor(this.game.timer.gameTime);
+//	   console.log(" >>> Sub Time: " +  sub);
+	   this.game.trapTime -= sub;
+//	   console.log("TIME: " + this.game.trapTime);
+//	   this.game.currTime = this.gameSecs;
+   }
+   if(this.game.trapTime <= 0){
+	   this.game.continueTrapTime = false;
+	   this.game.stopTraps = false;
+//	   this.game.currTime = 20;
+//	   this.game.disableTrap = false;
+   }
+   
 
     if (this.nextLevelLabel){
         this.counter1 -= 2;
@@ -45,7 +65,7 @@ gameLabel.prototype.update = function () {
 
 gameLabel.prototype.draw = function (ctx) {
 
-    ctx.fillStyle = "orange";
+    ctx.fillStyle = "white";
     ctx.font = "bold 2em Arial";
     ctx.fillText("Level: " + this.game.level, 625, 50); // TODO score
     
@@ -54,8 +74,14 @@ gameLabel.prototype.draw = function (ctx) {
     ctx.fillText(" x " + this.game.totCoins, 75, 50);
 
     ctx.fillStyle = "white";
-    ctx.font = "bold 2em Arial";
-    ctx.fillText(this.gameMins + ":" + this.gameSecs, 350, 50);
+    ctx.font = "bold 1.5em Arial";
+    ctx.fillText("Time " + this.gameMins + ":" + this.gameSecs, 625, 80);
+    
+    if(this.game.continueTrapTime) {
+    	ctx.fillStyle = "Red";
+        ctx.font = "bold 2em Arial";
+        ctx.fillText(this.game.trapTime, 350, 50);
+    }
 
     if(this.nextLevelLabel){
         ctx.fillStyle = "white";

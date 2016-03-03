@@ -100,7 +100,7 @@ Circle3d.prototype.update = function () {
                 	nextLevel(++(this.game.mazeSize), this.game);
                     
                 } else {
-                	if(pf.trapFrame < 8) {
+                	if(pf.trapFrame < 8 && !this.game.stopTraps) {
                 		this.game.tx = 0;
                 		this.game.ty = 0;
 //                		pf.removeFromWorld = true;
@@ -152,7 +152,7 @@ Circle3d.prototype.update = function () {
                 	pf.isCoin = false;
                 	pf.removeFromWorld = true;
                 } else {
-                	if(pf.trapFrame < 8) {
+                	if(pf.trapFrame < 8 && !this.game.stopTraps) {
                 		this.game.tx = 0;
                 		this.game.ty = 0;
 //                		pf.removeFromWorld = true;
@@ -204,7 +204,7 @@ Circle3d.prototype.update = function () {
                     pf.isCoin = false;
                     pf.removeFromWorld = true;
                 } else {
-                	if(pf.trapFrame < 8) {
+                	if(pf.trapFrame < 8 && !this.game.stopTraps) {
                 		this.game.tx = 0;
                 		this.game.ty = 0;
 //                		pf.removeFromWorld = true;
@@ -253,7 +253,7 @@ Circle3d.prototype.update = function () {
                 	pf.isCoin = false;
                 	pf.removeFromWorld = true;
                 } else {
-                	if(pf.trapFrame < 8) {
+                	if(pf.trapFrame < 8 && !this.game.stopTraps) {
                 		this.game.tx = 0;
                 		this.game.ty = 0;
 //                		pf.removeFromWorld = true;
@@ -300,12 +300,23 @@ Circle3d.prototype.update = function () {
         
         //solve the path in respect to where you are
         pathSolver(this.game, r, c);
-        console.log("r " + r + " c " + c);
-        console.log("x " + pf.x + " y " + pf.y);
+//        console.log("r " + r + " c " + c);
+//        console.log("x " + pf.x + " y " + pf.y);
         
         this.game.payPath = false;
     } else if(this.game.payPath) {
     	this.game.payPath = false;
+    }
+    
+    if(this.game.disableTrap && this.game.totCoins >= 3){
+//    	console.log("disable trap");
+    	this.game.totCoins -= 3;
+    	this.game.trapTime = 15;
+    	this.game.startTrapTime = true;
+    	this.game.stopTraps = true;
+    	this.game.disableTrap = false; // TODO timer trap
+    } else if(this.game.disableTrap) {
+    	this.game.disableTrap = false;
     }
 
     //console.log(this.game.timer);
@@ -328,6 +339,13 @@ Circle3d.prototype.draw = function (ctx) {
         //ctx.fill();
         ctx.stroke();
     }
+    if(this.game.stopTraps) {
+    	ctx.beginPath();
+        ctx.fillStyle = "gold";
+        ctx.arc(this.x, this.y, this.radius + 20, 0, Math.PI * 2, false);
+        ctx.fill();
+//        ctx.stroke();
+    }
 
     //render the 3d
     render();
@@ -345,7 +363,13 @@ ASSET_MANAGER.queueDownload("./img/coin.png");
 ASSET_MANAGER.queueDownload("./img/bricks.jpg");
 ASSET_MANAGER.queueDownload("./img/trap2.png"); // pre-download of .png images.
 ASSET_MANAGER.queueDownload("./img/trap1.png");
+ASSET_MANAGER.queueDownload("./img/trap1.png");
+ASSET_MANAGER.queueDownload("./img/trapDisable.png");
+ASSET_MANAGER.queueDownload("./img/trapDisableHorizontal.png");
 ASSET_MANAGER.queueDownload("./img/exitFlag.png");
+
+
+//song queue
 ASSET_MANAGER.queueAudioDownload("./song/bgsound.mp3");
 
 
@@ -369,6 +393,7 @@ ASSET_MANAGER.downloadAll(function () {
     gameEngine.numCoins = 3;
     gameEngine.screenOff = false;
     gameEngine.showSolution = false;
+    gameEngine.stopTraps = false;
 
     //instantiate the 3d ball
     init();
@@ -410,7 +435,10 @@ ASSET_MANAGER.downloadAll(function () {
 });
 
 function nextLevel(mazeSize, game) {
-	var so = false;
+//	var so = false;
+	game.continueTrapTime = false;
+	game.stopTraps = false;
+	game.trapTime = 0;
 
     
     //remove the enities

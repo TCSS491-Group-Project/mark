@@ -120,8 +120,10 @@ GameEngine.prototype.startInput = function () {
         } else if(String.fromCharCode(e.which) === 'S') {
             that.goDown = false;
            
-        } else if (String.fromCharCode(e.which) === ' '){
+        } else if(String.fromCharCode(e.which) === ' '){
             that.payPath = true;
+        } else if(String.fromCharCode(e.which) === 'F'){
+        	that.disableTrap = true;
         }
         
         that.tx = 0;

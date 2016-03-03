@@ -101,6 +101,7 @@ function createMazePieces(game, maze, mazeP) {
 	var mazePieces = [];
 //    console.log(maze.length);
 	var tempCoins = [];
+	var tempTraps = [];
 	for(var r = 0; r < maze.width ; r++) {
 		for(var c = 0; c < maze.maze[0].length  ; c++) {
 			if(maze.maze[r][c] !== 'X' && maze.maze[r][c] !== 'E') {
@@ -120,9 +121,7 @@ function createMazePieces(game, maze, mazeP) {
 			} else if(maze.maze[r][c] === 'T') {
 				var isHorirontal = false;
 				if(maze.maze[r][c - 1] === 'X' || maze.maze[r][c + 1] === 'X') isHorirontal = true;
-				var pl = new MazePiece(game, (c * 175) + 175, (r * 175) + 295 , 100, 175, true, false, isHorirontal); // x, y, width, height
-				game.addEntity(pl);
-				mazePieces.push(pl); 
+				tempTraps.push(new MazePiece(game, (c * 175) + 175, (r * 175) + 295 , 100, 175, true, false, isHorirontal)); // x, y, width, height 
 			} else if(maze.maze[r][c] === 'E') {
 				var pl = new MazePiece(game, (c * 175) + 175, (r * 175) + 295 , 175, 175, false, true, false); // x, y, width, height
 				game.addEntity(pl);
@@ -130,6 +129,12 @@ function createMazePieces(game, maze, mazeP) {
 			}
 		}
 //		string += '\r\n';
+	}
+	
+	for(var i = 0; i < tempTraps.length; i++) {
+		var pl = tempTraps[i];
+		game.addEntity(pl);
+		mazePieces.push(pl);
 	}
 	
 	var shade = new VisibilityCircle(game, 300); //TODO  shade
@@ -252,10 +257,10 @@ MazePiece.prototype.update = function () {
     this.x = this.x - this.game.tx;
     this.y = this.y - this.game.ty;
     if(this.trap && this.horizontalTrap) {
-    	this.boundingbox = new BoundingBox(this.x, this.y + 65, this.height, this.width - 50);
+    	this.boundingbox = new BoundingBox(this.x, this.y + 75, this.height, this.width - 30);
     	this.trapFrame = this.animationHorizontal.currentFrame(); 
     } else if(this.trap){
-    	this.boundingbox = new BoundingBox(this.x + 75, this.y, this.width - 50, this.height);
+    	this.boundingbox = new BoundingBox(this.x + 65, this.y, this.width - 30, this.height);
     	this.trapFrame = this.animationVertical.currentFrame();
     } else {
     	this.boundingbox = new BoundingBox(this.x, this.y, this.width, this.height);
@@ -271,9 +276,9 @@ MazePiece.prototype.draw = function (ctx) {
 //		ctx.fillStyle = "blue";
 //		ctx.fillRect(this.x, this.y, this.width, this.height);
 		if(this.horizontalTrap) {
-			this.animationHorizontal.drawFrame(this.game.clockTick, ctx, this.x - 10, this.y + 40, .68);
+			this.animationHorizontal.drawFrame(this.game.clockTick, ctx, this.x - 40, this.y + 40, 1);
 		} else {
-			this.animationVertical.drawFrame(this.game.clockTick, ctx, this.x + 50, this.y, .68);
+			this.animationVertical.drawFrame(this.game.clockTick, ctx, this.x + 30, this.y - 40, 1);
 			
 		}
 	} else if(this.startTop) {
