@@ -15,7 +15,6 @@ function init() {
 	
 	this.addEventListener("click", function(e){
 //		console.log(e);
-		e.preventDefault();
 		canvas.focus();
     }, false);
 	

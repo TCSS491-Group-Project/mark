@@ -60,6 +60,13 @@ gameLabel.prototype.update = function () {
             this.trapLabel = false;
         }
     }
+
+    var temp = document.getElementById("Music");
+    if(temp.checked){
+        //console.log("checked");
+    }else{
+        //console.log("notChecked");
+    }
     Entity.prototype.update.call(this);
 }
 
