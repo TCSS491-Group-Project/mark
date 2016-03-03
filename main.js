@@ -401,14 +401,14 @@ ASSET_MANAGER.downloadAll(function () {
     var myMaze = new Maze(gameEngine.mazeSize, gameEngine.mazeSize, gameEngine, true);
     var myMazeC = new Maze(gameEngine.mazeSize, gameEngine.mazeSize, gameEngine, false);
     var myMazeW = new Maze(gameEngine.mazeSize, gameEngine.mazeSize, gameEngine, false);
-    myMaze.printMaze();
+//    myMaze.printMaze();
 
     //make the myMaze a game entity variable
     gameEngine.myMaze = myMaze.maze;
    
     var ms = new solveMaze(myMaze.maze, myMazeC.maze, myMazeW.maze);
-    console.log(ms.traverse(0, 1));
-    printMaze(myMazeW.maze);
+//    console.log(ms.traverse(0, 1));
+//    printMaze(myMazeW.maze);
 
 
     var mazePieces = createMazePieces(gameEngine, myMaze, myMazeC.maze);
@@ -459,15 +459,15 @@ function nextLevel(mazeSize, game) {
 	var myMazeC = new Maze(mazeSize, mazeSize, game, false);
     var myMazeW = new Maze(mazeSize, mazeSize, game, false);
 
-    myMaze.printMaze();
+//    myMaze.printMaze();
 
     //make the maze we are solving a game variable
     game.myMaze = myMaze.maze;
 
    
     var ms = new solveMaze(myMaze.maze, myMazeC.maze, myMazeW.maze);
-    console.log(ms.traverse(0, 1));
-    printMaze(myMazeC.maze);
+//    console.log(ms.traverse(0, 1));
+//    printMaze(myMazeC.maze);
 
 
     var mazePieces = createMazePieces(game, myMaze, myMazeC.maze);
