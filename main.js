@@ -103,7 +103,7 @@ Circle3d.prototype.update = function () {
                     this.game.screenOff = true;
                 	nextLevel(++(this.game.mazeSize), this.game);
                     
-                } else {
+                } /*else {
                 	if(pf.trapFrame < 8 && !this.game.stopTraps) {
                 		this.game.tx = 0;
                 		this.game.ty = 0;
@@ -117,7 +117,7 @@ Circle3d.prototype.update = function () {
                 		this.game.screenOff = true;
                 		
                 	}
-                }
+                }*/
             } 
             //this.collide(pf.boundingbox);
             //console.log(this.collide(pf.boundingbox));
@@ -158,7 +158,7 @@ Circle3d.prototype.update = function () {
                 	pf.removeFromWorld = true;
                 	playCoinSound = true;
 //                	pf.coinSnd.play();
-                } else {
+                } /*else {
                 	if(pf.trapFrame < 8 && !this.game.stopTraps) {
                 		this.game.tx = 0;
                 		this.game.ty = 0;
@@ -172,7 +172,7 @@ Circle3d.prototype.update = function () {
                 		this.game.screenOff = true;
                 		
                 	}
-                }
+                }*/
             } 
         
         };
@@ -213,7 +213,7 @@ Circle3d.prototype.update = function () {
                     pf.removeFromWorld = true;
                     playCoinSound = true;
 //                    pf.coinSnd.play();
-                } else {
+                } /*else {
                 	if(pf.trapFrame < 8 && !this.game.stopTraps) {
                 		this.game.tx = 0;
                 		this.game.ty = 0;
@@ -225,7 +225,7 @@ Circle3d.prototype.update = function () {
                         mazeTrapReset(this.game);
                         this.game.screenOff = true;
                     }
-                }
+                }*/
 
             } 
             //console.log(this.collide(pf.boundingbox));
@@ -265,7 +265,7 @@ Circle3d.prototype.update = function () {
                 	pf.removeFromWorld = true;
                 	playCoinSound = true;
 //                	pf.coinSnd.play();
-                } else {
+                } /*else {
                 	if(pf.trapFrame < 8 && !this.game.stopTraps) {
                 		this.game.tx = 0;
                 		this.game.ty = 0;
@@ -278,7 +278,7 @@ Circle3d.prototype.update = function () {
                 		mazeTrapReset(this.game);
                 		this.game.screenOff = true;
                 	}
-                }
+                }*/
             } 
         };
 
@@ -337,11 +337,7 @@ Circle3d.prototype.update = function () {
     	playCoinSound = false;
     	this.game.coinSnd.currentTime  = 0;
     }
-    if(playShockSound && this.game.muteSoundfx) {
-    	this.game.shockSnd.play();
-    	playShockSound = false;
-    	this.game.shockSnd.currentTime  = 0;
-    }
+    
     //console.log(this.game.timer);
     
     
@@ -452,6 +448,9 @@ ASSET_MANAGER.downloadAll(function () {
 
     var circle3d = new Circle3d(gameEngine, 399.5, 399, 40);
     gameEngine.addEntity(circle3d);
+    gameEngine.circle3d = circle3d;
+
+
 
     var gamelabel = new gameLabel(gameEngine);
     gameEngine.addEntity(gamelabel);

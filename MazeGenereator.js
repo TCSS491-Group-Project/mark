@@ -256,16 +256,55 @@ MazePiece.prototype.update = function () {
     
     this.x = this.x - this.game.tx;
     this.y = this.y - this.game.ty;
+
+    var playShockSound = false;
     if(this.trap && this.horizontalTrap) {
     	this.boundingbox = new BoundingBox(this.x, this.y + 75, this.height, this.width - 30);
-    	this.trapFrame = this.animationHorizontal.currentFrame(); 
+    	this.trapFrame = this.animationHorizontal.currentFrame();
+
+        var pf = this.game.circle3d;
+        if (pf.boundingcircle.collide(this.boundingbox)) { 
+	            	
+        	if(this.trapFrame < 8 && !this.game.stopTraps) {
+        		this.game.tx = 0;
+        		this.game.ty = 0;
+        		playShockSound = true;
+        		if(this.game.totCoins !== 0) this.game.totCoins--;
+
+                //tell user they fall in the trap
+                this.game.gameLabel.trapLabel = true;
+        		mazeTrapReset(this.game);
+        		this.game.screenOff = true;
+        	}
+	    }
     } else if(this.trap){
     	this.boundingbox = new BoundingBox(this.x + 65, this.y, this.width - 30, this.height);
     	this.trapFrame = this.animationVertical.currentFrame();
+
+    	var pf = this.game.circle3d;
+        if (pf.boundingcircle.collide(this.boundingbox)) { 
+	            	
+        	if(this.trapFrame < 8 && !this.game.stopTraps) {
+        		this.game.tx = 0;
+        		this.game.ty = 0;
+        		playShockSound = true;
+        		if(this.game.totCoins !== 0) this.game.totCoins--;
+
+                //tell user they fall in the trap
+                this.game.gameLabel.trapLabel = true;
+        		mazeTrapReset(this.game);
+        		this.game.screenOff = true;
+        	}
+	    }
     } else {
     	this.boundingbox = new BoundingBox(this.x, this.y, this.width, this.height);
     }
     
+    if(playShockSound && this.game.muteSoundfx) {
+    	this.game.shockSnd.play();
+    	playShockSound = false;
+    	this.game.shockSnd.currentTime  = 0;
+    }
     Entity.prototype.update.call(this);
     
 }
