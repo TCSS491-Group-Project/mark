@@ -410,7 +410,7 @@ ASSET_MANAGER.downloadAll(function () {
     gameEngine.level = 1;
     gameEngine.totCoins = 0;
     gameEngine.numTraps = 0;
-    gameEngine.numCoins = 5;
+    gameEngine.numCoins = 3;
     gameEngine.screenOff = false;
     gameEngine.showSolution = false;
     gameEngine.stopTraps = false;
