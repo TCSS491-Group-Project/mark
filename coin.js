@@ -14,6 +14,7 @@ function Coin(game, x, y){
 	this.boxes = false;
 	this.boundingbox = new BoundingBox(this.x + 10, this.y - 40, this.animation.frameWidth, this.animation.frameHeight);
 	
+	
 	Entity.call(this, game, x, y); // Entity.call(this, game, x, y);
 	
 }

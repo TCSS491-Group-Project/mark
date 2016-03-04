@@ -61,12 +61,23 @@ gameLabel.prototype.update = function () {
         }
     }
 
-    var temp = document.getElementById("Music");
-    if(temp.checked){
+    var musicChck = document.getElementById("Music");
+    if(musicChck.checked){
         //console.log("checked");
+    	this.game.musicSnd.muted = false;
     }else{
+    	this.game.musicSnd.muted = true;
         //console.log("notChecked");
     }
+    
+    var soundfx = document.getElementById("SoundEffects");
+    if(soundfx.checked){
+    	this.game.muteSoundfx = true;
+    } else {
+    	this.game.muteSoundfx = false;
+    }
+    
+    
     Entity.prototype.update.call(this);
 }
 

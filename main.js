@@ -78,7 +78,8 @@ Circle3d.prototype.update = function () {
 
         //create a new bounding circle with padding so that the maze will be able to move
         this.boundingcircle = new BoundingCircle(this.x + padding, this.y, this.radius);
-
+        var playCoinSound = false;
+        var playShockSound = false;
         for (var i = 0; i < this.game.mazePieces.length; i++) {
             var pf = this.game.mazePieces[i];
 
@@ -90,6 +91,9 @@ Circle3d.prototype.update = function () {
                 	this.game.totCoins++;
                 	pf.isCoin = false;
                 	pf.removeFromWorld = true;
+                	playCoinSound = true;
+//                	pf.coinSnd.play();
+                	
                 } else if(pf.exit) {
                     this.game.tx = 0;
                     this.game.ty = 0;
@@ -103,6 +107,7 @@ Circle3d.prototype.update = function () {
                 	if(pf.trapFrame < 8 && !this.game.stopTraps) {
                 		this.game.tx = 0;
                 		this.game.ty = 0;
+                		playShockSound = true;
 //                		pf.removeFromWorld = true;
                 		if(this.game.totCoins !== 0) this.game.totCoins--;
 
@@ -151,10 +156,13 @@ Circle3d.prototype.update = function () {
             		this.game.totCoins++;
                 	pf.isCoin = false;
                 	pf.removeFromWorld = true;
+                	playCoinSound = true;
+//                	pf.coinSnd.play();
                 } else {
                 	if(pf.trapFrame < 8 && !this.game.stopTraps) {
                 		this.game.tx = 0;
                 		this.game.ty = 0;
+                		playShockSound = true;
 //                		pf.removeFromWorld = true;
                 		if(this.game.totCoins !== 0) this.game.totCoins--;
 
@@ -203,10 +211,13 @@ Circle3d.prototype.update = function () {
                     this.game.totCoins++;
                     pf.isCoin = false;
                     pf.removeFromWorld = true;
+                    playCoinSound = true;
+//                    pf.coinSnd.play();
                 } else {
                 	if(pf.trapFrame < 8 && !this.game.stopTraps) {
                 		this.game.tx = 0;
                 		this.game.ty = 0;
+                		playShockSound = true;
 //                		pf.removeFromWorld = true;
                 		if(this.game.totCoins !== 0) this.game.totCoins--;
                         //tell user they fall in the trap
@@ -252,10 +263,13 @@ Circle3d.prototype.update = function () {
             		this.game.totCoins++;
                 	pf.isCoin = false;
                 	pf.removeFromWorld = true;
+                	playCoinSound = true;
+//                	pf.coinSnd.play();
                 } else {
                 	if(pf.trapFrame < 8 && !this.game.stopTraps) {
                 		this.game.tx = 0;
                 		this.game.ty = 0;
+                		playShockSound = true;
 //                		pf.removeFromWorld = true;
                 		if(this.game.totCoins !== 0) this.game.totCoins--;
 
@@ -318,7 +332,16 @@ Circle3d.prototype.update = function () {
     } else if(this.game.disableTrap) {
     	this.game.disableTrap = false;
     }
-
+    if(playCoinSound && this.game.muteSoundfx) {
+    	this.game.coinSnd.play();
+    	playCoinSound = false;
+    	this.game.coinSnd.currentTime  = 0;
+    }
+    if(playShockSound && this.game.muteSoundfx) {
+    	this.game.shockSnd.play();
+    	playShockSound = false;
+    	this.game.shockSnd.currentTime  = 0;
+    }
     //console.log(this.game.timer);
     
     
@@ -371,7 +394,8 @@ ASSET_MANAGER.queueDownload("./img/exitFlag.png");
 
 //song queue
 ASSET_MANAGER.queueAudioDownload("./song/bgsound.mp3");
-
+ASSET_MANAGER.queueAudioDownload("./song/Coin.wav");
+ASSET_MANAGER.queueAudioDownload("./song/shock.wav");
 
 ASSET_MANAGER.downloadAll(function () {
 	
@@ -381,19 +405,24 @@ ASSET_MANAGER.downloadAll(function () {
 	canvas.focus();
 	var   ctx = canvas.getContext('2d');
     
-    var snd = ASSET_MANAGER.getAudioAsset("./song/bgsound.mp3");
-    snd.play();
-    
-    
     var gameEngine = new GameEngine();
     gameEngine.mazeSize = 3;
     gameEngine.level = 1;
     gameEngine.totCoins = 0;
     gameEngine.numTraps = 0;
-    gameEngine.numCoins = 3;
+    gameEngine.numCoins = 5;
     gameEngine.screenOff = false;
     gameEngine.showSolution = false;
     gameEngine.stopTraps = false;
+    gameEngine.coinSnd = ASSET_MANAGER.getAudioAsset("./song/Coin.wav");
+    gameEngine.shockSnd = ASSET_MANAGER.getAudioAsset("./song/shock.wav");
+    gameEngine.musicSnd = ASSET_MANAGER.getAudioAsset("./song/bgsound.mp3");
+    gameEngine.musicSnd.loop = true;
+    gameEngine.musicSnd.play();
+//    gameEngine.musicSnd.play();
+    gameEngine.muteMusic = false;
+    gameEngine.muteSoundfx = false;
+//    gameEngine.coinSnd.playbackRate = 1;
 
     //instantiate the 3d ball
     init();
