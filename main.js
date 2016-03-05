@@ -1,10 +1,3 @@
-
-
-
-
-
-
-
 function Circle3d(game, x, y, radius) {
     this.radius = radius;
     this.circle = false;
@@ -338,9 +331,58 @@ Circle3d.prototype.update = function () {
     	this.game.coinSnd.currentTime  = 0;
     }
     
+    //remove the ball from being stuck
+    var nudge = document.getElementById("nudge");
+    var that = this;
+    nudge.onclick = function() {
+
+        for (var i = 0; i < that.game.mazePieces.length; i++) {
+            var pf = that.game.mazePieces[i];
+            if(that.boundingcircle.collide(pf.boundingbox)){
+               
+                //console.log("Maze " + pf.y);
+                if(that.x + that.radius > pf.x && (((that.y - that.radius) <= pf.y + pf.height) && ((that.y - that.radius) >= pf.y))) {//stuck at left
+                     console.log("stuck left");
+                    for(var i = 0; i < that.game.entities.length; i++) {
+                        var temp = that.game.entities[i];
+                        if(temp instanceof(testMazePath) ||  temp instanceof(Coin) || temp instanceof(MazePiece)) {
+                            temp.x -= 30;
+                            temp.update();
+                        }
+                    }
+                }else if(that.x - that.radius < pf.x && (((that.y - that.radius) <= pf.y + pf.height) && ((that.y - that.radius) >= pf.y))){//stuck at right
+                    // console.log("stuck right");
+                    for(var i = 0; i < that.game.entities.length; i++) {
+                        var temp = that.game.entities[i];
+                        if(temp instanceof(testMazePath) ||  temp instanceof(Coin) || temp instanceof(MazePiece)) {
+                            temp.x += 30;
+                            temp.update();
+                        }
+                    }
+                }else if(that.y - that.radius > pf.y){//stuck up
+                    // console.log("stuck up");
+                    for(var i = 0; i < that.game.entities.length; i++) {
+                        var temp = that.game.entities[i];
+                        if(temp instanceof(testMazePath) ||  temp instanceof(Coin) || temp instanceof(MazePiece)) {
+                            temp.y -= 30;
+                            temp.update();
+                        }
+                    }
+                }else if(that.y + that.radius < pf.y){//stuck down
+                    console.log("stuck down");
+                    for(var i = 0; i < that.game.entities.length; i++) {
+                        var temp = that.game.entities[i];
+                        if(temp instanceof(testMazePath) ||  temp instanceof(Coin) || temp instanceof(MazePiece)) {
+                            temp.y += 30;
+                            temp.update();
+                        }
+                    }
+                }
+            }
+        };
+    };
+
     //console.log(this.game.timer);
-    
-    
 };
 
 Circle3d.prototype.draw = function (ctx) {

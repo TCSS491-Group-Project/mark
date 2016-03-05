@@ -346,7 +346,7 @@ function pathSolver(game, r, c){
 
     var ms = new solveMaze(game.myMaze, correctPath.maze, temp.maze);
     console.log(ms.traverse(r, c));
-    printMaze(correctPath.maze);
+    //printMaze(correctPath.maze);
 
     this.length = game.myMaze.length;
     this.width = game.myMaze[0].length;
