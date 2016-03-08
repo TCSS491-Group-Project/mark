@@ -50,7 +50,7 @@ Circle3d.prototype.update = function () {
 
     var speedIncreament = 2;
     var MaxSpeed = 8;
-    var padding = 8;
+    var padding = 9;
 
 
     var ballRotationSpeed = 0.10;
@@ -334,6 +334,7 @@ Circle3d.prototype.update = function () {
     //remove the ball from being stuck
     var nudge = document.getElementById("nudge");
     var that = this;
+    var stackTemp = false;
     nudge.onclick = function() {
 
         for (var i = 0; i < that.game.mazePieces.length; i++) {
@@ -341,39 +342,45 @@ Circle3d.prototype.update = function () {
             if(that.boundingcircle.collide(pf.boundingbox)){
                
                 //console.log("Maze " + pf.y);
-                if(that.x + that.radius > pf.x && (((that.y - that.radius) <= pf.y + pf.height) && ((that.y - that.radius) >= pf.y))) {//stuck at left
-                     console.log("stuck left");
-                    for(var i = 0; i < that.game.entities.length; i++) {
-                        var temp = that.game.entities[i];
-                        if(temp instanceof(testMazePath) ||  temp instanceof(Coin) || temp instanceof(MazePiece)) {
-                            temp.x -= 30;
-                            temp.update();
-                        }
-                    }
-                }else if(that.x - that.radius < pf.x && (((that.y - that.radius) <= pf.y + pf.height) && ((that.y - that.radius) >= pf.y))){//stuck at right
+            	console.log("Mz x: " + pf.x + " Mz width: " + pf.width);
+            	console.log("Cir x: " + that.x + " Cir radius: " + that.radius);
+                if(pf.x + pf.width > that.x - that.radius && that.x - that.radius > pf.x) {//stuck at left
                      console.log("stuck right");
                     for(var i = 0; i < that.game.entities.length; i++) {
                         var temp = that.game.entities[i];
                         if(temp instanceof(testMazePath) ||  temp instanceof(Coin) || temp instanceof(MazePiece)) {
-                            temp.x += 30;
+                            temp.x -= 20;
+                            temp.update();
+                            stackTemp = true;
+                        }
+                    }
+                } else if( pf.x < that.x + that.radius && that.x + that.radius < pf.x + pf.width) {//stuck at right
+                     console.log("stuck left");
+                    for(var i = 0; i < that.game.entities.length; i++) {
+                        var temp = that.game.entities[i];
+                        if(temp instanceof(testMazePath) ||  temp instanceof(Coin) || temp instanceof(MazePiece)) {
+                            temp.x += 20;
                             temp.update();
                         }
                     }
-                }else if(that.y - that.radius > pf.y){//stuck up
+                } 
+                if(pf.y < that.y + that.radius && that.y + that.radius < pf.y + pf.width){//stuck up
                      console.log("stuck up");
                     for(var i = 0; i < that.game.entities.length; i++) {
                         var temp = that.game.entities[i];
                         if(temp instanceof(testMazePath) ||  temp instanceof(Coin) || temp instanceof(MazePiece)) {
-                            temp.y -= 30;
+                            temp.y += 20;
+                            if(stackTemp) temp.y +=15;
                             temp.update();
                         }
                     }
-                }else if(that.y + that.radius < pf.y){//stuck down
+                } else if(pf.y + pf.width > that.y - that.radius && that.y - that.radius > pf.y){//stuck down
                     console.log("stuck down");
                     for(var i = 0; i < that.game.entities.length; i++) {
                         var temp = that.game.entities[i];
                         if(temp instanceof(testMazePath) ||  temp instanceof(Coin) || temp instanceof(MazePiece)) {
-                            temp.y += 30;
+                            temp.y -= 20;
+                            if(stackTemp) temp.y -=15;
                             temp.update();
                         }
                     }

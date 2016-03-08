@@ -234,8 +234,10 @@ function MazePiece(game, x, y, width, height, isTrap, isExit, isHorizontalTrap) 
     this.exit = isExit;
     if(isTrap && isHorizontalTrap) {
     	this.boundingbox = new BoundingBox(x, y, height, width);
+    	this.desactivated = false;
     } else if(isTrap){
     	this.boundingbox = new BoundingBox(x, y, width, height);
+    	this.desactivated = false;
     } else {
     	this.boundingbox = new BoundingBox(x, y, width, height);
     }
@@ -245,9 +247,11 @@ function MazePiece(game, x, y, width, height, isTrap, isExit, isHorizontalTrap) 
     this.trap = isTrap;
     this.horizontalTrap = isHorizontalTrap; 
     if(this.trap && this.horizontalTrap){ // currentFrame
-    	this.animationHorizontal = new Animation(ASSET_MANAGER.getAsset("./img/trap1.png"), 0, 0, 252, 144, 0.27, 14, true, false); // running
+    	this.animationHorizontal = new Animation(ASSET_MANAGER.getAsset("./img/trap1.png"), 0, 0, 252, 144, 0.12, 22, true, false); // running
+    	this.horizontalDesactivated = new Animation(ASSET_MANAGER.getAsset("./img/trapDisableHorizontal.png"), 0, 0, 252, 144, 0.12, 1, true, false); // running
     } else if(this.trap){
-    	this.animationVertical = new Animation(ASSET_MANAGER.getAsset("./img/trap2.png"), 0, 0, 144, 252, 0.27, 14, true, false); // running
+    	this.animationVertical = new Animation(ASSET_MANAGER.getAsset("./img/trap2.png"), 0, 0, 144, 252, 0.12, 22, true, false); // running
+    	this.verticalDesactivated = new Animation(ASSET_MANAGER.getAsset("./img/trapDisable.png"), 0, 0, 144, 252, 0.12, 1, true, false); // running
     }
 	Entity.call(this, game, x, y);
 }
@@ -265,21 +269,22 @@ MazePiece.prototype.update = function () {
     if(this.trap && this.horizontalTrap) {
     	this.boundingbox = new BoundingBox(this.x, this.y + 75, this.height, this.width - 30);
     	this.trapFrame = this.animationHorizontal.currentFrame();
-
         var pf = this.game.circle3d;
         if (pf.boundingcircle.collide(this.boundingbox)) { 
-	            	
-        	if(this.trapFrame < 8 && !this.game.stopTraps) {
-        		this.game.tx = 0;
-        		this.game.ty = 0;
-        		playShockSound = true;
-        		if(this.game.totCoins !== 0) this.game.totCoins--;
-
-                //tell user they fall in the trap
-                this.game.gameLabel.trapLabel = true;
-        		mazeTrapReset(this.game);
-        		this.game.screenOff = true;
-        	}
+	        if(!this.desactivated){	
+	        	if(this.trapFrame < 10 && !this.game.stopTraps) {
+	        		this.game.tx = 0;
+	        		this.game.ty = 0;
+	        		playShockSound = true;
+	        		if(this.game.totCoins !== 0) this.game.totCoins--;
+	        		this.desactivated = true;
+	                //tell user they fall in the trap
+	                this.game.gameLabel.trapLabel = true;
+	        		mazeTrapReset(this.game);
+	        		this.game.screenOff = true;
+	        		
+	        	}
+	        }
 	    }
     } else if(this.trap){
     	this.boundingbox = new BoundingBox(this.x + 65, this.y, this.width - 30, this.height);
@@ -287,17 +292,18 @@ MazePiece.prototype.update = function () {
 
     	var pf = this.game.circle3d;
         if (pf.boundingcircle.collide(this.boundingbox)) { 
-	            	
-        	if(this.trapFrame < 8 && !this.game.stopTraps) {
-        		this.game.tx = 0;
-        		this.game.ty = 0;
-        		playShockSound = true;
-        		if(this.game.totCoins !== 0) this.game.totCoins--;
-
-                //tell user they fall in the trap
-                this.game.gameLabel.trapLabel = true;
-        		mazeTrapReset(this.game);
-        		this.game.screenOff = true;
+        	if(!this.desactivated){	    	
+	        	if(this.trapFrame < 10 && !this.game.stopTraps) {
+	        		this.game.tx = 0;
+	        		this.game.ty = 0;
+	        		playShockSound = true;
+	        		if(this.game.totCoins !== 0) this.game.totCoins--;
+	        		this.desactivated = true;
+	                //tell user they fall in the trap
+	                this.game.gameLabel.trapLabel = true;
+	        		mazeTrapReset(this.game);
+	        		this.game.screenOff = true;
+	        	}
         	}
 	    }
     } else {
@@ -311,7 +317,7 @@ MazePiece.prototype.update = function () {
     }
     Entity.prototype.update.call(this);
     
-}
+};
 
 MazePiece.prototype.draw = function (ctx) {
     
@@ -319,10 +325,17 @@ MazePiece.prototype.draw = function (ctx) {
 //		ctx.fillStyle = "blue";
 //		ctx.fillRect(this.x, this.y, this.width, this.height);
 		if(this.horizontalTrap) {
-			this.animationHorizontal.drawFrame(this.game.clockTick, ctx, this.x - 40, this.y + 40, 1);
+			if(!this.desactivated) {
+				this.animationHorizontal.drawFrame(this.game.clockTick, ctx, this.x - 40, this.y + 40, 1);
+			} else {
+				this.horizontalDesactivated.drawFrame(this.game.clockTick, ctx, this.x - 40, this.y + 40, 1);
+			}	
 		} else {
-			this.animationVertical.drawFrame(this.game.clockTick, ctx, this.x + 30, this.y - 40, 1);
-			
+			if(!this.desactivated) {
+				this.animationVertical.drawFrame(this.game.clockTick, ctx, this.x + 30, this.y - 40, 1);
+			} else {
+				this.verticalDesactivated.drawFrame(this.game.clockTick, ctx, this.x + 30, this.y - 40, 1);
+			}
 		}
 	} else if(this.startTop) {
 		ctx.fillStyle = "transparent";
