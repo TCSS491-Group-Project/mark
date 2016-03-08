@@ -50,7 +50,7 @@ Circle3d.prototype.update = function () {
 
     var speedIncreament = 2;
     var MaxSpeed = 8;
-    var padding = 8;
+    var padding = 9;
 
 
     var ballRotationSpeed = 0.10;
@@ -96,21 +96,7 @@ Circle3d.prototype.update = function () {
                     this.game.screenOff = true;
                 	nextLevel(++(this.game.mazeSize), this.game);
                     
-                } /*else {
-                	if(pf.trapFrame < 8 && !this.game.stopTraps) {
-                		this.game.tx = 0;
-                		this.game.ty = 0;
-                		playShockSound = true;
-//                		pf.removeFromWorld = true;
-                		if(this.game.totCoins !== 0) this.game.totCoins--;
-
-                        //tell user they fall in the trap
-                        this.game.gameLabel.trapLabel = true;
-                		mazeTrapReset(this.game);
-                		this.game.screenOff = true;
-                		
-                	}
-                }*/
+                }
             } 
             //this.collide(pf.boundingbox);
             //console.log(this.collide(pf.boundingbox));
@@ -151,21 +137,7 @@ Circle3d.prototype.update = function () {
                 	pf.removeFromWorld = true;
                 	playCoinSound = true;
 //                	pf.coinSnd.play();
-                } /*else {
-                	if(pf.trapFrame < 8 && !this.game.stopTraps) {
-                		this.game.tx = 0;
-                		this.game.ty = 0;
-                		playShockSound = true;
-//                		pf.removeFromWorld = true;
-                		if(this.game.totCoins !== 0) this.game.totCoins--;
-
-                        //tell user they fall in the trap
-                        this.game.gameLabel.trapLabel = true;
-                		mazeTrapReset(this.game);
-                		this.game.screenOff = true;
-                		
-                	}
-                }*/
+                } 
             } 
         
         };
@@ -206,19 +178,7 @@ Circle3d.prototype.update = function () {
                     pf.removeFromWorld = true;
                     playCoinSound = true;
 //                    pf.coinSnd.play();
-                } /*else {
-                	if(pf.trapFrame < 8 && !this.game.stopTraps) {
-                		this.game.tx = 0;
-                		this.game.ty = 0;
-                		playShockSound = true;
-//                		pf.removeFromWorld = true;
-                		if(this.game.totCoins !== 0) this.game.totCoins--;
-                        //tell user they fall in the trap
-                        this.game.gameLabel.trapLabel = true;
-                        mazeTrapReset(this.game);
-                        this.game.screenOff = true;
-                    }
-                }*/
+                } 
 
             } 
             //console.log(this.collide(pf.boundingbox));
@@ -258,20 +218,7 @@ Circle3d.prototype.update = function () {
                 	pf.removeFromWorld = true;
                 	playCoinSound = true;
 //                	pf.coinSnd.play();
-                } /*else {
-                	if(pf.trapFrame < 8 && !this.game.stopTraps) {
-                		this.game.tx = 0;
-                		this.game.ty = 0;
-                		playShockSound = true;
-//                		pf.removeFromWorld = true;
-                		if(this.game.totCoins !== 0) this.game.totCoins--;
-
-                        //tell user they fall in the trap
-                        this.game.gameLabel.trapLabel = true;
-                		mazeTrapReset(this.game);
-                		this.game.screenOff = true;
-                	}
-                }*/
+                } 
             } 
         };
 
@@ -341,40 +288,43 @@ Circle3d.prototype.update = function () {
             if(that.boundingcircle.collide(pf.boundingbox)){
                
                 //console.log("Maze " + pf.y);
-                if(that.x + that.radius > pf.x && (((that.y - that.radius) <= pf.y + pf.height) && ((that.y - that.radius) >= pf.y))) {//stuck at left
-                     console.log("stuck left");
-                    for(var i = 0; i < that.game.entities.length; i++) {
-                        var temp = that.game.entities[i];
-                        if(!(temp instanceof(Circle3d))) {
-                            temp.x -= 30;
-                            temp.update();
-                        }
-                    }
-                }else if(that.x - that.radius < pf.x && (((that.y - that.radius) <= pf.y + pf.height) && ((that.y - that.radius) >= pf.y))){//stuck at right
+            	// console.log("Mz x: " + pf.x + " Mz width: " + pf.width);
+            	// console.log("Cir x: " + that.x + " Cir radius: " + that.radius);
+                if(pf.x < that.x) {//stuck at left
                      console.log("stuck right");
                     for(var i = 0; i < that.game.entities.length; i++) {
                         var temp = that.game.entities[i];
+
                         if(!(temp instanceof(Circle3d))) {
-                            temp.x += 30;
-                            temp.update();
+                            temp.x -= 30;
                         }
                     }
-                }else if(that.y - that.radius > pf.y){//stuck up
+                } else if( pf.x > that.x) {//stuck at right
+                     console.log("stuck left");
+                    for(var i = 0; i < that.game.entities.length; i++) {
+                        var temp = that.game.entities[i];
+
+                        if(!(temp instanceof(Circle3d))) {
+                            temp.x += 30;
+                        }
+                    }
+                } 
+                if(pf.y < that.y){//stuck up
                      console.log("stuck up");
                     for(var i = 0; i < that.game.entities.length; i++) {
                         var temp = that.game.entities[i];
+
                         if(!(temp instanceof(Circle3d))) {
                             temp.y -= 30;
-                            temp.update();
                         }
                     }
-                }else if(that.y + that.radius < pf.y){//stuck down
+                } else if(pf.y  > that.y ){//stuck down
                     console.log("stuck down");
                     for(var i = 0; i < that.game.entities.length; i++) {
                         var temp = that.game.entities[i];
+
                         if(!(temp instanceof(Circle3d))) {
                             temp.y += 30;
-                            temp.update();
                         }
                     }
                 }
