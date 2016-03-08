@@ -81,6 +81,7 @@ function Maze(x, y, game, addFeatures) {
     if(addFeatures) {
 	    addCoins(this.length, this.width, this.maze, game.numCoins);  
 	    addTraps(this.length, this.width, this.maze, game.numTraps);
+	    addNinjas(this.length, this.width, this.maze, game.numNinjas);
     }
     
 	this.printMaze = function() {
@@ -126,6 +127,9 @@ function createMazePieces(game, maze, mazeP) {
 				var pl = new MazePiece(game, (c * 175) + 175, (r * 175) + 295 , 175, 175, false, true, false); // x, y, width, height
 				game.addEntity(pl);
 				mazePieces.push(pl); 
+			} else if(maze.maze[r][c] === 'N') {
+				var pl = new Ninja(game, (c * 175) + 195 + 35, (r * 175) + 355);
+				game.addEntity(pl);
 			}
 		}
 //		string += '\r\n';
@@ -376,6 +380,19 @@ function addCoins(rows, cols, maze, numOfcoins) {
 		if(maze[x][y] === " ") {
 			maze[x][y] = "C";
 			coins++;
+		}
+	}
+}
+
+function addNinjas(rows, cols, maze, numOfcoins) {
+	var ninjas = 0;
+	while(ninjas !== numOfcoins) {
+		var x = Math.floor(Math.random() * (rows - 2)) + 2;
+		var y = Math.floor(Math.random() * (cols - 2)) + 2;
+		
+		if(maze[x][y] === " ") {
+			maze[x][y] = "N";
+			ninjas++;
 		}
 	}
 }

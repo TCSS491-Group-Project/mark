@@ -351,7 +351,7 @@ Circle3d.prototype.update = function () {
                         }
                     }
                 }else if(that.x - that.radius < pf.x && (((that.y - that.radius) <= pf.y + pf.height) && ((that.y - that.radius) >= pf.y))){//stuck at right
-                    // console.log("stuck right");
+                     console.log("stuck right");
                     for(var i = 0; i < that.game.entities.length; i++) {
                         var temp = that.game.entities[i];
                         if(temp instanceof(testMazePath) ||  temp instanceof(Coin) || temp instanceof(MazePiece)) {
@@ -360,7 +360,7 @@ Circle3d.prototype.update = function () {
                         }
                     }
                 }else if(that.y - that.radius > pf.y){//stuck up
-                    // console.log("stuck up");
+                     console.log("stuck up");
                     for(var i = 0; i < that.game.entities.length; i++) {
                         var temp = that.game.entities[i];
                         if(temp instanceof(testMazePath) ||  temp instanceof(Coin) || temp instanceof(MazePiece)) {
@@ -428,6 +428,8 @@ ASSET_MANAGER.queueDownload("./img/trap1.png");
 ASSET_MANAGER.queueDownload("./img/trapDisable.png");
 ASSET_MANAGER.queueDownload("./img/trapDisableHorizontal.png");
 ASSET_MANAGER.queueDownload("./img/exitFlag.png");
+ASSET_MANAGER.queueDownload("./img/ninja.png");
+
 
 
 //song queue
@@ -439,16 +441,22 @@ ASSET_MANAGER.downloadAll(function () {
 	
     console.log("starting up da sheild");
     
+    
+    
 	var  canvas = document.getElementById('gameWorld');
 	canvas.focus();
 	var   ctx = canvas.getContext('2d');
     
     var gameEngine = new GameEngine();
+    var timer = new Timer();
+    gameEngine.timer = timer;
+    
     gameEngine.mazeSize = 3;
     gameEngine.level = 1;
     gameEngine.totCoins = 0;
     gameEngine.numTraps = 0;
     gameEngine.numCoins = 3;
+    gameEngine.numNinjas = 1;
     gameEngine.screenOff = false;
     gameEngine.showSolution = false;
     gameEngine.stopTraps = false;
@@ -482,8 +490,7 @@ ASSET_MANAGER.downloadAll(function () {
     gameEngine.mazePieces  = mazePieces;
 
 
-    var timer = new Timer();
-    gameEngine.timer = timer;
+    
 //    var ninja = new Ninja(gameEngine); Dont need
 
 

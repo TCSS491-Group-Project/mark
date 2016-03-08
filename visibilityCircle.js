@@ -16,7 +16,7 @@ VisibilityCircle.prototype.update = function () {
         this.game.screenOff = true;
         if(this.circleG < 0){
             this.gradleTriger = false;
-            this.circleG = 300;
+            this.circleG = 800;
             camera = cameraOn;
             this.game.screenOff = false;
         }

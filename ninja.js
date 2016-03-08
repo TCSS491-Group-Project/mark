@@ -1,4 +1,4 @@
-function Ninja(game) {
+function Ninja(game, x, y) {
      //this.animation = new Animation(ASSET_MANAGER.getAsset("./img/RobotUnicorn.png"), 0, 0, 206, 110, 0.02, 30, true, true);
      //this.jumpAnimation = new Animation(ASSET_MANAGER.getAsset("./img/RobotUnicorn.png"), 618, 334, 174, 138, 0.02, 40, false, true);
  
@@ -12,96 +12,63 @@ function Ninja(game) {
      this.jumpLeftAnimation = new Animation(ASSET_MANAGER.getAsset("./img/ninja.png"), 0, 309, 50, 77, 0.08, 3, false, true);
      this.radius = 100;
      this.ground = 430;
-     Entity.call(this, game, 10, 430);
+     this.x = x;
+     this.y = y;
+     this.currSec = Math.floor(game.timer.gameTime) % 60; 
+     this.gameSecs = this.currSec;
+     Entity.call(this, game, this.x, this.y);
  }
  
  Ninja.prototype = new Entity();
  Ninja.prototype.constructor = Ninja;
  
  Ninja.prototype.update = function () {
- 
-     if (this.game.jumping && this.lookRightOrLeftActive) {
-         
- 
-         if (this.jumpRightAnimation.isDone()) {
-             this.jumpRightAnimation.elapsedTime = 0;
-             this.game.jumping = false;
-         } else if (this.jumpLeftAnimation.isDone()) {
-             this.jumpLeftAnimation.elapsedTime = 0;
-             this.game.jumping = false;
-         }
-         
-         var jumpDistance;
-         if(this.lookRight){
-             jumpDistance = this.jumpRightAnimation.elapsedTime / this.jumpRightAnimation.totalTime;
-              this.x += 10;
-         } else if(this.lookLeft){
-             jumpDistance = this.jumpLeftAnimation.elapsedTime / this.jumpLeftAnimation.totalTime;
-              this.x -= 10;
-         }
-          
-         var totalHeight = 50;
- 
-         if (jumpDistance > 0.5){
-             jumpDistance = 1 - jumpDistance;
-         }
-             
- 
-         //var height = jumpDistance * 2 * totalHeight;
-         var height = totalHeight*(-4 * (jumpDistance * jumpDistance - jumpDistance));
- 
-         this.y = this.ground - height; 
-         console.log(this.y);
-         
-         
-     } else if(this.game.walkRight){
-         this.lookRight = true;
-         this.lookRightOrLeftActive = true;
-         this.lookLeft = false;
+   this.gameSecs = Math.floor(this.game.timer.gameTime) % 60;
+   if(this.currSec !== this.gameSecs) {
+	   this.NinjaMove = Math.floor(Math.random() * 4);
+	   this.currSec = this.gameSecs;
+   }
+// this.game.NinjaMove = Math.floor(Math.random() * 4);
+   if(this.NinjaMove === 0){
+//         this.lookRight = true;
+//         this.lookRightOrLeftActive = true;
+//         this.lookLeft = false;
          this.ground = this.y;
          this.x += 1;
-     } else if(this.game.walkLeft){
+     } else if(this.NinjaMove === 1){
          this.lookLeft = true;
          this.lookRight = false;
          this.lookRightOrLeftActive = true;
          this.ground = this.y;
          this.x -= 1;
-     } else if(this.game.goUp){
+     } else if(this.NinjaMove === 2){
          this.lookLeft = false;
          this.lookRight = false;
          this.lookRightOrLeftActive = false;
          this.y -= 1;
-     } else if(this.game.goDown){
+     } else if(this.NinjaMove === 3){
          this.lookLeft = false;
          this.lookRight = false;
          this.lookRightOrLeftActive = false;
          this.y += 1;
      }
+     this.x = this.x - this.game.tx;
+     this.y = this.y - this.game.ty;
  
  
      Entity.prototype.update.call(this);
- }
+ };
  
  Ninja.prototype.draw = function (ctx) {
-     if (this.game.jumping && this.lookRight) {
-         this.jumpRightAnimation.drawFrame(this.game.clockTick, ctx, this.x + 10, this.y - 40);
-     }else if (this.game.jumping && this.lookLeft) {
-         this.jumpLeftAnimation.drawFrame(this.game.clockTick, ctx, this.x + 10, this.y - 40);
-     } else if (this.game.walkRight){
+     if (this.NinjaMove === 0){
          this.walkRightAnimation.drawFrame(this.game.clockTick, ctx, this.x, this.y);
-     } else if (this.game.walkLeft){
+     } else if (this.NinjaMove === 1){
          this.walkLeftAnimation.drawFrame(this.game.clockTick, ctx, this.x, this.y);
-     } else if (this.lookLeft) {
-         this.LookLeftAnimation.drawFrame(this.game.clockTick, ctx, this.x, this.y);
-     } else if (this.lookRight){
-         this.LookRightAnimation.drawFrame(this.game.clockTick, ctx, this.x, this.y);
-     } else if (this.game.goUp){
+     } else if (this.NinjaMove === 2){
          this.goUpAndDownAnimation.drawFrame(this.game.clockTick, ctx, this.x, this.y);
-     } else if (this.game.goDown){
+     } else if (this.NinjaMove === 3){
          this.goUpAndDownAnimation.drawFrame(this.game.clockTick, ctx, this.x, this.y);
-     } else {
-         this.animation.drawFrame(this.game.clockTick, ctx, this.x, this.y);
-     }
+     } 
         
      Entity.prototype.draw.call(this);
  }
