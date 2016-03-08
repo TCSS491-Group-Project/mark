@@ -345,7 +345,7 @@ Circle3d.prototype.update = function () {
                      console.log("stuck left");
                     for(var i = 0; i < that.game.entities.length; i++) {
                         var temp = that.game.entities[i];
-                        if(temp instanceof(testMazePath) ||  temp instanceof(Coin) || temp instanceof(MazePiece)) {
+                        if(!(temp instanceof(Circle3d))) {
                             temp.x -= 30;
                             temp.update();
                         }
@@ -354,7 +354,7 @@ Circle3d.prototype.update = function () {
                      console.log("stuck right");
                     for(var i = 0; i < that.game.entities.length; i++) {
                         var temp = that.game.entities[i];
-                        if(temp instanceof(testMazePath) ||  temp instanceof(Coin) || temp instanceof(MazePiece)) {
+                        if(!(temp instanceof(Circle3d))) {
                             temp.x += 30;
                             temp.update();
                         }
@@ -363,7 +363,7 @@ Circle3d.prototype.update = function () {
                      console.log("stuck up");
                     for(var i = 0; i < that.game.entities.length; i++) {
                         var temp = that.game.entities[i];
-                        if(temp instanceof(testMazePath) ||  temp instanceof(Coin) || temp instanceof(MazePiece)) {
+                        if(!(temp instanceof(Circle3d))) {
                             temp.y -= 30;
                             temp.update();
                         }
@@ -372,7 +372,7 @@ Circle3d.prototype.update = function () {
                     console.log("stuck down");
                     for(var i = 0; i < that.game.entities.length; i++) {
                         var temp = that.game.entities[i];
-                        if(temp instanceof(testMazePath) ||  temp instanceof(Coin) || temp instanceof(MazePiece)) {
+                        if(!(temp instanceof(Circle3d))) {
                             temp.y += 30;
                             temp.update();
                         }

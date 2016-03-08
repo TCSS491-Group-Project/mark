@@ -130,6 +130,7 @@ function createMazePieces(game, maze, mazeP) {
 			} else if(maze.maze[r][c] === 'N') {
 				var pl = new Ninja(game, (c * 175) + 195 + 35, (r * 175) + 355);
 				game.addEntity(pl);
+				mazePieces.push(pl);
 			}
 		}
 //		string += '\r\n';

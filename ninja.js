@@ -1,7 +1,7 @@
 function Ninja(game, x, y) {
      //this.animation = new Animation(ASSET_MANAGER.getAsset("./img/RobotUnicorn.png"), 0, 0, 206, 110, 0.02, 30, true, true);
      //this.jumpAnimation = new Animation(ASSET_MANAGER.getAsset("./img/RobotUnicorn.png"), 618, 334, 174, 138, 0.02, 40, false, true);
- 
+    this.boxes = true
      this.animation = new Animation(ASSET_MANAGER.getAsset("./img/ninja.png"), 0, 0, 50, 77, 0.05, 1, true, false);
      this.walkRightAnimation = new Animation(ASSET_MANAGER.getAsset("./img/ninja.png"), 0, 155, 50, 77, 0.08, 8, true, false);
      this.LookRightAnimation = new Animation(ASSET_MANAGER.getAsset("./img/ninja.png"), 0, 155, 50, 77, 0.08, 1, true, false);
@@ -16,6 +16,7 @@ function Ninja(game, x, y) {
      this.y = y;
      this.currSec = Math.floor(game.timer.gameTime) % 60; 
      this.gameSecs = this.currSec;
+     this.boundingbox = new BoundingBox(x, y, this.walkRightAnimation.frameWidth, this.walkRightAnimation.frameHeight);
      Entity.call(this, game, this.x, this.y);
  }
  
@@ -23,37 +24,76 @@ function Ninja(game, x, y) {
  Ninja.prototype.constructor = Ninja;
  
  Ninja.prototype.update = function () {
+
    this.gameSecs = Math.floor(this.game.timer.gameTime) % 60;
-   if(this.currSec !== this.gameSecs) {
+   var ninjaSpeedX = 1;
+   var ninjaSpeedY = 1;
+   var ninjaPadding = 9;
+
+    this.x = this.x - this.game.tx;
+    this.y = this.y - this.game.ty;
+
+    if(this.currSec !== this.gameSecs) {
 	   this.NinjaMove = Math.floor(Math.random() * 4);
 	   this.currSec = this.gameSecs;
-   }
+    }
 // this.game.NinjaMove = Math.floor(Math.random() * 4);
-   if(this.NinjaMove === 0){
-//         this.lookRight = true;
-//         this.lookRightOrLeftActive = true;
-//         this.lookLeft = false;
-         this.ground = this.y;
-         this.x += 1;
-     } else if(this.NinjaMove === 1){
-         this.lookLeft = true;
-         this.lookRight = false;
-         this.lookRightOrLeftActive = true;
-         this.ground = this.y;
-         this.x -= 1;
-     } else if(this.NinjaMove === 2){
-         this.lookLeft = false;
-         this.lookRight = false;
-         this.lookRightOrLeftActive = false;
-         this.y -= 1;
-     } else if(this.NinjaMove === 3){
-         this.lookLeft = false;
-         this.lookRight = false;
-         this.lookRightOrLeftActive = false;
-         this.y += 1;
-     }
-     this.x = this.x - this.game.tx;
-     this.y = this.y - this.game.ty;
+    if(this.NinjaMove === 0){
+        this.boundingbox = new BoundingBox(this.x + ninjaPadding, this.y, this.walkRightAnimation.frameWidth, this.walkRightAnimation.frameHeight);
+
+        for(var i = 0; i < this.game.entities.length; i++){
+            var ent = this.game.entities[i];
+            if(ent instanceof(MazePiece) && !ent.isTrap){
+                if(this.boundingbox.collide(ent.boundingbox)){
+                    ninjaSpeedX = 0;
+                
+                }
+            }
+            
+        }
+        this.x += ninjaSpeedX;
+    } else if(this.NinjaMove === 1){
+        this.boundingbox = new BoundingBox(this.x - ninjaPadding, this.y, this.walkRightAnimation.frameWidth, this.walkRightAnimation.frameHeight);
+
+        for(var i = 0; i < this.game.entities.length; i++){
+            var ent = this.game.entities[i];
+            if(ent instanceof(MazePiece) && !ent.isTrap){
+                if(this.boundingbox.collide(ent.boundingbox)){
+                    ninjaSpeedX = 0;
+                    
+                }
+            }
+        }
+        this.x -= ninjaSpeedX;
+    } else if(this.NinjaMove === 2){
+        this.boundingbox = new BoundingBox(this.x, this.y - ninjaPadding, this.walkRightAnimation.frameWidth, this.walkRightAnimation.frameHeight);
+
+        for(var i = 0; i < this.game.entities.length; i++){
+            var ent = this.game.entities[i];
+            if(ent instanceof(MazePiece) && !ent.isTrap){
+                if(this.boundingbox.collide(ent.boundingbox)){
+                    ninjaSpeedY = 0;
+                    
+                }
+            }
+        }
+        this.y -= ninjaSpeedY;
+    } else if(this.NinjaMove === 3){
+        this.boundingbox = new BoundingBox(this.x, this.y + ninjaPadding, this.walkRightAnimation.frameWidth, this.walkRightAnimation.frameHeight);
+
+        for(var i = 0; i < this.game.entities.length; i++){
+            var ent = this.game.entities[i];
+            if(ent instanceof(MazePiece) && !ent.isTrap){
+                if(this.boundingbox.collide(ent.boundingbox)){
+                    ninjaSpeedY = 0;
+                   
+                }
+            }
+        }
+        this.y += ninjaSpeedY;
+    }
+    
+    
  
  
      Entity.prototype.update.call(this);
@@ -70,5 +110,9 @@ function Ninja(game, x, y) {
          this.goUpAndDownAnimation.drawFrame(this.game.clockTick, ctx, this.x, this.y);
      } 
         
+    if (this.boxes) {
+            ctx.strokeStyle = "green";
+            ctx.strokeRect(this.boundingbox.x, this.boundingbox.y, this.boundingbox.width, this.boundingbox.height);
+    }
      Entity.prototype.draw.call(this);
  }
