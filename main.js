@@ -285,7 +285,7 @@ Circle3d.prototype.update = function () {
 
         for (var i = 0; i < that.game.mazePieces.length; i++) {
             var pf = that.game.mazePieces[i];
-            if(that.boundingcircle.collide(pf.boundingbox)){
+            if(that.boundingcircle.collide(pf.boundingbox) && !(pf instanceof(Coin)) && !pf.isTrap && !pf.desactivated){
                
                 //console.log("Maze " + pf.y);
             	// console.log("Mz x: " + pf.x + " Mz width: " + pf.width);
