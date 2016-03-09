@@ -103,11 +103,13 @@ function createMazePieces(game, maze, mazeP) {
 //    console.log(maze.length);
 	var tempCoins = [];
 	var tempTraps = [];
+	game.solutionPieces = [];
 	for(var r = 0; r < maze.width ; r++) {
 		for(var c = 0; c < maze.maze[0].length  ; c++) {
-			if(maze.maze[r][c] !== 'X' && maze.maze[r][c] !== 'E') {
+			if(maze.maze[r][c] !== 'X' && maze.maze[r][c] !== 'E') { // the solution
                 var pl = new testMazePath(game, (c * 175) + 250, (r * 175) + 400, r, c); // x, y, width, height
                 game.addEntity(pl);
+                game.solutionPieces.push(pl);
             }
 //			string += maze.maze[r][c] + " ";
 			if(maze.maze[r][c] === 'X') {
@@ -359,8 +361,8 @@ MazePiece.prototype.draw = function (ctx) {
 
 //solve the path with the current x, y coordinate
 function pathSolver(game, r, c){
-    var correctPath = new Maze(game.mazeSize, game.mazeSize, game);
-    var temp = new Maze(game.mazeSize, game.mazeSize, game);
+    var correctPath = new Maze(game.mazeSize, game.mazeSize, game, false);
+    var temp = new Maze(game.mazeSize, game.mazeSize, game, false);
 
     var ms = new solveMaze(game.myMaze, correctPath.maze, temp.maze);
     console.log(ms.traverse(r, c));

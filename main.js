@@ -91,8 +91,6 @@ Circle3d.prototype.update = function () {
                     this.game.tx = 0;
                     this.game.ty = 0;
                 	this.game.level += 1;
-                	this.game.numCoins += 1;
-                	this.game.numTraps += 2;
                     this.game.screenOff = true;
                 	nextLevel(++(this.game.mazeSize), this.game);
                     
@@ -262,9 +260,9 @@ Circle3d.prototype.update = function () {
     	this.game.payPath = false;
     }
     
-    if(this.game.disableTrap && this.game.totCoins >= 3){
+    if(this.game.disableTrap && this.game.totCoins >= 2){
 //    	console.log("disable trap");
-    	this.game.totCoins -= 3;
+    	this.game.totCoins -= 2;
     	this.game.trapTime = 15;
     	this.game.startTrapTime = true;
     	this.game.stopTraps = true;
@@ -406,7 +404,7 @@ ASSET_MANAGER.downloadAll(function () {
     gameEngine.totCoins = 0;
     gameEngine.numTraps = 0;
     gameEngine.numCoins = 3;
-    gameEngine.numNinjas = 1;
+    gameEngine.numNinjas = 0;
     gameEngine.screenOff = false;
     gameEngine.showSolution = false;
     gameEngine.stopTraps = false;
@@ -466,15 +464,19 @@ function nextLevel(mazeSize, game) {
 	game.continueTrapTime = false;
 	game.stopTraps = false;
 	game.trapTime = 0;
+	if(game.level % 2 === 0) game.numNinjas += 2;
+	game.numCoins += 2;
+	game.numTraps += 2;
 
     
     //remove the enities
 	for(var i = 0; i < game.entities.length; i++) {
 		var temp = game.entities[i];
-		if(temp instanceof(testMazePath) || temp instanceof(VisibilityCircle) || temp instanceof(Coin) || temp instanceof(gameLabel)) {
+		if(!temp instanceof(Circle3d)) {
 			temp.removeFromWorld = true;
 		}
 	}
+	
 	
 	for (var i = 0; i < game.mazePieces.length; i++) {
 		game.mazePieces[i].removeFromWorld = true;
