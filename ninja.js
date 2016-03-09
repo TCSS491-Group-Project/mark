@@ -43,53 +43,68 @@ function Ninja(game, x, y) {
     if(this.NinjaMove === 0){
         this.boundingbox = new BoundingBox(this.x + ninjaPadding, this.y, this.walkRightAnimation.frameWidth, this.walkRightAnimation.frameHeight);
 
-        for(var i = 0; i < this.game.entities.length; i++){
-            var ent = this.game.entities[i];
-            if(ent instanceof(MazePiece) && !ent.isTrap){
-                if(this.boundingbox.collide(ent.boundingbox)){
+        for(var i = 0; i < this.game.mazePieces.length; i++){
+            var ent = this.game.mazePieces[i];
+           
+                if(this.boundingbox.collide(ent.boundingbox) && ent instanceof(MazePiece) && !ent.trap){
                     ninjaSpeedX = 0;
                 
                 }
-            }  
+                if(this.game.circle3d.boundingcircle.collide(this.boundingbox)){
+                    ninjaSpeedX = 0;
+                }
+            
         }
         this.x += ninjaSpeedX;
     } else if(this.NinjaMove === 1){
         this.boundingbox = new BoundingBox(this.x - ninjaPadding, this.y, this.walkRightAnimation.frameWidth, this.walkRightAnimation.frameHeight);
 
-        for(var i = 0; i < this.game.entities.length; i++){
-            var ent = this.game.entities[i];
-            if(ent instanceof(MazePiece) && !ent.isTrap){
-                if(this.boundingbox.collide(ent.boundingbox)){
+        for(var i = 0; i < this.game.mazePieces.length; i++){
+            var ent = this.game.mazePieces[i];
+            
+                if(this.boundingbox.collide(ent.boundingbox)&& ent instanceof(MazePiece) && !ent.trap){
                     ninjaSpeedX = 0;
                     
                 }
-            }
+
+                if(this.game.circle3d.boundingcircle.collide(this.boundingbox)){
+                    ninjaSpeedX = 0;
+                }
+            
         }
         this.x -= ninjaSpeedX;
     } else if(this.NinjaMove === 2){
         this.boundingbox = new BoundingBox(this.x, this.y - ninjaPadding, this.walkRightAnimation.frameWidth, this.walkRightAnimation.frameHeight);
 
-        for(var i = 0; i < this.game.entities.length; i++){
-            var ent = this.game.entities[i];
-            if(ent instanceof(MazePiece) && !ent.isTrap){
-                if(this.boundingbox.collide(ent.boundingbox)){
+        for(var i = 0; i < this.game.mazePieces.length; i++){
+            var ent = this.game.mazePieces[i];
+            
+                if(this.boundingbox.collide(ent.boundingbox)&& ent instanceof(MazePiece) && !ent.trap){
                     ninjaSpeedY = 0;
                     
                 }
-            }
+
+                if(this.game.circle3d.boundingcircle.collide(this.boundingbox)){
+                    ninjaSpeedY = 0;
+                }
+            
         }
         this.y -= ninjaSpeedY;
     } else if(this.NinjaMove === 3){
         this.boundingbox = new BoundingBox(this.x, this.y + ninjaPadding, this.walkRightAnimation.frameWidth, this.walkRightAnimation.frameHeight);
 
-        for(var i = 0; i < this.game.entities.length; i++){
-            var ent = this.game.entities[i];
-            if(ent instanceof(MazePiece) && !ent.isTrap){
-                if(this.boundingbox.collide(ent.boundingbox)){
+        for(var i = 0; i < this.game.mazePieces.length; i++){
+            var ent = this.game.mazePieces[i];
+     
+                if(this.boundingbox.collide(ent.boundingbox)&& ent instanceof(MazePiece) && !ent.trap){
                     ninjaSpeedY = 0;
                    
                 } 
-            }
+
+                if(this.game.circle3d.boundingcircle.collide(this.boundingbox)){
+                    ninjaSpeedy = 0;
+                }
+          
         }
         this.y += ninjaSpeedY;
     }

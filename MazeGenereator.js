@@ -155,7 +155,7 @@ function createMazePieces(game, maze, mazeP) {
 		
 	}
 	// Static coin counter
-	var pl = new Coin(game, 0, 50)
+	var pl = new Coin(game, 0, 50);
 	pl.deactivate = true;
 	game.addEntity(pl);
 	

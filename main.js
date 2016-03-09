@@ -472,9 +472,10 @@ function nextLevel(mazeSize, game) {
     //remove the enities
 	for(var i = 0; i < game.entities.length; i++) {
 		var temp = game.entities[i];
-		if(!temp instanceof(Circle3d)) {
+		if(!temp instanceof(Circle3d) || temp instanceof(Coin) || temp instanceof(gameLabel) || temp instanceof(VisibilityCircle)) {
 			temp.removeFromWorld = true;
 		}
+
 	}
 	
 	
