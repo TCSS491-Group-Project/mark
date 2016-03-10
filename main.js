@@ -513,4 +513,3 @@ function nextLevel(mazeSize, game) {
     var timer = new Timer();
     game.timer = timer;
 }
-

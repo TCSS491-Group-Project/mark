@@ -509,4 +509,3 @@ function printMaze(maze){
     }
     console.log(string);
 }
-
