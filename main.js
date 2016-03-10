@@ -92,6 +92,7 @@ Circle3d.prototype.update = function () {
                     this.game.ty = 0;
                 	this.game.level += 1;
                     this.game.screenOff = true;
+                    if(this.game.muteSoundfx) (ASSET_MANAGER.getAudioAsset("./song/exitSnd.wav")).play(); 
                 	nextLevel(++(this.game.mazeSize), this.game);
                     
                 }
@@ -224,8 +225,8 @@ Circle3d.prototype.update = function () {
         rotateAroundWorldAxis(mesh, xAxis, y);
     } 
 
-    if(this.game.payPath && this.game.totCoins >= 10){ //TODO coins to cash
-    	this.game.totCoins -= 10;
+    if(this.game.payPath && this.game.totCoins >= 7){ //TODO coins to cash
+    	this.game.totCoins -= 7;
         //reset the enities color back to transparent
         for(var i = 0; i < this.game.entities.length; i++) {
             var temp = this.game.entities[i];
@@ -252,6 +253,55 @@ Circle3d.prototype.update = function () {
         
         //solve the path in respect to where you are
         pathSolver(this.game, r, c);
+        var done = 0;
+        var start = null;
+        for(var t = 0; t < this.game.entities.length && !done; t++){
+            var cp = this.game.entities[t];
+            if(cp instanceof(testMazePath) && cp.row === r && cp.column ===c){
+            	start = cp;
+            	done = true;
+            	cp.visited = true;
+            }
+        }
+        done = false;
+        start.color = 1;
+        while(done !== this.game.entities.length) {
+        	var tempDone = false;
+        	for(var i = 0; i < this.game.entities.length && !tempDone; i++) {
+        		var cp = this.game.entities[i];
+        		if(cp instanceof(testMazePath) && cp.row === r - 1 && cp.column ===c && cp.color === 0 && !cp.visited){
+        			//North
+        			cp.color = 0;
+        			r = r - 1;
+        			tempDone = true;
+        			cp.visited = true;
+        		} else if(cp instanceof(testMazePath) && cp.row === r + 1 && cp.column ===c && cp.color === 0 && !cp.visited){
+        			//South
+        			cp.color = 2;
+        			 r = r + 1;
+        			tempDone = true;
+        			cp.visited = true;
+        		} else if(cp instanceof(testMazePath) && cp.row === r && cp.column === c - 1 && cp.color === 0 && !cp.visited){
+        			// East
+        			cp.color = 3;
+        			 c = c - 1;
+        			tempDone = true;
+        			cp.visited = true;
+        		} else if(cp instanceof(testMazePath) && cp.row === r && cp.column === c + 1 && cp.color === 0 && !cp.visited){
+        			// West
+        			cp.color = 4;
+        			 c = c + 1;
+        			 tempDone = true;
+        			 cp.visited = true;
+        		} 
+        		
+        	}
+        	done++;
+        }
+//        
+//        for(var t = 0; t < game.entities.length; t++){
+//            var cp = game.entities[t];
+//            if(cp instanceof(testMazePath) && cp.row === r && cp.column ===c){
 //        console.log("r " + r + " c " + c);
 //        console.log("x " + pf.x + " y " + pf.y);
         
@@ -377,6 +427,10 @@ ASSET_MANAGER.queueDownload("./img/trapDisable.png");
 ASSET_MANAGER.queueDownload("./img/trapDisableHorizontal.png");
 ASSET_MANAGER.queueDownload("./img/exitFlag.png");
 ASSET_MANAGER.queueDownload("./img/ninja.png");
+ASSET_MANAGER.queueDownload("./img/up.png");
+ASSET_MANAGER.queueDownload("./img/down.png");
+ASSET_MANAGER.queueDownload("./img/left.png");
+ASSET_MANAGER.queueDownload("./img/right.png");
 
 
 
@@ -384,6 +438,8 @@ ASSET_MANAGER.queueDownload("./img/ninja.png");
 ASSET_MANAGER.queueAudioDownload("./song/bgsound.mp3");
 ASSET_MANAGER.queueAudioDownload("./song/Coin.wav");
 ASSET_MANAGER.queueAudioDownload("./song/shock.wav");
+ASSET_MANAGER.queueAudioDownload("./song/exitSnd.wav");
+ASSET_MANAGER.queueAudioDownload("./song/ninja1.wav");
 
 ASSET_MANAGER.downloadAll(function () {
 	
@@ -410,7 +466,7 @@ ASSET_MANAGER.downloadAll(function () {
     gameEngine.stopTraps = false;
     gameEngine.coinSnd = ASSET_MANAGER.getAudioAsset("./song/Coin.wav");
     gameEngine.shockSnd = ASSET_MANAGER.getAudioAsset("./song/shock.wav");
-    gameEngine.musicSnd = ASSET_MANAGER.getAudioAsset("./song/bgsound.mp3");
+    gameEngine.musicSnd = ASSET_MANAGER.getAudioAsset("./song/bgsound.mp3"); 
     gameEngine.musicSnd.loop = true;
     gameEngine.musicSnd.play();
 //    gameEngine.musicSnd.play();
@@ -429,7 +485,7 @@ ASSET_MANAGER.downloadAll(function () {
     //make the myMaze a game entity variable
     gameEngine.myMaze = myMaze.maze;
    
-    var ms = new solveMaze(myMaze.maze, myMazeC.maze, myMazeW.maze);
+//    var ms = new solveMaze(myMaze.maze, myMazeC.maze, myMazeW.maze);
 //    console.log(ms.traverse(0, 1));
 //    printMaze(myMazeW.maze);
 
@@ -472,7 +528,8 @@ function nextLevel(mazeSize, game) {
     //remove the enities
 	for(var i = 0; i < game.entities.length; i++) {
 		var temp = game.entities[i];
-		if(!temp instanceof(Circle3d) || temp instanceof(Coin) || temp instanceof(gameLabel) || temp instanceof(VisibilityCircle)) {
+		if(!temp instanceof(Circle3d) || temp instanceof(Coin) || temp instanceof(gameLabel) 
+			|| temp instanceof(VisibilityCircle) || temp instanceof(testMazePath)) {
 			temp.removeFromWorld = true;
 		}
 
@@ -495,7 +552,7 @@ function nextLevel(mazeSize, game) {
     game.myMaze = myMaze.maze;
 
    
-    var ms = new solveMaze(myMaze.maze, myMazeC.maze, myMazeW.maze);
+//    var ms = new solveMaze(myMaze.maze, myMazeC.maze, myMazeW.maze);
 //    console.log(ms.traverse(0, 1));
 //    printMaze(myMazeC.maze);
 

@@ -48,7 +48,6 @@ function Ninja(game, x, y) {
            
                 if(this.boundingbox.collide(ent.boundingbox) && ent instanceof(MazePiece) && !ent.trap){
                     ninjaSpeedX = 0;
-                
                 }
                 if(this.game.circle3d.boundingcircle.collide(this.boundingbox)){
                     ninjaSpeedX = 0;
@@ -110,6 +109,11 @@ function Ninja(game, x, y) {
     }
     
     if(!this.game.stopTraps && this.game.circle3d.boundingcircle.collide(this.boundingbox)) {
+    	
+    	if(this.game.muteSoundfx) {
+	    	(ASSET_MANAGER.getAudioAsset("./song/ninja1.wav")).play();
+	    	(ASSET_MANAGER.getAudioAsset("./song/ninja1.wav")).currentTime  = 0;
+    	}
     	var randomLocation = Math.floor(Math.random() * (this.game.solutionPieces.length)); //Math.floor(Math.random() * (max - min)) + min;
 //    	console.log("SolutionPieces: " + this.game.solutionPieces.length);
 //    	console.log("Random Location: " + randomLocation);

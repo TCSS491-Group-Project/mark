@@ -175,9 +175,10 @@ function testMazePath(game, x, y, r, c){
     this.y = y;
     this.width = 50;
     this.height = 50;
+    this.visited = false;
     this.column = c;
     this.row = r;
-    this.colors = ["Red", "transparent" ];
+    this.colors = ["Red", "transparent", "blue", "green", "black", "yellow"];
     this.color = 1;
 
     this.someX = 0;
@@ -201,9 +202,19 @@ testMazePath.prototype.draw = function (ctx) {
     if (this.boxes) {
 
         //ctx.strokeStyle = "green";
-        ctx.fillStyle = this.colors[this.color];
-        ctx.fillRect(this.x, this.y, this.width, this.height);
         
+        if(this.color === 0) {
+        	ctx.drawImage(ASSET_MANAGER.getAsset("./img/up.png"), this.x - 100, this.y - 120, this.width + 150, this.height + 150);
+        } else if(this.color === 2) {
+        	ctx.drawImage(ASSET_MANAGER.getAsset("./img/down.png"), this.x - 100, this.y - 120, this.width + 150, this.height + 150);
+        } else if(this.color === 4) {
+        	ctx.drawImage(ASSET_MANAGER.getAsset("./img/right.png"), this.x - 100, this.y - 120, this.width + 150, this.height + 150);
+        } else if(this.color === 3) {
+        	ctx.drawImage(ASSET_MANAGER.getAsset("./img/left.png"), this.x - 100, this.y - 120, this.width + 150, this.height + 150);
+        } else {
+        	ctx.fillStyle = this.colors[this.color];
+        	ctx.fillRect(this.x, this.y, this.width, this.height);
+        }
     }
 
 
@@ -365,7 +376,7 @@ function pathSolver(game, r, c){
     var temp = new Maze(game.mazeSize, game.mazeSize, game, false);
 
     var ms = new solveMaze(game.myMaze, correctPath.maze, temp.maze);
-    console.log(ms.traverse(r, c));
+    ms.traverse(r, c);
     //printMaze(correctPath.maze);
 
     this.length = game.myMaze.length;
@@ -376,6 +387,7 @@ function pathSolver(game, r, c){
             if(correctPath.maze[r][c]){
                 for(var t = 0; t < game.entities.length; t++){
                     var cp = game.entities[t];
+                    cp.visited = false;
                     if(cp instanceof(testMazePath) && cp.row === r && cp.column ===c){
                         cp.color = 0;
                     }
