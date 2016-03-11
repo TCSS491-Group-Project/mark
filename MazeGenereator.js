@@ -281,12 +281,19 @@ MazePiece.prototype.update = function () {
 
     var playShockSound = false;
     if(this.trap && this.horizontalTrap) {
-    	this.boundingbox = new BoundingBox(this.x, this.y + 75, this.height, this.width - 30);
     	this.trapFrame = this.animationHorizontal.currentFrame();
+
+    	//make the trap have smaller width
+    	if(this.trapFrame > 4){
+    		this.boundingbox = new BoundingBox(this.x, this.y + 110, this.height, this.width - 85);
+    	} else {
+    		this.boundingbox = new BoundingBox(this.x, this.y + 85, this.height, this.width - 35);
+    	}
+    	
         var pf = this.game.circle3d;
         if (pf.boundingcircle.collide(this.boundingbox)) { 
 	        if(!this.desactivated){	
-	        	if(this.trapFrame < 10 && !this.game.stopTraps) {
+	        	if(this.trapFrame < 8 && !this.game.stopTraps) {
 	        		this.game.tx = 0;
 	        		this.game.ty = 0;
 	        		playShockSound = true;
@@ -301,13 +308,23 @@ MazePiece.prototype.update = function () {
 	        }
 	    }
     } else if(this.trap){
-    	this.boundingbox = new BoundingBox(this.x + 65, this.y, this.width - 30, this.height);
+
     	this.trapFrame = this.animationVertical.currentFrame();
+
+    	//make the trap have smaller width
+    	if(this.trapFrame > 4){
+    		this.boundingbox = new BoundingBox(this.x + 100, this.y, this.width - 85, this.height);
+    	} else {
+    		this.boundingbox = new BoundingBox(this.x + 70, this.y, this.width - 25, this.height);
+    	}
+
+    	
+    	
 
     	var pf = this.game.circle3d;
         if (pf.boundingcircle.collide(this.boundingbox)) { 
         	if(!this.desactivated){	    	
-	        	if(this.trapFrame < 10 && !this.game.stopTraps) {
+	        	if(this.trapFrame < 8 && !this.game.stopTraps) {
 	        		this.game.tx = 0;
 	        		this.game.ty = 0;
 	        		playShockSound = true;
