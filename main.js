@@ -520,7 +520,7 @@ function nextLevel(mazeSize, game) {
 	game.continueTrapTime = false;
 	game.stopTraps = false;
 	game.trapTime = 0;
-	if(game.level % 2 === 0) game.numNinjas += 2;
+	game.numNinjas = Math.floor(game.level / 2) + 1;
 	game.numCoins += 2;
 	game.numTraps += 2;
 
