@@ -110,6 +110,8 @@ function Ninja(game, x, y) {
     
     if(!this.game.stopTraps && this.game.circle3d.boundingcircle.collide(this.boundingbox)) {
     	
+        this.game.gameLabel.ninjaLabel = true;
+
     	if(this.game.muteSoundfx) {
 	    	(ASSET_MANAGER.getAudioAsset("./song/ninja1.wav")).play();
 	    	(ASSET_MANAGER.getAudioAsset("./song/ninja1.wav")).currentTime  = 0;

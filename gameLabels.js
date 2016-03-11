@@ -4,8 +4,10 @@ function gameLabel(game) {
     this.gameTotCoins = game.totCoins;
     this.nextLevelLabel = false;
     this.trapLabel = false;
-    this.counter1 = 300;
-    this.counter2 = 300;
+    this.ninjaLabel = false;
+    this.trapCounter = 300;
+    this.nextLevelCounter = 300;
+    this.ninjaCounter = 300;
     this.gameMins = 0;
     this.gameSecs = 0;
     Entity.call(this, game, 0, 0);
@@ -47,17 +49,24 @@ gameLabel.prototype.update = function () {
    
 
     if (this.nextLevelLabel){
-        this.counter1 -= 2;
-        if(this.counter1 < 0){ //TODO hereehrherhehrhehrhe
-            this.counter1 = 300;
+        this.nextLevelCounter -= 2;
+        if(this.nextLevelCounter < 0){ //TODO hereehrherhehrhehrhe
+            this.nextLevelCounter = 300;
             this.nextLevelLabel = false;
         }
     }
     if (this.trapLabel){
-        this.counter2 -= 2;
-        if(this.counter2 < 0){
-            this.counter2 = 300;
+        this.trapCounter -= 2;
+        if(this.trapCounter < 0){
+            this.trapCounter = 300;
             this.trapLabel = false;
+        }
+    }
+    if (this.ninjaLabel){
+        this.ninjaCounter -= 2;
+        if(this.ninjaCounter < 0){
+            this.ninjaCounter = 300;
+            this.ninjaLabel = false;
         }
     }
 
@@ -110,6 +119,12 @@ gameLabel.prototype.draw = function (ctx) {
         ctx.fillStyle = "Red";
         ctx.font = "bold 2em Arial";
         ctx.fillText("You fall on to a trap" , 210, 100);
+    }
+
+    if(this.ninjaLabel){
+        ctx.fillStyle = "Red";
+        ctx.font = "bold 2em Arial";
+        ctx.fillText("You got rob by a ninja" , 210, 130);
     }
     Entity.prototype.draw.call(this);
 }
