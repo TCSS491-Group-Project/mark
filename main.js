@@ -418,6 +418,7 @@ Circle3d.prototype.draw = function (ctx) {
 var ASSET_MANAGER = new AssetManager();
 
 //ASSET_MANAGER.queueDownload("./img/ninja.png");
+ASSET_MANAGER.queueDownload("./img/StartBG.png");
 ASSET_MANAGER.queueDownload("./img/coin.png");
 ASSET_MANAGER.queueDownload("./img/bricks.jpg");
 ASSET_MANAGER.queueDownload("./img/trap2.png"); // pre-download of .png images.
@@ -431,7 +432,7 @@ ASSET_MANAGER.queueDownload("./img/up.png");
 ASSET_MANAGER.queueDownload("./img/down.png");
 ASSET_MANAGER.queueDownload("./img/left.png");
 ASSET_MANAGER.queueDownload("./img/right.png");
-ASSET_MANAGER.queueDownload("./img/StartBG.png");
+
 
 
 //song queue
