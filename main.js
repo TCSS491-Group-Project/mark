@@ -431,7 +431,7 @@ ASSET_MANAGER.queueDownload("./img/up.png");
 ASSET_MANAGER.queueDownload("./img/down.png");
 ASSET_MANAGER.queueDownload("./img/left.png");
 ASSET_MANAGER.queueDownload("./img/right.png");
-
+ASSET_MANAGER.queueDownload("./img/StartBG.png");
 
 
 //song queue
@@ -442,11 +442,15 @@ ASSET_MANAGER.queueAudioDownload("./song/exitSnd.wav");
 ASSET_MANAGER.queueAudioDownload("./song/ninja1.wav");
 
 ASSET_MANAGER.downloadAll(function () {
-	
-    console.log("starting up da sheild");
-    
-    
-    
+	var  canvas = document.getElementById('gameWorld');
+//	canvas.focus();
+	var ctx = canvas.getContext('2d');
+	ctx.drawImage(ASSET_MANAGER.getAsset("./img/StartBG.png"), 0, 0, 800, 800);
+
+});
+
+function startGameNormal() {
+	console.log("starting up da sheild");
 	var  canvas = document.getElementById('gameWorld');
 	canvas.focus();
 	var   ctx = canvas.getContext('2d');
@@ -461,6 +465,7 @@ ASSET_MANAGER.downloadAll(function () {
     gameEngine.numTraps = 0;
     gameEngine.numCoins = 3;
     gameEngine.numNinjas = 0;
+    gameEngine.easyGame = false;
     gameEngine.screenOff = false;
     gameEngine.showSolution = false;
     gameEngine.stopTraps = false;
@@ -477,7 +482,7 @@ ASSET_MANAGER.downloadAll(function () {
     //instantiate the 3d ball
     init();
     
-    var myMaze = new Maze(gameEngine.mazeSize, gameEngine.mazeSize, gameEngine, true);
+    var myMaze = new Maze(gameEngine.mazeSize, gameEngine.mazeSize, gameEngine, !gameEngine.easyGame);
     var myMazeC = new Maze(gameEngine.mazeSize, gameEngine.mazeSize, gameEngine, false);
     var myMazeW = new Maze(gameEngine.mazeSize, gameEngine.mazeSize, gameEngine, false);
 //    myMaze.printMaze();
@@ -512,17 +517,98 @@ ASSET_MANAGER.downloadAll(function () {
     //gameEngine.addEntity(ninja);
     
     gameEngine.init(ctx);
+    var button = document.getElementById('normalStart');
+    button.remove(); easyStart
+    var otherbutton = document.getElementById('easyStart');
+    otherbutton.remove();
     gameEngine.start();
-});
+};
+
+function easyGameNormal() {
+	console.log("starting up da sheild");
+	var  canvas = document.getElementById('gameWorld');
+	canvas.focus();
+	var   ctx = canvas.getContext('2d');
+    
+    var gameEngine = new GameEngine();
+    var timer = new Timer();
+    gameEngine.timer = timer;
+    
+    gameEngine.mazeSize = 3;
+    gameEngine.level = 1;
+    gameEngine.totCoins = 0;
+    gameEngine.numTraps = 0;
+    gameEngine.numCoins = 0;
+    gameEngine.numNinjas = 0;
+    gameEngine.easyGame = true;
+    gameEngine.screenOff = false;
+    gameEngine.showSolution = false;
+    gameEngine.stopTraps = false;
+    gameEngine.coinSnd = ASSET_MANAGER.getAudioAsset("./song/Coin.wav");
+    gameEngine.shockSnd = ASSET_MANAGER.getAudioAsset("./song/shock.wav");
+    gameEngine.musicSnd = ASSET_MANAGER.getAudioAsset("./song/bgsound.mp3"); 
+    gameEngine.musicSnd.loop = true;
+    gameEngine.musicSnd.play();
+//    gameEngine.musicSnd.play();
+    gameEngine.muteMusic = false;
+    gameEngine.muteSoundfx = false;
+//    gameEngine.coinSnd.playbackRate = 1;
+
+    //instantiate the 3d ball
+    init();
+    
+    var myMaze = new Maze(gameEngine.mazeSize, gameEngine.mazeSize, gameEngine, !gameEngine.easyGame);
+    var myMazeC = new Maze(gameEngine.mazeSize, gameEngine.mazeSize, gameEngine, false);
+    var myMazeW = new Maze(gameEngine.mazeSize, gameEngine.mazeSize, gameEngine, false);
+//    myMaze.printMaze();
+
+    //make the myMaze a game entity variable
+    gameEngine.myMaze = myMaze.maze;
+   
+//    var ms = new solveMaze(myMaze.maze, myMazeC.maze, myMazeW.maze);
+//    console.log(ms.traverse(0, 1));
+//    printMaze(myMazeW.maze);
+
+
+    var mazePieces = createMazePieces(gameEngine, myMaze, myMazeC.maze);
+    gameEngine.mazePieces  = mazePieces;
+
+
+    
+//    var ninja = new Ninja(gameEngine); Dont need
+
+
+
+    var circle3d = new Circle3d(gameEngine, 399.5, 399, 40);
+    gameEngine.addEntity(circle3d);
+    gameEngine.circle3d = circle3d;
+
+
+
+    var gamelabel = new gameLabel(gameEngine);
+    gameEngine.addEntity(gamelabel);
+    gameEngine.gameLabel = gamelabel;
+//    gameEngine.addEntity(shade);
+    //gameEngine.addEntity(ninja);
+    
+    gameEngine.init(ctx);
+    var button = document.getElementById('normalStart');
+    button.remove(); easyStart
+    var otherbutton = document.getElementById('easyStart');
+    otherbutton.remove();
+    gameEngine.start();
+};
 
 function nextLevel(mazeSize, game) {
 //	var so = false;
 	game.continueTrapTime = false;
 	game.stopTraps = false;
 	game.trapTime = 0;
-	game.numNinjas = Math.floor(game.level / 2) + 1;
-	game.numCoins += 2;
-	game.numTraps += 2;
+	if(!game.easyGame) {
+		game.numNinjas = Math.floor(game.level / 2) + 1;
+		game.numCoins += 2;
+		game.numTraps += 2;
+	}
 
     
     //remove the enities
